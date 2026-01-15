@@ -1,12 +1,8 @@
 import {
-  Container,
-  GridLegacy as Grid,
   Card,
-  CardMedia,
   CardContent,
-  Typography,
-  Box,
-} from "@mui/material";
+  CardTitle,
+} from "@/components/ui/card";
 
 const objects = [
   { id: 1, name: "Hotel Romanija", type: "Hotel", municipality: "Pale" },
@@ -16,35 +12,37 @@ const objects = [
 
 const FeaturedObjects = () => {
   return (
-    // FULL WIDTH SEKCIJA
-    <Box sx={{ width: "100%", py: { xs: 6, md: 8 } }}>
-      {/* CENTRIRANI SADRŽAJ */}
-      <Container maxWidth="lg">
-        <Typography variant="h5" gutterBottom>
+    <section className="w-full py-16 bg-muted">
+      {/* centrirani sadržaj */}
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-2xl font-semibold mb-8">
           Izdvojeni objekti
-        </Typography>
+        </h2>
 
-        <Grid container spacing={4}>
+        {/* RESPONSIVE GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {objects.map((obj) => (
-            <Grid item xs={12} sm={6} md={4} key={obj.id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="160"
-                  image="https://source.unsplash.com/400x300/?hotel"
-                />
-                <CardContent>
-                  <Typography variant="h6">{obj.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {obj.type} • {obj.municipality}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card key={obj.id} className="overflow-hidden">
+              <img
+                src="https://source.unsplash.com/400x300/?hotel"
+                alt={obj.name}
+                className="h-40 w-full object-cover"
+              />
+
+              <CardContent className="pt-4">
+                <CardTitle className="text-lg">
+                  {obj.name}
+                </CardTitle>
+
+                <p className="text-sm text-muted-foreground mt-1">
+                  {obj.type} • {obj.municipality}
+                </p>
+              </CardContent>
+            </Card>
           ))}
-        </Grid>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </section>
   );
 };
 

@@ -38,7 +38,7 @@ const MapSection = () => {
           overflow: "hidden",
           boxShadow: 3,
           mt: 2,
-        }}
+        }} id="mapa"
       >
         <MapContainer
           center={[43.85, 18.39]}

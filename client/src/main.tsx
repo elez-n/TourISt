@@ -1,10 +1,11 @@
 
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
 import "leaflet/dist/leaflet.css";
 
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import { RouterProvider } from 'react-router-dom';
+import { router } from './app/routes/Routes.tsx';
 
 const theme = createTheme({
   palette: {
@@ -18,6 +19,6 @@ const theme = createTheme({
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
+    <RouterProvider router={router} />
   </ThemeProvider>
 );

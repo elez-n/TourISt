@@ -1,19 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  GridLegacy as Grid,
   Card,
-  CardMedia,
   CardContent,
-  CardActions,
-  Button,
-  MenuItem,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
   Select,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Objekat = {
   id: number;
@@ -22,7 +21,7 @@ type Objekat = {
   opstina: string;
   kategorija: string;
   status: string;
-  slike: string[]; // URL slika
+  slike: string[];
 };
 
 const mockObjekti: Objekat[] = [
@@ -34,8 +33,8 @@ const mockObjekti: Objekat[] = [
     kategorija: "3*",
     status: "Aktivan",
     slike: [
-      "https://picsum.photos/300/200?random=1",
-      "https://picsum.photos/300/200?random=2",
+      "https://picsum.photos/400/300?random=1",
+      "https://picsum.photos/400/300?random=2",
     ],
   },
   {
@@ -45,99 +44,91 @@ const mockObjekti: Objekat[] = [
     opstina: "Pale",
     kategorija: "2*",
     status: "Aktivan",
-    slike: ["https://picsum.photos/300/200?random=3"],
+    slike: ["https://picsum.photos/400/300?random=3"],
   },
 ];
 
 const ListaObjekata = () => {
-  const [objekti, setObjekti] = useState<Objekat[]>([]);
-  const [filterVrsta, setFilterVrsta] = useState("");
-  const [filterOpstina, setFilterOpstina] = useState("");
+  const [filterVrsta, setFilterVrsta] = useState<string>("all");
+  const [filterOpstina, setFilterOpstina] = useState<string>("all");
 
-useEffect(() => {
-  const loadObjekte = async () => {
-    // kasnije fetch sa backend-a
-    setObjekti(mockObjekti);
-  };
-  loadObjekte();
-}, []);
+const [objekti] = useState<Objekat[]>(mockObjekti);
 
 
-  // filtriranje
   const filtrirani = objekti.filter(
     (o) =>
-      (filterVrsta === "" || o.vrsta === filterVrsta) &&
-      (filterOpstina === "" || o.opstina === filterOpstina)
+      (filterVrsta === "all" || o.vrsta === filterVrsta) &&
+      (filterOpstina === "all" || o.opstina === filterOpstina)
   );
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Typography variant="h4" gutterBottom textAlign="center">
-        Turistički objekti
-      </Typography>
+    <section className="w-full py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        <h1 className="text-3xl font-semibold text-center mb-10">
+          Turistički objekti
+        </h1>
 
-      {/* Filteri */}
-      <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap" }}>
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>Vrsta</InputLabel>
-          <Select
-            value={filterVrsta}
-            onChange={(e) => setFilterVrsta(e.target.value)}
-            label="Vrsta"
-          >
-            <MenuItem value="">Sve</MenuItem>
-            <MenuItem value="Hotel">Hotel</MenuItem>
-            <MenuItem value="Apartman">Apartman</MenuItem>
-            <MenuItem value="Pansion">Pansion</MenuItem>
+        {/* FILTERI */}
+        <div className="flex flex-wrap gap-4 mb-8 justify-center">
+          <Select value={filterVrsta} onValueChange={setFilterVrsta}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Vrsta objekta" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Sve vrste</SelectItem>
+              <SelectItem value="Hotel">Hotel</SelectItem>
+              <SelectItem value="Apartman">Apartman</SelectItem>
+              <SelectItem value="Pansion">Pansion</SelectItem>
+            </SelectContent>
           </Select>
-        </FormControl>
 
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>Opština</InputLabel>
-          <Select
-            value={filterOpstina}
-            onChange={(e) => setFilterOpstina(e.target.value)}
-            label="Opština"
-          >
-            <MenuItem value="">Sve</MenuItem>
-            <MenuItem value="Istočno Novo Sarajevo">Istočno Novo Sarajevo</MenuItem>
-            <MenuItem value="Pale">Pale</MenuItem>
+          <Select value={filterOpstina} onValueChange={setFilterOpstina}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Opština" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Sve opštine</SelectItem>
+              <SelectItem value="Istočno Novo Sarajevo">
+                Istočno Novo Sarajevo
+              </SelectItem>
+              <SelectItem value="Pale">Pale</SelectItem>
+            </SelectContent>
           </Select>
-        </FormControl>
-      </Box>
+        </div>
 
-      {/* Lista kartica */}
-      <Grid container spacing={3}>
-        {filtrirani.map((o) => (
-          <Grid item xs={12} sm={6} md={4} key={o.id}>
-            <Card>
+        {/* GRID KARTICA */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtrirani.map((o) => (
+            <Card key={o.id} className="overflow-hidden">
               {o.slike.length > 0 && (
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={o.slike[0]}
+                <img
+                  src={o.slike[0]}
                   alt={o.naziv}
+                  className="h-48 w-full object-cover"
                 />
               )}
-              <CardContent>
-                <Typography variant="h6">{o.naziv}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {o.vrsta} | {o.opstina} | {o.kategorija}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Status: {o.status}
-                </Typography>
+
+              <CardContent className="pt-4">
+                <CardTitle className="text-lg">{o.naziv}</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {o.vrsta} • {o.opstina} • {o.kategorija}
+                </p>
+                <p className="text-sm mt-1">
+                  Status:{" "}
+                  <span className="font-medium">{o.status}</span>
+                </p>
               </CardContent>
-              <CardActions>
-                <Button size="small" variant="outlined">
+
+              <CardFooter>
+                <Button variant="outline" className="w-full">
                   Detalji
                 </Button>
-              </CardActions>
+              </CardFooter>
             </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 
