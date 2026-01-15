@@ -1,0 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace Dipl.Api.Data
+{
+    public class TouristObject
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        public string Type { get; set; } = string.Empty; // hotel, apartman...
+
+        public string Municipality { get; set; } = string.Empty;
+
+        public string Address { get; set; } = string.Empty;
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+}
