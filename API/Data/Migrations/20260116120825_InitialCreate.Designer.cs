@@ -3,6 +3,7 @@ using Dipl.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(TouristDbContext))]
-    partial class TouristDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260116120825_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +36,12 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ObjectId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ObjectId");
 
                     b.ToTable("AdditionalServices");
                 });
@@ -78,57 +86,7 @@ namespace API.Data.Migrations
                     b.ToTable("Municipalities");
                 });
 
-            modelBuilder.Entity("API.Entities.Photograph", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TouristObjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TouristObjectId");
-
-                    b.ToTable("Photographs");
-                });
-
-            modelBuilder.Entity("API.Entities.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TouristObjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TouristObjectId");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("API.Entities.TouristObject", b =>
+            modelBuilder.Entity("API.Entities.Object", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,8 +142,9 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -195,25 +154,60 @@ namespace API.Data.Migrations
 
                     b.HasIndex("ObjectTypeId");
 
-                    b.ToTable("TouristObjects");
+                    b.ToTable("Objects");
                 });
 
-            modelBuilder.Entity("AdditionalServiceTouristObject", b =>
+            modelBuilder.Entity("API.Entities.Photograph", b =>
                 {
-                    b.Property<int>("AdditionalServicesId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("TouristObjectsId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ObjectId")
                         .HasColumnType("int");
 
-                    b.HasKey("AdditionalServicesId", "TouristObjectsId");
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("TouristObjectsId");
+                    b.HasKey("Id");
 
-                    b.ToTable("AdditionalServiceTouristObject");
+                    b.HasIndex("ObjectId");
+
+                    b.ToTable("Photographs");
                 });
 
-            modelBuilder.Entity("Api.Entities.ObjectType", b =>
+            modelBuilder.Entity("API.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ObjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ObjectId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Dipl.Api.Entities.ObjectType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -231,44 +225,29 @@ namespace API.Data.Migrations
                     b.ToTable("ObjectType");
                 });
 
-            modelBuilder.Entity("API.Entities.Photograph", b =>
+            modelBuilder.Entity("API.Entities.AdditionalService", b =>
                 {
-                    b.HasOne("API.Entities.TouristObject", "Object")
-                        .WithMany("Photographs")
-                        .HasForeignKey("TouristObjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Object");
+                    b.HasOne("API.Entities.Object", null)
+                        .WithMany("AdditionalServices")
+                        .HasForeignKey("ObjectId");
                 });
 
-            modelBuilder.Entity("API.Entities.Review", b =>
-                {
-                    b.HasOne("API.Entities.TouristObject", "TouristObject")
-                        .WithMany("Reviews")
-                        .HasForeignKey("TouristObjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TouristObject");
-                });
-
-            modelBuilder.Entity("API.Entities.TouristObject", b =>
+            modelBuilder.Entity("API.Entities.Object", b =>
                 {
                     b.HasOne("API.Entities.Category", "Category")
-                        .WithMany("TouristObjects")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("API.Entities.Municipality", "Municipality")
-                        .WithMany("TouristObjects")
+                        .WithMany()
                         .HasForeignKey("MunicipalityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Api.Entities.ObjectType", "ObjectType")
-                        .WithMany("TouristObjects")
+                    b.HasOne("Dipl.Api.Entities.ObjectType", "ObjectType")
+                        .WithMany()
                         .HasForeignKey("ObjectTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -280,41 +259,31 @@ namespace API.Data.Migrations
                     b.Navigation("ObjectType");
                 });
 
-            modelBuilder.Entity("AdditionalServiceTouristObject", b =>
+            modelBuilder.Entity("API.Entities.Photograph", b =>
                 {
-                    b.HasOne("API.Entities.AdditionalService", null)
-                        .WithMany()
-                        .HasForeignKey("AdditionalServicesId")
+                    b.HasOne("API.Entities.Object", null)
+                        .WithMany("Photographs")
+                        .HasForeignKey("ObjectId");
+                });
+
+            modelBuilder.Entity("API.Entities.Review", b =>
+                {
+                    b.HasOne("API.Entities.Object", "Object")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.TouristObject", null)
-                        .WithMany()
-                        .HasForeignKey("TouristObjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Object");
                 });
 
-            modelBuilder.Entity("API.Entities.Category", b =>
+            modelBuilder.Entity("API.Entities.Object", b =>
                 {
-                    b.Navigation("TouristObjects");
-                });
+                    b.Navigation("AdditionalServices");
 
-            modelBuilder.Entity("API.Entities.Municipality", b =>
-                {
-                    b.Navigation("TouristObjects");
-                });
-
-            modelBuilder.Entity("API.Entities.TouristObject", b =>
-                {
                     b.Navigation("Photographs");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("Api.Entities.ObjectType", b =>
-                {
-                    b.Navigation("TouristObjects");
                 });
 #pragma warning restore 612, 618
         }

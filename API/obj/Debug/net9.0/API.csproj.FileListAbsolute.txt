@@ -144,3 +144,4 @@ C:\Users\Korisnik\Desktop\Dipl\api\bin\Debug\net9.0\runtimes\win\lib\net6.0\Syst
 C:\Users\Korisnik\Desktop\Dipl\api\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\Korisnik\Desktop\Dipl\api\obj\Debug\net9.0\API.csproj.AssemblyReference.cache
 C:\Users\Korisnik\Desktop\Dipl\api\obj\Debug\net9.0\API.csproj.Up2Date
+C:\Users\Korisnik\Desktop\Dipl\api\obj\Debug\net9.0\API.sourcelink.json

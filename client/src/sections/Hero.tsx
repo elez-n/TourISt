@@ -35,7 +35,7 @@ const HeroImageSlider = () => {
 
 const Hero = () => {
   return (
-    <section className="w-full py-16 md:py-24 bg-gray-100">
+    <section className="w-full py-16 md:py-24 bg-gray-100 mt-10">
       <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
         {/* Lijeva strana: tekst */}
         <div className="text-center md:text-left space-y-6">

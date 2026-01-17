@@ -1,23 +1,45 @@
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using Api.Entities;
 
-namespace Dipl.Api.Data
+namespace API.Entities
 {
     public class TouristObject
     {
-        [Key]
-        public int Id { get; set; }
+        public int Id { get; set; } // ID
 
-        [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = null!; // Naziv
 
-        public string Type { get; set; } = string.Empty; // hotel, apartman...
+        // FK prema ObjectType
+        public int ObjectTypeId { get; set; }
+        public ObjectType ObjectType { get; set; } = null!; // Vrsta
 
-        public string Municipality { get; set; } = string.Empty;
+        public bool Status { get; set; }  // Status
+        public string Address { get; set; } = null!; // Adresa
+        public double Coordinate1 { get; set; } // Koordinata1
+        public double Coordinate2 { get; set; } // Koordinata2
+        public string ContactPhone { get; set; } = null!; // Kontakt telefon
+        public string ContactEmail { get; set; } = null!; // Kontakt mejl
+        public int NumberOfUnits { get; set; } // Broj smještajnih jedinica
+        public int NumberOfBeds { get; set; } // Broj ležajeva
+        public string Description { get; set; } = null!; // Opis
+        public string Owner { get; set; } = null!; // Vlasnik
+        public bool Featured { get; set; } // Izdvojen
 
-        public string Address { get; set; } = string.Empty;
+        // FK prema Category
+        public int CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
 
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        // FK prema Municipality
+        public int MunicipalityId { get; set; }
+        public Municipality Municipality { get; set; } = null!;
+
+        // M:N veza prema AdditionalServices (implicit join table)
+        public ICollection<AdditionalService> AdditionalServices { get; set; } = new List<AdditionalService>();
+
+        // 1:N veza prema Photographs
+        public ICollection<Photograph> Photographs { get; set; } = new List<Photograph>();
+
+        // 1:N veza prema Reviews (Recenzije)
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
