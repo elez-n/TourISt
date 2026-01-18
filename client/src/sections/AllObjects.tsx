@@ -5,66 +5,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-
-type Objekat = {
-  id: number;
-  naziv: string;
-  vrsta: string;
-  opstina: string;
-  kategorija: string;
-  status: string;
-  slike: string[];
-};
-
-const mockObjekti: Objekat[] = [
-  {
-    id: 1,
-    naziv: "Hotel Romanija",
-    vrsta: "Hotel",
-    opstina: "Istočno Novo Sarajevo",
-    kategorija: "3*",
-    status: "Aktivan",
-    slike: [
-      "https://picsum.photos/400/300?random=1",
-      "https://picsum.photos/400/300?random=2",
-    ],
-  },
-  {
-    id: 2,
-    naziv: "Apartmani Jahorina",
-    vrsta: "Apartman",
-    opstina: "Pale",
-    kategorija: "2*",
-    status: "Aktivan",
-    slike: ["https://picsum.photos/400/300?random=3"],
-  },
-];
+import { useGetTouristObjectsQuery } from "../store/api/TouristObjectApi";
 
 const ListaObjekata = () => {
+  const { data, isLoading, isError } = useGetTouristObjectsQuery();
 
+  if (isLoading) {
+    return <div className="text-center py-20">Učitavanje...</div>;
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="text-center py-20 text-red-500">
+        Greška pri učitavanju objekata
+      </div>
+    );
+  }
 
   return (
     <section className="w-full py-16">
       <div className="max-w-7xl mx-auto px-4">
-
-
-        {/* GRID KARTICA */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockObjekti.map((o) => (
+          {data.map((o) => (
             <Card key={o.id} className="overflow-hidden">
-              {o.slike.length > 0 && (
+              {o.photographs.length > 0 && (
                 <img
-                  src={o.slike[0]}
-                  alt={o.naziv}
+                  src={`https://localhost:5001${o.photographs[0]}`}
+                  alt={o.name}
                   className="h-48 w-full object-cover"
                 />
               )}
 
               <CardContent className="pt-4">
-                <CardTitle className="text-lg">{o.naziv}</CardTitle>
+                <CardTitle className="text-lg">{o.name}</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {o.vrsta} • {o.opstina} • {o.kategorija}
+                  {o.objectTypeName} • {o.municipalityName} •{" "}
+                  {o.categoryName}
                 </p>
               </CardContent>
 

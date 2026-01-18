@@ -6,6 +6,8 @@ import "leaflet/dist/leaflet.css";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { RouterProvider } from 'react-router-dom';
 import { router } from './app/routes/Routes.tsx';
+import { Provider } from 'react-redux';
+import { store } from './store/store.ts';
 
 const theme = createTheme({
   palette: {
@@ -19,6 +21,8 @@ const theme = createTheme({
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
+    <Provider store={store}>
     <RouterProvider router={router} />
+    </Provider>
   </ThemeProvider>
 );
