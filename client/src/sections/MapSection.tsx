@@ -3,32 +3,58 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L, { type LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Marker ikona (radi u Vite + TS + React)
+// Ikone
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
+// ===== IKONE =====
 const defaultIcon = L.icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
-  iconSize: [25, 41],       // standardna veličina Leaflet markera
-  iconAnchor: [12, 41],     // tačka na kojoj je marker "prikvačen" na mapu
-  popupAnchor: [1, -34],    // gdje popup izlazi u odnosu na marker
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
 
-// Marker-i (kasnije iz backend-a)
-const markers: { id: number; name: string; position: LatLngTuple }[] = [
-  { id: 1, name: "Hotel Romanija", position: [43.847, 18.386] },
-  { id: 2, name: "Apartmani Jahorina", position: [43.857, 18.394] },
-  { id: 3, name: "Pansion Trebević", position: [43.848, 18.378] },
-];
+const highlightedIcon = L.icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  shadowUrl: markerShadowPng,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
-const MapSection = () => {
+// ===== TIP =====
+export interface MapMarker {
+  id: number;
+  name: string;
+  position: LatLngTuple;
+}
+
+// ===== PROPS =====
+interface MapSectionProps {
+  markers: MapMarker[];
+  selectedId?: number;
+  title?: string;
+}
+
+// ===== KOMPONENTA =====
+const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
+  const center: LatLngTuple =
+    selectedId && markers.find((m) => m.id === selectedId)
+      ? markers.find((m) => m.id === selectedId)!.position
+      : [43.85, 18.39];
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Typography variant="h5" textAlign="center" gutterBottom>
-        Mapa objekata
-      </Typography>
+      {title && (
+        <Typography variant="h5" textAlign="center" gutterBottom>
+          {title}
+        </Typography>
+      )}
 
       <Box
         sx={{
@@ -38,27 +64,34 @@ const MapSection = () => {
           overflow: "hidden",
           boxShadow: 3,
           mt: 2,
-        }} id="mapa"
+        }}
       >
         <MapContainer
-          center={[43.85, 18.39]}
+          center={center}
           zoom={13}
           style={{ width: "100%", height: "100%" }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution="&copy; OpenStreetMap"
           />
 
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              position={marker.position}
-              icon={defaultIcon} // sada ikona radi
-            >
-              <Popup>{marker.name}</Popup>
-            </Marker>
-          ))}
+          {markers.map((marker) => {
+            const isSelected = marker.id === selectedId;
+
+            return (
+              <Marker
+                key={marker.id}
+                position={marker.position}
+                icon={isSelected ? highlightedIcon : defaultIcon}
+              >
+                <Popup>
+                  <strong>{marker.name}</strong>
+                  {isSelected && <div>(trenutni objekat)</div>}
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       </Box>
     </Container>

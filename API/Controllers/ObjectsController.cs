@@ -3,7 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using API.Data; // DbContext
 using API.Entities;
 using Dipl.Api.Data;
-using API.DTOs; // Entitet Object
+using API.DTOs;
+using System.Collections.Immutable; // Entitet Object
+using API.Extensions;
+using API.RequestHelpers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Azure;
 
 namespace API.Controllers
 {
@@ -20,39 +25,58 @@ namespace API.Controllers
 
     // GET: api/objects
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjects()
+    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjects([FromQuery] ObjectParams objectParams)
     {
-      var objects = await _context.TouristObjects
+      var query = _context.TouristObjects
+          .AsQueryable();
+
+      query = query
+          .Filter(objectParams.ObjectTypes)      // npr. "Hotel,Hostel"
+          .Search(objectParams.SearchTerm)           // npr. "spa"
+          .Sort(objectParams.OrderBy)
+          .AsSplitQuery()
           .Include(o => o.ObjectType)
           .Include(o => o.Category)
           .Include(o => o.Municipality)
           .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs)
-          .Select(o => new ObjectDto
-          {
-            Id = o.Id,
-            Name = o.Name,
-            ObjectTypeName = o.ObjectType.Name,
-            Status = o.Status,
-            Address = o.Address,
-            Coordinate1 = o.Coordinate1,
-            Coordinate2 = o.Coordinate2,
-            ContactPhone = o.ContactPhone,
-            ContactEmail = o.ContactEmail,
-            NumberOfUnits = o.NumberOfUnits,
-            NumberOfBeds = o.NumberOfBeds,
-            Description = o.Description,
-            Owner = o.Owner,
-            Featured = o.Featured,
-            CategoryName = o.Category.Name,
-            MunicipalityName = o.Municipality.Name,
-            AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
-            Photographs = o.Photographs.Select(p => p.Url).ToList()
-          })
-          .ToListAsync();
+          .Include(o => o.Photographs);   // beds | bedsdesc | default
 
-      return Ok(objects);
+      var dtoQuery = query.Select(o => new ObjectDto
+      {
+        Id = o.Id,
+        Name = o.Name,
+        ObjectTypeName = o.ObjectType.Name,
+        Status = o.Status,
+        Address = o.Address,
+        Coordinate1 = o.Coordinate1,
+        Coordinate2 = o.Coordinate2,
+        ContactPhone = o.ContactPhone,
+        ContactEmail = o.ContactEmail,
+        NumberOfUnits = o.NumberOfUnits,
+        NumberOfBeds = o.NumberOfBeds,
+        Description = o.Description,
+        Owner = o.Owner,
+        Featured = o.Featured,
+        CategoryName = o.Category.Name,
+        MunicipalityName = o.Municipality.Name,
+        AdditionalServices = o.AdditionalServices
+                  .Select(s => s.Name)
+                  .ToList(),
+        Photographs = o.Photographs
+                  .Select(p => p.Url)
+                  .ToList()
+      });
+
+      var pagedList = await PagedList<ObjectDto>.ToPagedList(
+dtoQuery,
+objectParams.PageNumber, // npr. iz query string-a
+objectParams.PageSize
+);
+
+    Response.AddPaginationHeader(pagedList.Metadata);
+      return pagedList;
     }
+
 
     // GET: api/Objects/5
     [HttpGet("{id}")]

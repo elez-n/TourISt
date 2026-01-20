@@ -6,9 +6,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetTouristObjectsQuery } from "../store/api/TouristObjectApi";
+import { useNavigate } from "react-router-dom";
 
 const ListaObjekata = () => {
   const { data, isLoading, isError } = useGetTouristObjectsQuery();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <div className="text-center py-20">Učitavanje...</div>;
@@ -45,7 +47,7 @@ const ListaObjekata = () => {
               </CardContent>
 
               <CardFooter>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full"  onClick={() => navigate(`/objects/${o.id}`)}>
                   Detalji
                 </Button>
               </CardFooter>
