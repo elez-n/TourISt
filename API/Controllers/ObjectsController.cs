@@ -31,7 +31,7 @@ namespace API.Controllers
           .AsQueryable();
 
       query = query
-          .Filter(objectParams.ObjectTypes)      // npr. "Hotel,Hostel"
+          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories)  
           .Search(objectParams.SearchTerm)           // npr. "spa"
           .Sort(objectParams.OrderBy)
           .AsSplitQuery()
@@ -73,7 +73,7 @@ objectParams.PageNumber, // npr. iz query string-a
 objectParams.PageSize
 );
 
-    Response.AddPaginationHeader(pagedList.Metadata);
+      Response.AddPaginationHeader(pagedList.Metadata);
       return pagedList;
     }
 
@@ -116,6 +116,22 @@ objectParams.PageSize
       };
 
       return Ok(dto);
+    }
+
+    [HttpGet("filters")]
+    public async Task<IActionResult> GetFilters()
+    {
+      var types = await _context.ObjectTypes.Select(x => x.Name).Distinct().ToListAsync();
+      var municipalities = await _context.Municipalities.Select(x => x.Name).Distinct().ToListAsync();
+      var categories = await _context.Categories.Select(x => x.Name).Distinct().ToListAsync();
+
+
+      return Ok(new
+      {
+        types,
+        municipalities,
+        categories
+      });
     }
   }
 }
