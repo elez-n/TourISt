@@ -38,6 +38,8 @@ const ObjectDetailsPage = () => {
       position: [object.coordinate1, object.coordinate2] as [number, number],
     },
   ];
+  console.log(object);
+
 
   return (
     <>

@@ -31,7 +31,7 @@ namespace API.Controllers
           .AsQueryable();
 
       query = query
-          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories)  
+          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories)
           .Search(objectParams.SearchTerm)           // npr. "spa"
           .Sort(objectParams.OrderBy)
           .AsSplitQuery()
@@ -133,5 +133,118 @@ objectParams.PageSize
         categories
       });
     }
+
+    [HttpPost("test")]
+    public IActionResult TestPost()
+    {
+      return Ok(new { message = "POST works!" });
+    }
+
+    [HttpGet("noviTest")]
+    public IActionResult GetAll()
+    {
+      return Ok(new { message = "GET all works!" });
+    }
+
+    [HttpPost]
+
+    public async Task<IActionResult> CreateObject([FromForm] TouristObjectCreateDto dto)
+    {
+      // Kreiramo entitet
+      var touristObject = new TouristObject
+      {
+        Name = dto.Name,
+        ObjectTypeId = dto.ObjectTypeId,
+        Status = dto.Status,
+        Address = dto.Address,
+        Coordinate1 = dto.Coordinate1,
+        Coordinate2 = dto.Coordinate2,
+        ContactPhone = dto.ContactPhone,
+        ContactEmail = dto.ContactEmail,
+        NumberOfUnits = dto.NumberOfUnits,
+        NumberOfBeds = dto.NumberOfBeds,
+        Description = dto.Description,
+        Owner = dto.Owner,
+        Featured = dto.Featured,
+        CategoryId = dto.CategoryId,
+        MunicipalityId = dto.MunicipalityId
+      };
+      
+            // Dodavanje dodatnih usluga
+            if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
+            {
+              var services = await _context.AdditionalServices
+                  .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
+                  .ToListAsync();
+
+              foreach (var s in services)
+                touristObject.AdditionalServices.Add(s);
+            }
+
+            // Upload fotografija
+            if (dto.Photographs != null && dto.Photographs.Any())
+            {
+              var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+              if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+              foreach (var file in dto.Photographs)
+              {
+                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                  await file.CopyToAsync(stream);
+                }
+
+                touristObject.Photographs.Add(new Photograph { Url = "/uploads/" + fileName });
+              }
+            }
+
+            _context.TouristObjects.Add(touristObject);
+            await _context.SaveChangesAsync();
+      
+      // Vraćamo kreirani objekat kao DTO
+      var resultDto = new ObjectDto
+      {
+        Id = touristObject.Id,
+        Name = touristObject.Name,
+        ObjectTypeName = (await _context.ObjectTypes.FindAsync(touristObject.ObjectTypeId))?.Name ?? "",
+        Status = touristObject.Status,
+        Address = touristObject.Address,
+        Coordinate1 = touristObject.Coordinate1,
+        Coordinate2 = touristObject.Coordinate2,
+        ContactPhone = touristObject.ContactPhone,
+        ContactEmail = touristObject.ContactEmail,
+        NumberOfUnits = touristObject.NumberOfUnits,
+        NumberOfBeds = touristObject.NumberOfBeds,
+        Description = touristObject.Description,
+        Owner = touristObject.Owner,
+        Featured = touristObject.Featured,
+        CategoryName = (await _context.Categories.FindAsync(touristObject.CategoryId))?.Name ?? "",
+        MunicipalityName = (await _context.Municipalities.FindAsync(touristObject.MunicipalityId))?.Name ?? "",
+        AdditionalServices = touristObject.AdditionalServices.Select(s => s.Name).ToList(),
+        Photographs = touristObject.Photographs.Select(p => p.Url).ToList()
+      };
+
+      return Ok(resultDto);
+    }
+
+    [HttpPost("testform")]
+    public IActionResult PostString([FromForm] TestDto test)
+    {
+      return Ok(new
+      {
+        message = "Primljeno!",
+        name = test.Name
+      });
+    }
+
+    public class TestDto
+    {
+      public string Name { get; set; }
+    }
+
   }
 }
