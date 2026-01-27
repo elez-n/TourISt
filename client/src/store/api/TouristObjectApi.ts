@@ -33,12 +33,55 @@ export const touristObjectApi = createApi({
 
     fetchFilters: builder.query<{ types: string[], municipalities: string[], categories: string[] }, void>({
       query: () => 'objects/filters'
-    })
+    }),
+    fetchObjectTypes: builder.query<{ id: number; name: string }[], void>({
+      query: () => "objects/object-types",
+    }),
+
+    // Fetch Categories
+    fetchCategories: builder.query<{ id: number; name: string }[], void>({
+      query: () => "objects/categories",
+    }),
+
+    // Fetch Municipalities
+    fetchMunicipalities: builder.query<{ id: number; name: string }[], void>({
+      query: () => "objects/municipalities",
+    }),
+
+    // Fetch Additional Services
+    fetchAdditionalServices: builder.query<{ id: number; name: string }[], void>({
+      query: () => "objects/additional-services",
+    }),
+    createTouristObject: builder.mutation<TouristObjectDto, FormData>({
+      query: (formData) => ({
+        url: "objects",
+        method: "POST",
+        body: formData,
+      }),
+    }),
+
+    updateTouristObject: builder.mutation<
+      TouristObjectDto,
+      { id: number; formData: FormData }
+    >({
+      query: ({ id, formData }) => ({
+        url: `objects/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
+    }),
   }),
+
 });
 
 export const {
   useGetTouristObjectsQuery,
   useGetTouristObjectByIdQuery,
-  useFetchFiltersQuery
+  useFetchFiltersQuery,
+  useCreateTouristObjectMutation,
+  useUpdateTouristObjectMutation,
+  useFetchObjectTypesQuery,
+  useFetchCategoriesQuery,
+  useFetchMunicipalitiesQuery,
+  useFetchAdditionalServicesQuery,
 } = touristObjectApi;
