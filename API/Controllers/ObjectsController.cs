@@ -134,6 +134,38 @@ objectParams.PageSize
       });
     }
 
+    [HttpGet("object-types")]
+    public async Task<IActionResult> GetObjectTypes()
+    {
+      var types = await _context.ObjectTypes.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
+
+      return Ok(types);
+    }
+
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories()
+    {
+      var categories = await _context.Categories.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
+
+      return Ok(categories);
+    }
+
+    [HttpGet("municipalities")]
+    public async Task<IActionResult> GetMunicipalities()
+    {
+      var municipalities = await _context.Municipalities.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
+
+      return Ok(municipalities);
+    }
+
+    [HttpGet("additional-services")]
+    public async Task<IActionResult> GetAdditionalServices()
+    {
+      var services = await _context.AdditionalServices.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
+
+      return Ok(services);
+    }
+
     [HttpPost("test")]
     public IActionResult TestPost()
     {
@@ -157,8 +189,8 @@ objectParams.PageSize
         ObjectTypeId = dto.ObjectTypeId,
         Status = dto.Status,
         Address = dto.Address,
-        Coordinate1 = dto.Coordinate1,
-        Coordinate2 = dto.Coordinate2,
+        Coordinate1 = dto.Coordinate1/100,
+        Coordinate2 = dto.Coordinate2/100,
         ContactPhone = dto.ContactPhone,
         ContactEmail = dto.ContactEmail,
         NumberOfUnits = dto.NumberOfUnits,
@@ -169,42 +201,42 @@ objectParams.PageSize
         CategoryId = dto.CategoryId,
         MunicipalityId = dto.MunicipalityId
       };
-      
-            // Dodavanje dodatnih usluga
-            if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
-            {
-              var services = await _context.AdditionalServices
-                  .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
-                  .ToListAsync();
 
-              foreach (var s in services)
-                touristObject.AdditionalServices.Add(s);
-            }
+      // Dodavanje dodatnih usluga
+      if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
+      {
+        var services = await _context.AdditionalServices
+            .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
+            .ToListAsync();
 
-            // Upload fotografija
-            if (dto.Photographs != null && dto.Photographs.Any())
-            {
-              var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-              if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
+        foreach (var s in services)
+          touristObject.AdditionalServices.Add(s);
+      }
 
-              foreach (var file in dto.Photographs)
-              {
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
+      // Upload fotografija
+      if (dto.Photographs != null && dto.Photographs.Any())
+      {
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        if (!Directory.Exists(uploadsFolder))
+          Directory.CreateDirectory(uploadsFolder);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                  await file.CopyToAsync(stream);
-                }
+        foreach (var file in dto.Photographs)
+        {
+          var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+          var filePath = Path.Combine(uploadsFolder, fileName);
 
-                touristObject.Photographs.Add(new Photograph { Url = "/uploads/" + fileName });
-              }
-            }
+          using (var stream = new FileStream(filePath, FileMode.Create))
+          {
+            await file.CopyToAsync(stream);
+          }
 
-            _context.TouristObjects.Add(touristObject);
-            await _context.SaveChangesAsync();
-      
+          touristObject.Photographs.Add(new Photograph { Url = "/uploads/" + fileName });
+        }
+      }
+
+      _context.TouristObjects.Add(touristObject);
+      await _context.SaveChangesAsync();
+
       // Vraćamo kreirani objekat kao DTO
       var resultDto = new ObjectDto
       {
@@ -229,21 +261,6 @@ objectParams.PageSize
       };
 
       return Ok(resultDto);
-    }
-
-    [HttpPost("testform")]
-    public IActionResult PostString([FromForm] TestDto test)
-    {
-      return Ok(new
-      {
-        message = "Primljeno!",
-        name = test.Name
-      });
-    }
-
-    public class TestDto
-    {
-      public string Name { get; set; }
     }
 
   }
