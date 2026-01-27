@@ -166,18 +166,6 @@ objectParams.PageSize
       return Ok(services);
     }
 
-    [HttpPost("test")]
-    public IActionResult TestPost()
-    {
-      return Ok(new { message = "POST works!" });
-    }
-
-    [HttpGet("noviTest")]
-    public IActionResult GetAll()
-    {
-      return Ok(new { message = "GET all works!" });
-    }
-
     [HttpPost]
 
     public async Task<IActionResult> CreateObject([FromForm] TouristObjectCreateDto dto)
@@ -189,8 +177,8 @@ objectParams.PageSize
         ObjectTypeId = dto.ObjectTypeId,
         Status = dto.Status,
         Address = dto.Address,
-        Coordinate1 = dto.Coordinate1/100,
-        Coordinate2 = dto.Coordinate2/100,
+        Coordinate1 = dto.Coordinate1 / 100,
+        Coordinate2 = dto.Coordinate2 / 100,
         ContactPhone = dto.ContactPhone,
         ContactEmail = dto.ContactEmail,
         NumberOfUnits = dto.NumberOfUnits,
@@ -261,6 +249,43 @@ objectParams.PageSize
       };
 
       return Ok(resultDto);
+    }
+
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteObject(int id)
+    {
+      var touristObject = await _context.TouristObjects
+          .Include(o => o.Photographs) // SAMO zbog fajlova
+          .FirstOrDefaultAsync(o => o.Id == id);
+
+      if (touristObject == null)
+        return NotFound(new { message = "Objekat nije pronađen." });
+
+      // Brisanje slika sa diska
+      if (touristObject.Photographs.Any())
+      {
+        var uploadsFolder = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "uploads"
+        );
+
+        foreach (var photo in touristObject.Photographs)
+        {
+          var filePath = Path.Combine(
+              uploadsFolder,
+              Path.GetFileName(photo.Url)
+          );
+
+          if (System.IO.File.Exists(filePath))
+            System.IO.File.Delete(filePath);
+        }
+      }
+
+      _context.TouristObjects.Remove(touristObject);
+      await _context.SaveChangesAsync();
+
+      return NoContent(); // 204
     }
 
   }

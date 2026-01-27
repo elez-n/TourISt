@@ -62,16 +62,29 @@ const Objects = () => {
 
       {/* GLAVNI SADRŽAJ */}
       <div className="flex-1 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 px-4 lg:px-8 py-6 w-full">
-        
+
         {/* LIJEVA STRANA */}
         <div className="flex-1 flex flex-col">
-          <input
-            type="text"
-            value={objectParams.searchTerm || ""}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Pretraži objekte..."
-            className="w-full p-2 border rounded shadow-sm mb-4"
-          />
+          {/* POLJE ZA PRETRAGU + DUGME U ISTOJ LINJI */}
+          <div className="flex gap-4 mb-4">
+            <input
+              type="text"
+              value={objectParams.searchTerm || ""}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Pretraži objekte..."
+              className="flex-1 p-2 border rounded shadow-sm"
+            />
+
+            <Button
+              style={{ backgroundColor: "#2563eb", color: "white" }}
+              onClick={() => {
+                // Navigacija na stranicu za dodavanje objekta
+                window.location.href = "/add-object";
+              }}
+            >
+              Dodaj novi objekat
+            </Button>
+          </div>
 
           <AllObjects objects={objects} />
 

@@ -7,6 +7,7 @@ import type { Pagination } from "../types/Pagination";
 export const touristObjectApi = createApi({
   reducerPath: "touristObjectApi",
   baseQuery: customBaseQuery,
+  tagTypes: ["TouristObjects"],
 
   endpoints: (builder) => ({
     // GET: api/objects
@@ -24,6 +25,7 @@ export const touristObjectApi = createApi({
           : null;
         return { objects, pagination };
       },
+      providesTags: ["TouristObjects"]
     }),
 
     // GET: api/objects/{id}
@@ -70,6 +72,14 @@ export const touristObjectApi = createApi({
         body: formData,
       }),
     }),
+
+    deleteTouristObject: builder.mutation<void, number> ({
+      query: (id) => ({
+        url: `objects/delete/${id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ["TouristObjects"]
+    }),
   }),
 
 });
@@ -84,4 +94,5 @@ export const {
   useFetchCategoriesQuery,
   useFetchMunicipalitiesQuery,
   useFetchAdditionalServicesQuery,
+  useDeleteTouristObjectMutation
 } = touristObjectApi;

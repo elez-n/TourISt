@@ -2,19 +2,14 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Ispravno tipovanje za TypeScript
-const iconDefault = L.Icon.Default.prototype as L.Icon.Default & {
-  _getIconUrl?: () => string;
-};
+// Marker ikone (isto kao prije)
+const iconDefault = L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: () => string };
 delete iconDefault._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 type Props = {
@@ -24,11 +19,15 @@ type Props = {
 };
 
 export default function MapPicker({ lat, lng, onChange }: Props) {
+  // Pomjeramo centar mape malo iznad markera
+  const offsetLat = -0.25;
+  const initialCenter: [number, number] = [lat + offsetLat, lng];
+
   return (
     <MapContainer
-      center={[lat, lng]}
+      center={initialCenter}
       zoom={10}
-      className="h-75 rounded-lg"
+      className="w-full h-72 md:h-80 lg:h-96 rounded-lg" // responsive visina
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker
