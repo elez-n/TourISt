@@ -3,7 +3,7 @@ import type { ObjectParams } from "../models/ObjectParams";
 
 const initialState: ObjectParams = {
   pageNumber: 1,
-  pageSize: 8,
+  pageSize: 9,
   objectTypes: "",
   categories: "",
   municipalities: "",

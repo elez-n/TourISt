@@ -39,7 +39,8 @@ namespace API.Controllers
           .Include(o => o.Category)
           .Include(o => o.Municipality)
           .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs);   // beds | bedsdesc | default
+          .Include(o => o.Photographs)
+          .Where(o => o.Status);   // beds | bedsdesc | default
 
       var dtoQuery = query.Select(o => new ObjectDto
       {
@@ -401,6 +402,46 @@ objectParams.PageSize
 
       return NoContent(); // 204 – uspješan update
     }
+
+    [HttpGet("featured-objects")]
+    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetFeaturedObjects()
+    {
+      var featuredObjects = await _context.TouristObjects
+          .AsSplitQuery()
+          .Include(o => o.ObjectType)
+          .Include(o => o.Category)
+          .Include(o => o.Municipality)
+          .Include(o => o.AdditionalServices)
+          .Include(o => o.Photographs)
+          .Where(o => o.Status && o.Featured) 
+          .Select(o => new ObjectDto
+          {
+            Id = o.Id,
+            Name = o.Name,
+            ObjectTypeName = o.ObjectType.Name,
+            Status = o.Status,
+            Address = o.Address,
+            Coordinate1 = o.Coordinate1,
+            Coordinate2 = o.Coordinate2,
+            ContactPhone = o.ContactPhone,
+            ContactEmail = o.ContactEmail,
+            NumberOfUnits = o.NumberOfUnits,
+            NumberOfBeds = o.NumberOfBeds,
+            Description = o.Description,
+            Owner = o.Owner,
+            Featured = o.Featured,
+            CategoryName = o.Category.Name,
+            MunicipalityName = o.Municipality.Name,
+            AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
+            Photographs = o.Photographs
+                  .Select(p => new PhotographDto { Id = p.Id, Url = p.Url })
+                  .ToList()
+          })
+          .ToListAsync();
+
+      return Ok(featuredObjects);
+    }
+
 
   }
 }

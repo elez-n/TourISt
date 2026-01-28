@@ -80,6 +80,10 @@ export const touristObjectApi = createApi({
       }),
       invalidatesTags: ["TouristObjects"]
     }),
+
+    FetchFeaturedObjects: builder.query<TouristObjectDto[], void> ({
+      query: () => 'objects/featured-objects'
+    })
   }),
 
 });
@@ -94,5 +98,6 @@ export const {
   useFetchCategoriesQuery,
   useFetchMunicipalitiesQuery,
   useFetchAdditionalServicesQuery,
-  useDeleteTouristObjectMutation
+  useDeleteTouristObjectMutation,
+  useFetchFeaturedObjectsQuery
 } = touristObjectApi;

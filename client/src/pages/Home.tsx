@@ -3,9 +3,9 @@ import Footer from "../components/Footer";
 import Hero from "../sections/Hero";
 import MapSection, { type MapMarker } from "../sections/MapSection";
 import { Box } from "@mui/material";
-import AllObjects from "@/sections/AllObjects";
 import { useGetTouristObjectsQuery } from "@/store/api/TouristObjectApi";
 import { useAppSelector } from "@/store/store";
+import FeaturedObjects from "@/sections/FeaturedObjects";
 
 const Home = () => {
     const objectParams = useAppSelector((state) => state.touristObject);
@@ -32,8 +32,7 @@ const Home = () => {
       <Header />
       <Hero />
 
-      {/* Lista objekata – npr. prikaz 6 objekata */}
-      <AllObjects objects={objects} />
+      <FeaturedObjects />
 
       {/* 🗺️ MAPA – SVI OBJEKTI */}
       <MapSection title="Mapa turističkih objekata" markers={markers} />

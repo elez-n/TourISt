@@ -1,10 +1,8 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TouristObjectForm from "../components/all-objects/TouristObjectForm";
-//import { useGetTouristObjectsQuery } from "@/store/api/TouristObjectApi";
 
 const AddObject = () => {
-  //const { refetch } = useGetTouristObjectsQuery({}); // da prosledimo refetch ako treba
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 mt-20">
