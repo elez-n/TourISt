@@ -1,7 +1,8 @@
+import type { PhotographDto } from "@/store/types/TouristObject";
 import { useState } from "react";
 
 interface GallerySectionProps {
-  photographs?: string[];
+  photographs?: PhotographDto[];
 }
 
 const GallerySection = ({ photographs = [] }: GallerySectionProps) => {
@@ -32,14 +33,14 @@ const GallerySection = ({ photographs = [] }: GallerySectionProps) => {
 
         return (
           <div
-            key={index}
+            key={img.id}
             className={`cursor-pointer relative ${
               index === 0 ? "md:col-span-2 md:row-span-2" : ""
             }`}
             onClick={() => openLightbox(index)}
           >
             <img
-              src={`https://localhost:5001${img}`}
+              src={`https://localhost:5001${img.url}`}
               alt={`Gallery ${index}`}
               className="w-full h-full object-cover rounded-xl"
             />
@@ -67,7 +68,7 @@ const GallerySection = ({ photographs = [] }: GallerySectionProps) => {
             &#10094;
           </button>
           <img
-            src={`https://localhost:5001${photographs[currentImg]}`}
+            src={`https://localhost:5001${photographs[currentImg].url}`}
             alt={`Lightbox ${currentImg}`}
             className="max-h-[90vh] max-w-[90vw] rounded-xl"
           />

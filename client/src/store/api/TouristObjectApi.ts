@@ -67,7 +67,7 @@ export const touristObjectApi = createApi({
       { id: number; formData: FormData }
     >({
       query: ({ id, formData }) => ({
-        url: `objects/${id}`,
+        url: `objects/edit/${id}`,
         method: "PUT",
         body: formData,
       }),

@@ -63,7 +63,7 @@ namespace API.Controllers
                   .Select(s => s.Name)
                   .ToList(),
         Photographs = o.Photographs
-                  .Select(p => p.Url)
+                  .Select(p => new PhotographDto { Id = p.Id, Url = p.Url })
                   .ToList()
       });
 
@@ -112,7 +112,13 @@ objectParams.PageSize
         CategoryName = o.Category.Name,
         MunicipalityName = o.Municipality.Name,
         AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
-        Photographs = o.Photographs.Select(p => p.Url).ToList()
+        Photographs = o.Photographs
+    .Select(p => new PhotographDto
+    {
+      Id = p.Id,
+      Url = p.Url
+    })
+    .ToList()
       };
 
       return Ok(dto);
@@ -245,7 +251,13 @@ objectParams.PageSize
         CategoryName = (await _context.Categories.FindAsync(touristObject.CategoryId))?.Name ?? "",
         MunicipalityName = (await _context.Municipalities.FindAsync(touristObject.MunicipalityId))?.Name ?? "",
         AdditionalServices = touristObject.AdditionalServices.Select(s => s.Name).ToList(),
-        Photographs = touristObject.Photographs.Select(p => p.Url).ToList()
+        Photographs = touristObject.Photographs
+    .Select(p => new PhotographDto
+    {
+      Id = p.Id,
+      Url = p.Url
+    })
+    .ToList()
       };
 
       return Ok(resultDto);
@@ -286,6 +298,108 @@ objectParams.PageSize
       await _context.SaveChangesAsync();
 
       return NoContent(); // 204
+    }
+
+    [HttpPut("edit/{id}")]
+    public async Task<IActionResult> UpdateObject(int id, [FromForm] UpdateTouristObjectDto dto)
+    {
+      var touristObject = await _context.TouristObjects
+          .Include(o => o.AdditionalServices)
+          .Include(o => o.Photographs)
+          .FirstOrDefaultAsync(o => o.Id == id);
+
+      if (touristObject == null)
+        return NotFound(new { message = "Objekat nije pronađen." });
+
+      // === OSNOVNA POLJA ===
+      touristObject.Name = dto.Name;
+      touristObject.ObjectTypeId = dto.ObjectTypeId;
+      touristObject.Status = dto.Status;
+      touristObject.Address = dto.Address;
+      touristObject.Coordinate1 = dto.Coordinate1 / 100;
+      touristObject.Coordinate2 = dto.Coordinate2 / 100;
+      touristObject.ContactPhone = dto.ContactPhone;
+      touristObject.ContactEmail = dto.ContactEmail;
+      touristObject.NumberOfUnits = dto.NumberOfUnits;
+      touristObject.NumberOfBeds = dto.NumberOfBeds;
+      touristObject.Description = dto.Description;
+      touristObject.Owner = dto.Owner;
+      touristObject.Featured = dto.Featured;
+      touristObject.CategoryId = dto.CategoryId;
+      touristObject.MunicipalityId = dto.MunicipalityId;
+
+      // === DODATNE USLUGE (reset + add) ===
+      touristObject.AdditionalServices.Clear();
+
+      if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
+      {
+        var services = await _context.AdditionalServices
+            .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
+            .ToListAsync();
+
+        foreach (var s in services)
+          touristObject.AdditionalServices.Add(s);
+      }
+
+      // === BRISANJE POSTOJEĆIH SLIKA (ISTI PRINCIP KAO DELETE) ===
+      if (dto.DeletedPhotographIds != null && dto.DeletedPhotographIds.Any())
+      {
+        var uploadsFolder = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "uploads"
+        );
+
+        var photosToDelete = touristObject.Photographs
+            .Where(p => dto.DeletedPhotographIds.Contains(p.Id))
+            .ToList();
+
+        foreach (var photo in photosToDelete)
+        {
+          var filePath = Path.Combine(
+              uploadsFolder,
+              Path.GetFileName(photo.Url)
+          );
+
+          if (System.IO.File.Exists(filePath))
+            System.IO.File.Delete(filePath);
+
+          _context.Photographs.Remove(photo);
+        }
+      }
+
+      // === DODAVANJE NOVIH SLIKA ===
+      if (dto.Photographs != null && dto.Photographs.Any())
+      {
+        var uploadsFolder = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "uploads"
+        );
+
+        if (!Directory.Exists(uploadsFolder))
+          Directory.CreateDirectory(uploadsFolder);
+
+        foreach (var file in dto.Photographs)
+        {
+          var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+          var filePath = Path.Combine(uploadsFolder, fileName);
+
+          using (var stream = new FileStream(filePath, FileMode.Create))
+          {
+            await file.CopyToAsync(stream);
+          }
+
+          touristObject.Photographs.Add(new Photograph
+          {
+            Url = "/uploads/" + fileName
+          });
+        }
+      }
+
+      await _context.SaveChangesAsync();
+
+      return NoContent(); // 204 – uspješan update
     }
 
   }

@@ -24,6 +24,11 @@ export interface TouristObject {
   reviews?: Review[];
 }
 
+export interface PhotographDto {
+  id: number;
+  url: string;
+}
+
 export interface TouristObjectDto {
   id: number;
   name: string;
@@ -42,6 +47,6 @@ export interface TouristObjectDto {
   categoryName: string;
   municipalityName: string;
   additionalServices: string[];
-  photographs: string[];
+  photographs: PhotographDto[];
 }
 

@@ -25,7 +25,7 @@ const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {
           <Card key={o.id} className="overflow-hidden">
             {o.photographs && o.photographs.length > 0 ? (
               <img
-                src={`https://localhost:5001${o.photographs[0]}`}
+                src={`https://localhost:5001${o.photographs[0].url}`}
                 alt={o.name}
                 className="h-48 w-full object-cover"
               />
@@ -52,7 +52,7 @@ const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {
               </Button>
             </CardFooter>
           </Card>
-        ))}
+        ))} 
       </div>
     </section>
   );

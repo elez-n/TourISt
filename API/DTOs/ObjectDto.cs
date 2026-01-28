@@ -32,7 +32,7 @@ namespace API.DTOs
         public List<string> AdditionalServices { get; set; } = new();
 
         // List of photographs (URLs)
-        public List<string> Photographs { get; set; } = new();
+        public List<PhotographDto> Photographs { get; set; } = new();
 
         // Optionally: average rating or number of reviews
         //public double AverageRating { get; set; }
