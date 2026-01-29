@@ -3,11 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L, { type LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Ikone
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
-// ===== IKONE =====
 const defaultIcon = L.icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
@@ -27,21 +25,18 @@ const highlightedIcon = L.icon({
   shadowSize: [41, 41],
 });
 
-// ===== TIP =====
 export interface MapMarker {
   id: number;
   name: string;
   position: LatLngTuple;
 }
 
-// ===== PROPS =====
 interface MapSectionProps {
   markers: MapMarker[];
   selectedId?: number;
   title?: string;
 }
 
-// ===== KOMPONENTA =====
 const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
   const center: LatLngTuple =
     selectedId && markers.find((m) => m.id === selectedId)

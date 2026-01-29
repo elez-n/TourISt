@@ -1,4 +1,4 @@
-// src/pages/Login.tsx
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,10 +14,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-400 to-indigo-600 px-4">
 
-      {/* GLAVNI CONTAINER */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
 
-        {/* 🔷 LEFT BRAND / LOGO */}
         <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-indigo-600 to-blue-500 text-white p-10">
           <img src={logo} alt="Logo" className="w-70" />
           <p className="text-center text-indigo-100 max-w-xs">
@@ -25,7 +23,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* 🔶 RIGHT LOGIN FORM */}
         <div className="p-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             Dobrodošli nazad!
@@ -63,7 +60,6 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* SOCIAL */}
           <div className="mt-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-gray-300" />
@@ -92,9 +88,6 @@ const Login = () => {
             </div>
           </div>
 
-
-
-          {/* SIGN UP */}
           <div className="text-center mt-6">
             <span className="text-gray-600">Nemate nalog?</span>{" "}
             <button
@@ -107,7 +100,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* ANIMACIJA */}
       <style>
         {`
           @keyframes fadeInUp {

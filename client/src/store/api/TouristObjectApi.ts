@@ -10,7 +10,6 @@ export const touristObjectApi = createApi({
   tagTypes: ["TouristObjects"],
 
   endpoints: (builder) => ({
-    // GET: api/objects
     getTouristObjects: builder.query<{ objects: TouristObjectDto[]; pagination: Pagination }, ObjectParams>({
       query: (ObjectParams) => {
         return {

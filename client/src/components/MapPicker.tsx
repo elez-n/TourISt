@@ -2,7 +2,6 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Marker ikone (isto kao prije)
 const iconDefault = L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: () => string };
 delete iconDefault._getIconUrl;
 
@@ -19,7 +18,6 @@ type Props = {
 };
 
 export default function MapPicker({ lat, lng, onChange }: Props) {
-  // Pomjeramo centar mape malo iznad markera
   const offsetLat = -0.25;
   const initialCenter: [number, number] = [lat + offsetLat, lng];
 
@@ -27,7 +25,7 @@ export default function MapPicker({ lat, lng, onChange }: Props) {
     <MapContainer
       center={initialCenter}
       zoom={10}
-      className="w-full h-72 md:h-80 lg:h-96 rounded-lg" // responsive visina
+      className="w-full h-72 md:h-80 lg:h-96 rounded-lg"
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker

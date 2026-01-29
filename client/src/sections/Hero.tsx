@@ -1,6 +1,6 @@
-// src/sections/Hero.tsx
+
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"; // shadcn button
+import { Button } from "@/components/ui/button";
 import grad1 from "../assets/grad1.jpg";
 import grad2 from "../assets/grad2.jpg";
 import grad3 from "../assets/grad3.jpg";
@@ -37,7 +37,6 @@ const Hero = () => {
   return (
     <section className="w-full py-16 md:py-24 bg-gray-100 mt-10">
       <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-        {/* Lijeva strana: tekst */}
         <div className="text-center md:text-left space-y-6">
           <h1 className="text-3xl md:text-5xl font-extrabold opacity-0 animate-fadeInUp">
             Otkrijte turističke objekte Istočnog Sarajeva
@@ -50,12 +49,8 @@ const Hero = () => {
             Pogledaj objekte
           </Button>
         </div>
-
-        {/* Desna strana: slider */}
         <HeroImageSlider />
       </div>
-
-      {/* Animacije */}
       <style>
         {`
           @keyframes fadeInUp {

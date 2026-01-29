@@ -16,6 +16,7 @@ import ReviewsSection from "@/components/object-details/ReviewsSection";
 
 import TouristObjectForm from "../components/all-objects/TouristObjectForm";
 import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "../store/api/TouristObjectApi";
+import LoadingSpinner from "@/components/ui/loading";
 
 const ObjectDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +38,7 @@ const ObjectDetailsPage = () => {
   };
 
   if (isLoading)
-    return <div className="text-center py-20">Učitavanje...</div>;
+    return <LoadingSpinner />
 
   if (isError || !object)
     return (
@@ -88,7 +89,7 @@ const ObjectDetailsPage = () => {
           <TouristObjectForm
             initialData={object}
             setEditMode={setEditMode}
-            refetch={() => window.location.reload()} // osvježi podatke nakon editovanja
+            refetch={() => window.location.reload()} 
           />
         ) : (
           <>

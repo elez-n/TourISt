@@ -21,14 +21,13 @@ const GallerySection = ({ photographs = [] }: GallerySectionProps) => {
 
   if (!photographs || photographs.length === 0) return null;
 
-  const maxVisible = 5; // koliko slika da prikazuje u gridu
-  const extraCount = photographs.length - maxVisible; // koliko ih ostaje skriveno
+  const maxVisible = 5; 
+  const extraCount = photographs.length - maxVisible; 
   const visiblePhotos = photographs.slice(0, maxVisible);
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-xl overflow-hidden">
       {visiblePhotos.map((img, index) => {
-        // zadnja slika sa overlay-om
         const isLastVisible = index === maxVisible - 1 && extraCount > 0;
 
         return (

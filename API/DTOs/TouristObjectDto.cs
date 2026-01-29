@@ -20,11 +20,7 @@ namespace API.DTOs
         public bool Featured { get; set; }
         public int CategoryId { get; set; }
         public int MunicipalityId { get; set; }
-
-        // Id-evi dodatnih usluga koje korisnik bira
         public List<int> AdditionalServiceIds { get; set; } = new List<int>();
-
-        // Slike uploadovane preko form-data
         public List<IFormFile> Photographs { get; set; } = new List<IFormFile>();
     }
 }

@@ -13,8 +13,6 @@ namespace Api.Entities
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = null!;
-
-        // Navigacijska svojstva
         public ICollection<TouristObject>? TouristObjects { get; set; }
     }
 }

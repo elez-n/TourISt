@@ -14,10 +14,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactApp", policy =>
     {
         policy
-            .WithOrigins("https://localhost:3000") // frontend origin
+            .WithOrigins("https://localhost:3000") 
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); // za cookie-based refresh token
+            .AllowCredentials(); 
     });
 });
 

@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 import { useGetTouristObjectsQuery } from "@/store/api/TouristObjectApi";
 import { useAppSelector } from "@/store/store";
 import FeaturedObjects from "@/sections/FeaturedObjects";
+import LoadingSpinner from "@/components/ui/loading";
 
 const Home = () => {
     const objectParams = useAppSelector((state) => state.touristObject);
@@ -13,7 +14,7 @@ const Home = () => {
   const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
 
   if (isLoading || !data) {
-    return <div className="text-center py-20">Učitavanje...</div>;
+    return <LoadingSpinner />
   }
 
   const { objects } = data;
@@ -34,7 +35,6 @@ const Home = () => {
 
       <FeaturedObjects />
 
-      {/* 🗺️ MAPA – SVI OBJEKTI */}
       <MapSection title="Mapa turističkih objekata" markers={markers} />
 
       <Footer />

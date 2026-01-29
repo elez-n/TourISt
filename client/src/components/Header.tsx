@@ -91,7 +91,6 @@ const Header = () => {
           </div>
         </nav>
 
-        {/* Hamburger */}
         <button
           className="md:hidden text-white"
           onClick={() => setOpen(!open)}
@@ -100,7 +99,6 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {open && (
         <div className="md:hidden absolute top-full left-0 w-full bg-indigo-700 flex flex-col items-center py-2 space-y-2">
           {links.map((link) => (
@@ -114,7 +112,6 @@ const Header = () => {
             </span>
           ))}
 
-          {/* Mobile login/register */}
           <span
             className="text-white cursor-pointer text-lg py-2"
             onClick={() => handleNavigate("/login")}

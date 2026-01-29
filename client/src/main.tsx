@@ -12,8 +12,8 @@ import { store } from './store/store.ts';
 const theme = createTheme({
   palette: {
     background: {
-      default: "#f4f6f8", // svijetlo siva (profi)
-      paper: "#ffffff",  // kartice ostaju bijele
+      default: "#f4f6f8", 
+      paper: "#ffffff",  
     },
   },
 });

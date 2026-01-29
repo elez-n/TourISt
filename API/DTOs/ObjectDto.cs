@@ -6,8 +6,6 @@ namespace API.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-
-        // ObjectType info
         public string ObjectTypeName { get; set; } = null!;
 
         public bool Status { get; set; } 
@@ -22,20 +20,12 @@ namespace API.DTOs
         public string Owner { get; set; } = null!;
         public bool Featured { get; set; }
 
-        // Category info
         public string CategoryName { get; set; } = null!;
 
-        // Municipality info
         public string MunicipalityName { get; set; } = null!;
-
-        // List of additional services
         public List<string> AdditionalServices { get; set; } = new();
 
-        // List of photographs (URLs)
         public List<PhotographDto> Photographs { get; set; } = new();
 
-        // Optionally: average rating or number of reviews
-        //public double AverageRating { get; set; }
-        //public int ReviewCount { get; set; }
     }
 }

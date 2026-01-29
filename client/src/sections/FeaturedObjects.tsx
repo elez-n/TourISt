@@ -1,12 +1,13 @@
 "use client";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import LoadingSpinner from "@/components/ui/loading";
 import { useFetchFeaturedObjectsQuery } from "@/store/api/TouristObjectApi";
 
 const FeaturedObjects = () => {
   const { data: objects = [], isLoading, isError } = useFetchFeaturedObjectsQuery();
 
-  if (isLoading) return <p className="text-center py-16">Učitavanje...</p>;
+  if (isLoading) return <LoadingSpinner />
   if (isError) return <p className="text-center py-16 text-red-500">Greška pri učitavanju.</p>;
   if (!objects.length) return <p className="text-center py-16">Nema izdvojenih objekata.</p>;
 

@@ -4,10 +4,10 @@ import { useAppDispatch } from "@/store/store";
 import { setPageNumber } from "@/store/slice/objectSlice";
 
 type Props = {
-  title: string;           // naziv filtera (Tip objekta, Opština, Kategorija)
-  selected: string[];      // selektovani elementi iz slice-a
-  onChange: (types: string[]) => void; // akcija za dispatch
-  typesList: string[];     // lista svih opcija za filter
+  title: string;           
+  selected: string[];      
+  onChange: (types: string[]) => void; 
+  typesList: string[];     
 };
 
 const Filters: React.FC<Props> = ({ title, selected, onChange, typesList }) => {
@@ -18,7 +18,7 @@ const Filters: React.FC<Props> = ({ title, selected, onChange, typesList }) => {
       ? selected.filter((t) => t !== type)
       : [...selected, type];
     onChange(newSelected);
-    dispatch(setPageNumber(1)); // vraća na prvu stranicu kad filter promijeni
+    dispatch(setPageNumber(1));
   };
 
   if (!typesList || typesList.length === 0) return <div>Učitavanje filtera...</div>;

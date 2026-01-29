@@ -31,7 +31,6 @@ const ReviewsSection = () => {
     <section className="space-y-6">
       <h2 className="text-xl font-semibold">Recenzije</h2>
 
-      {/* SUMMARY */}
       <div className="flex items-center gap-4">
         <div className="text-4xl font-bold">
           {averageRating.toFixed(1)}
@@ -55,7 +54,6 @@ const ReviewsSection = () => {
         </span>
       </div>
 
-      {/* LISTA RECENZIJA */}
       <div className="space-y-4">
         {reviews.map((r) => (
           <Card key={r.id}>
@@ -88,12 +86,10 @@ const ReviewsSection = () => {
         ))}
       </div>
 
-      {/* ADD REVIEW */}
       <Card>
         <CardContent className="p-6 space-y-4">
           <h3 className="font-semibold">Ostavite recenziju</h3>
 
-          {/* kasnije zamijenimo sa pravim star rating inputom */}
           <Textarea placeholder="Napišite vašu recenziju..." />
 
           <Button className="w-fit">

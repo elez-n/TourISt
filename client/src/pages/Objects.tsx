@@ -20,6 +20,7 @@ import {
   setMunicipality,
   setCategory,
 } from "@/store/slice/objectSlice";
+import LoadingSpinner from "@/components/ui/loading";
 
 const Objects = () => {
   const dispatch = useAppDispatch();
@@ -32,7 +33,7 @@ const Objects = () => {
   } = useFetchFiltersQuery();
 
   if (isLoading || isFiltersLoading || !data) {
-    return <div className="text-center py-20">Učitavanje...</div>;
+    return <LoadingSpinner />
   }
 
   const { objects, pagination } = data;
@@ -60,12 +61,9 @@ const Objects = () => {
       <Header />
       <ObjectsHero />
 
-      {/* GLAVNI SADRŽAJ */}
       <div className="flex-1 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 px-4 lg:px-8 py-6 w-full">
 
-        {/* LIJEVA STRANA */}
         <div className="flex-1 flex flex-col">
-          {/* POLJE ZA PRETRAGU + DUGME U ISTOJ LINJI */}
           <div className="flex gap-4 mb-4">
             <input
               type="text"
@@ -78,7 +76,6 @@ const Objects = () => {
             <Button
               style={{ backgroundColor: "#2563eb", color: "white" }}
               onClick={() => {
-                // Navigacija na stranicu za dodavanje objekta
                 window.location.href = "/add-object";
               }}
             >
@@ -87,8 +84,6 @@ const Objects = () => {
           </div>
 
           <AllObjects objects={objects} />
-
-          {/* PAGINACIJA – uvijek na dnu */}
           {pagination && (
             <div className="mt-auto pt-6 flex justify-center">
               <ObjectsPagination
@@ -99,8 +94,6 @@ const Objects = () => {
             </div>
           )}
         </div>
-
-        {/* DESNA STRANA – FILTERI */}
         <div className="w-full lg:w-64 space-y-4">
           <Filters
             title="Tip objekta"

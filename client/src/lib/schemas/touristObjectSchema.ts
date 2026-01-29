@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Regularni izraz za bosanski/hrvatski telefon (npr. +387 61 123 456)
+// Regularni izraz za telefon (npr. +387 66 123 456)
 const phoneRegex = /^(\+?\d{1,3})?\s?\d{2,3}\s?\d{3}\s?\d{3,4}$/;
 
 export const touristObjectSchema = z.object({
@@ -24,7 +24,7 @@ export const touristObjectSchema = z.object({
   owner: z.string().min(2, "Ime vlasnika mora biti uneseno"),
   featured: z.boolean(),
   categoryId: z.number().int().positive("Odaberi kategoriju"),
-  municipalityId: z.number().int().positive("Odaberi općinu"),
+  municipalityId: z.number().int().positive("Odaberi opštinu"),
   additionalServiceIds: z.array(z.number().int().positive()).optional(),
  photographs: z
   .array(z.instanceof(File))
@@ -33,5 +33,4 @@ export const touristObjectSchema = z.object({
 
 });
 
-// Tip za React Hook Form
 export type TouristObjectSchema = z.infer<typeof touristObjectSchema>;

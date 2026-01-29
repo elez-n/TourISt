@@ -22,10 +22,6 @@ public class UpdateTouristObjectDto
     public int MunicipalityId { get; set; }
 
     public List<int> AdditionalServiceIds { get; set; } = new();
-
-    // nove slike
     public List<IFormFile> Photographs { get; set; } = new();
-
-    // opcionalno: slike koje brišeš
     public List<int> DeletedPhotographIds { get; set; } = new();
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { TouristObjectDto } from "../store/types/TouristObject";
 
 interface AllObjectsProps {
-  objects?: TouristObjectDto[]; // dopuštamo undefined, sigurnije
+  objects?: TouristObjectDto[]; 
 }
 
 const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {

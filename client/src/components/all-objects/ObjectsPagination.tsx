@@ -40,7 +40,6 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
   return (
     <Pagination>
       <PaginationContent className="flex justify-center items-center gap-2 flex-wrap">
-        {/* PRETHODNA */}
         <PaginationItem>
           <PaginationLink
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
@@ -52,7 +51,6 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
           </PaginationLink>
         </PaginationItem>
 
-        {/* BROJEVI */}
         {getPages().map((p, i) =>
           p === "ellipsis" ? (
             <PaginationItem key={`e-${i}`}>
@@ -74,7 +72,6 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
           )
         )}
 
-        {/* SLJEDEĆA */}
         <PaginationItem>
           <PaginationLink
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}

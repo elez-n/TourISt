@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.Data; // DbContext
+using API.Data; 
 using API.Entities;
 using Dipl.Api.Data;
 using API.DTOs;
-using System.Collections.Immutable; // Entitet Object
+using System.Collections.Immutable; 
 using API.Extensions;
 using API.RequestHelpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,7 +23,6 @@ namespace API.Controllers
       _context = context;
     }
 
-    // GET: api/objects
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjects([FromQuery] ObjectParams objectParams)
     {
@@ -32,7 +31,7 @@ namespace API.Controllers
 
       query = query
           .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories)
-          .Search(objectParams.SearchTerm)           // npr. "spa"
+          .Search(objectParams.SearchTerm)           
           .Sort(objectParams.OrderBy)
           .AsSplitQuery()
           .Include(o => o.ObjectType)
@@ -40,7 +39,7 @@ namespace API.Controllers
           .Include(o => o.Municipality)
           .Include(o => o.AdditionalServices)
           .Include(o => o.Photographs)
-          .Where(o => o.Status);   // beds | bedsdesc | default
+          .Where(o => o.Status);   
 
       var dtoQuery = query.Select(o => new ObjectDto
       {
@@ -70,7 +69,7 @@ namespace API.Controllers
 
       var pagedList = await PagedList<ObjectDto>.ToPagedList(
 dtoQuery,
-objectParams.PageNumber, // npr. iz query string-a
+objectParams.PageNumber,
 objectParams.PageSize
 );
 
@@ -78,8 +77,6 @@ objectParams.PageSize
       return pagedList;
     }
 
-
-    // GET: api/Objects/5
     [HttpGet("{id}")]
     public async Task<ActionResult<ObjectDto>> GetObject(int id)
     {
@@ -177,7 +174,6 @@ objectParams.PageSize
 
     public async Task<IActionResult> CreateObject([FromForm] TouristObjectCreateDto dto)
     {
-      // Kreiramo entitet
       var touristObject = new TouristObject
       {
         Name = dto.Name,
@@ -197,7 +193,6 @@ objectParams.PageSize
         MunicipalityId = dto.MunicipalityId
       };
 
-      // Dodavanje dodatnih usluga
       if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
       {
         var services = await _context.AdditionalServices
@@ -208,7 +203,6 @@ objectParams.PageSize
           touristObject.AdditionalServices.Add(s);
       }
 
-      // Upload fotografija
       if (dto.Photographs != null && dto.Photographs.Any())
       {
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -232,7 +226,6 @@ objectParams.PageSize
       _context.TouristObjects.Add(touristObject);
       await _context.SaveChangesAsync();
 
-      // Vraćamo kreirani objekat kao DTO
       var resultDto = new ObjectDto
       {
         Id = touristObject.Id,
@@ -268,13 +261,12 @@ objectParams.PageSize
     public async Task<IActionResult> DeleteObject(int id)
     {
       var touristObject = await _context.TouristObjects
-          .Include(o => o.Photographs) // SAMO zbog fajlova
+          .Include(o => o.Photographs) 
           .FirstOrDefaultAsync(o => o.Id == id);
 
       if (touristObject == null)
         return NotFound(new { message = "Objekat nije pronađen." });
 
-      // Brisanje slika sa diska
       if (touristObject.Photographs.Any())
       {
         var uploadsFolder = Path.Combine(
@@ -298,7 +290,7 @@ objectParams.PageSize
       _context.TouristObjects.Remove(touristObject);
       await _context.SaveChangesAsync();
 
-      return NoContent(); // 204
+      return NoContent(); 
     }
 
     [HttpPut("edit/{id}")]
@@ -312,7 +304,6 @@ objectParams.PageSize
       if (touristObject == null)
         return NotFound(new { message = "Objekat nije pronađen." });
 
-      // === OSNOVNA POLJA ===
       touristObject.Name = dto.Name;
       touristObject.ObjectTypeId = dto.ObjectTypeId;
       touristObject.Status = dto.Status;
@@ -329,7 +320,6 @@ objectParams.PageSize
       touristObject.CategoryId = dto.CategoryId;
       touristObject.MunicipalityId = dto.MunicipalityId;
 
-      // === DODATNE USLUGE (reset + add) ===
       touristObject.AdditionalServices.Clear();
 
       if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
@@ -342,7 +332,6 @@ objectParams.PageSize
           touristObject.AdditionalServices.Add(s);
       }
 
-      // === BRISANJE POSTOJEĆIH SLIKA (ISTI PRINCIP KAO DELETE) ===
       if (dto.DeletedPhotographIds != null && dto.DeletedPhotographIds.Any())
       {
         var uploadsFolder = Path.Combine(
@@ -369,7 +358,6 @@ objectParams.PageSize
         }
       }
 
-      // === DODAVANJE NOVIH SLIKA ===
       if (dto.Photographs != null && dto.Photographs.Any())
       {
         var uploadsFolder = Path.Combine(
@@ -400,7 +388,7 @@ objectParams.PageSize
 
       await _context.SaveChangesAsync();
 
-      return NoContent(); // 204 – uspješan update
+      return NoContent();
     }
 
     [HttpGet("featured-objects")]

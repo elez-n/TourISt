@@ -16,7 +16,6 @@ export const customBaseQuery = async (
 ) => {
   const result = await baseQuery(args, api, extraOptions);
 
-  // 🔍 Globalni log (korisno za debug)
   if (result.error) {
     console.error("API error:", result.error);
   }

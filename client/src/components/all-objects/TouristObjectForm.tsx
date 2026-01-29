@@ -70,11 +70,9 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
       },
     });
 
-  // Init form with initialData (edit mode)
   useEffect(() => {
     if (!initialData) return;
 
-    // resetujemo formu
     reset({
       name: initialData.name,
       objectTypeId: types?.find(t => t.name === initialData.objectTypeName)?.id || 0,
@@ -98,7 +96,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
       photographs: [],
     });
 
-    // asinhrono postavimo postojece fotografije
     setTimeout(() => setExistingPhotos(initialData.photographs || []), 0);
 
   }, [initialData, types, categories, municipalities, additionalServices, reset]);
@@ -164,7 +161,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 
-        {/* Osnovne informacije */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label htmlFor="name">Naziv objekta</Label>
@@ -218,7 +214,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           </div>
         </div>
 
-        {/* Mapa */}
         <div>
           <Label>Odaberi lokaciju na mapi</Label>
           <div className="w-full h-72 rounded-md overflow-hidden border mt-2">
@@ -233,7 +228,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           </div>
         </div>
 
-        {/* Kontakt i jedinice */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <Label>Telefon</Label>
@@ -257,7 +251,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           </div>
         </div>
 
-        {/* Opis i vlasnik */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label>Opis</Label>
@@ -271,7 +264,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           </div>
         </div>
 
-        {/* Featured, Kategorija, Opština */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <Label>Izdvojen</Label>
@@ -326,7 +318,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           </div>
         </div>
 
-        {/* Dodatne usluge */}
         <div>
           <Label>Dodatne usluge</Label>
           <Controller
@@ -353,7 +344,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           />
         </div>
 
-        {/* Upload slika */}
         <div>
           <Label>Dodaj slike (max {MAX_IMAGES})</Label>
           <div
@@ -378,7 +368,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
             onChange={e => e.target.files && handleFiles(e.target.files)}
           />
 
-          {/* Novi fajlovi */}
           {previews.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               {previews.map((p, i) => (
@@ -396,7 +385,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
             </div>
           )}
 
-          {/* Postojeće fotografije */}
           {existingPhotos.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               {existingPhotos.map(p => (
@@ -418,7 +406,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
           )}
         </div>
 
-        {/* Dugmad */}
         <div className="flex justify-end space-x-4 mt-6">
           <Button variant="outline" onClick={() => reset()}>Otkaži</Button>
           <Button type="submit" disabled={isSubmitting || isCreating || isUpdating}>
