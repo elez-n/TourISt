@@ -2,10 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { touristObjectApi } from "./api/TouristObjectApi";
 import { objectSlice } from "./slice/objectSlice";
+import { authSlice } from "./slice/authSlice";
 export const store = configureStore({
   reducer: {
     [touristObjectApi.reducerPath]: touristObjectApi.reducer,
     touristObject: objectSlice.reducer,
+    auth: authSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(touristObjectApi.middleware),

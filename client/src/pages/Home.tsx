@@ -9,8 +9,8 @@ import FeaturedObjects from "@/sections/FeaturedObjects";
 import LoadingSpinner from "@/components/ui/loading";
 
 const Home = () => {
-    const objectParams = useAppSelector((state) => state.touristObject);
-  
+  const objectParams = useAppSelector((state) => state.touristObject);
+
   const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
 
   if (isLoading || !data) {
@@ -34,6 +34,7 @@ const Home = () => {
       <Hero />
 
       <FeaturedObjects />
+
 
       <MapSection title="Mapa turističkih objekata" markers={markers} />
 

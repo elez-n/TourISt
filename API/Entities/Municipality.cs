@@ -5,5 +5,6 @@ namespace API.Entities
         public int Id { get; set; }  
         public string Name { get; set; } = null!;
         public ICollection<TouristObject> TouristObjects { get; set; } = new List<TouristObject>();
+        public ICollection<OfficerProfile> Officers { get; set; } = new List<OfficerProfile>();
     }
 }

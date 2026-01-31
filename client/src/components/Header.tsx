@@ -1,5 +1,4 @@
-// src/components/Header.tsx
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import logo from "../assets/logooo.png";
 import userIcon from "../assets/user.svg";
 import homeIcon from "../assets/house.svg";
@@ -8,12 +7,17 @@ import mapIcon from "../assets/map-pinned.svg";
 import contactIcon from "../assets/info.svg";
 import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useAppSelector } from "@/store/store";
+import AuthCard from "@/components/login/AuthCard";
+import UserCard from "@/components/login/UserCard";
 
 const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const userRef = useRef<HTMLDivElement>(null);
+
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const links = [
     { name: "Početna", path: "/", icon: homeIcon },
@@ -48,10 +52,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 w-full h-20 z-50 bg-[#272757]">
       <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between">
-        {/* Logo */}
         <img src={logo} alt="Logo" className="h-10 md:h-20" />
 
-        {/* Desktop navigacija */}
         <nav className="hidden md:flex items-center gap-6">
           {links.map((link) => (
             <span
@@ -64,7 +66,6 @@ const Header = () => {
             </span>
           ))}
 
-          {/* USER IKONICA */}
           <div className="relative" ref={userRef}>
             <img
               src={userIcon}
@@ -73,19 +74,8 @@ const Header = () => {
               onClick={() => setUserOpen(!userOpen)}
             />
             {userOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg overflow-hidden">
-                <div
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleNavigate("/login")}
-                >
-                  Prijavi se
-                </div>
-                <div
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleNavigate("/login")}
-                >
-                  Registruj se
-                </div>
+              <div className="absolute right-0 mt-2 z-50">
+                {isAuthenticated && user ? <UserCard user={user} /> : <AuthCard />}
               </div>
             )}
           </div>
@@ -112,12 +102,13 @@ const Header = () => {
             </span>
           ))}
 
-          <span
-            className="text-white cursor-pointer text-lg py-2"
-            onClick={() => handleNavigate("/login")}
-          >
-            Prijavi se / Registruj se
-          </span>
+          <div className="w-full flex justify-center">
+            {isAuthenticated && user ? (
+              <UserCard user={user} />
+            ) : (
+              <AuthCard />
+            )}
+          </div>
         </div>
       )}
     </header>

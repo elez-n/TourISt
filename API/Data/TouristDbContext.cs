@@ -16,6 +16,11 @@ namespace Dipl.Api.Data
         public DbSet<AdditionalService> AdditionalServices { get; set; } = null!;
         public DbSet<TouristObject> TouristObjects { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<OfficerProfile> OfficerProfiles { get; set; }
+
 
     }
 }

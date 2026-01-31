@@ -9,6 +9,7 @@ using API.Extensions;
 using API.RequestHelpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Azure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -77,6 +78,7 @@ objectParams.PageSize
       return pagedList;
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<ObjectDto>> GetObject(int id)
     {

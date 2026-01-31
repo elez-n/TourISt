@@ -6,7 +6,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants, type Button } from "@/components/ui/button"
+import { type Button } from "@/components/ui/button"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -45,7 +45,6 @@ type PaginationLinkProps = {
 function PaginationLink({
   className,
   isActive,
-  size = "icon",
   ...props
 }: PaginationLinkProps) {
   return (
@@ -54,12 +53,11 @@ function PaginationLink({
       data-slot="pagination-link"
       data-active={isActive}
       className={cn(
-        buttonVariants({
-          variant: isActive ? "outline" : "ghost",
-          size,
-        }),
+        "inline-flex items-center justify-center rounded-md text-sm font-medium transition hover:bg-gray-100 px-3 py-2",
+        isActive && "border border-gray-300 bg-white",
         className
       )}
+
       {...props}
     />
   )
