@@ -67,7 +67,7 @@ const ObjectDetailsPage = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setEditMode(true)}
-              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition flex items-center gap-1"
+              className="bg-[#5c5c99]! text-white px-3 py-1 rounded hover:bg-[#272757]! transition flex items-center gap-1"
             >
               <Edit2 size={18} />
               <span className="text-sm">Edituj objekat</span>

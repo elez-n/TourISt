@@ -75,7 +75,7 @@ const Header = () => {
             />
             {userOpen && (
               <div className="absolute right-0 mt-2 z-50">
-                {isAuthenticated && user ? <UserCard user={user} /> : <AuthCard />}
+                {isAuthenticated && user ? <UserCard /> : <AuthCard />}
               </div>
             )}
           </div>
@@ -104,7 +104,7 @@ const Header = () => {
 
           <div className="w-full flex justify-center">
             {isAuthenticated && user ? (
-              <UserCard user={user} />
+              <UserCard />
             ) : (
               <AuthCard />
             )}

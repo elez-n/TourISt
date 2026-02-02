@@ -74,7 +74,7 @@ const Objects = () => {
             />
 
             <Button
-              style={{ backgroundColor: "#2563eb", color: "white" }}
+              style={{ backgroundColor: "#5C5C99", color: "white" }}
               onClick={() => {
                 window.location.href = "/add-object";
               }}

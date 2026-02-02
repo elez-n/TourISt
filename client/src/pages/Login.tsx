@@ -9,11 +9,12 @@ import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logooo.png";
 
 import { useAppDispatch } from "@/store/store";
-import { userApi } from "@/store/api/userApi";
 import { setAccessToken } from "@/store/tokenStore";
 import { setUser, logout } from "@/store/slice/authSlice";
 import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@/store/models/JwtPayload";
+
+import { useLoginMutation } from "@/store/api/userApi";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,50 +23,46 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
 
-  try {
-    const response = await userApi.login({ username, password });
-    const { accessToken } = response.data;
+    try {
+      const response = await login({ username, password }).unwrap();
+      const { accessToken } = response;
 
-    if (!accessToken || typeof accessToken !== "string") {
-      throw new Error("No valid access token returned");
+      if (!accessToken) {
+        throw new Error("No access token returned");
+      }
+
+      setAccessToken(accessToken);
+
+      const decoded = jwtDecode<JwtPayload>(accessToken);
+      console.log("Decoded JWT:", decoded);
+
+      dispatch(
+        setUser({
+          id: decoded.userId,
+          username: decoded.username,
+          role: decoded.role,
+        })
+      );
+
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Neispravni podaci za prijavu.");
+      dispatch(logout());
     }
-
-    setAccessToken(accessToken);
-
-    const decoded = jwtDecode<JwtPayload>(accessToken);
-    console.log("Decoded JWT:", decoded);
-
-    dispatch(
-      setUser({
-        id: decoded.userId,
-        username: decoded.username,
-        role: decoded.role,
-      })
-    );
-
-    navigate("/", { replace: true });
-  } catch (err) {
-    console.error("Login error:", err);
-    setError("Neispravni podaci za prijavu.");
-    dispatch(logout());
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
-
-        <div className="hidden md:flex flex-col justify-center items-center bg-linear-to-br from-indigo-600 to-blue-500 text-white p-10">
+        <div className="hidden md:flex flex-col justify-center items-center bg-[#272757]! text-white p-10">
           <img src={logo} alt="Logo" className="w-70" />
           <p className="text-center text-indigo-100 max-w-xs">
             Tražite turističke objekte u Istočnom Sarajevu? Na pravom ste mjestu!
@@ -116,10 +113,10 @@ const Login = () => {
 
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-linear-to-r from-indigo-500 to-blue-500 text-white font-semibold hover:scale-105 transition-transform"
+              disabled={isLoading}
+              className="w-full bg-[#5C5C99]! hover:bg-[#272757]! text-white font-semibold hover:scale-105 transition-transform"
             >
-              {loading ? "Prijava..." : "Prijavi se"}
+              {isLoading ? "Prijava..." : "Prijavi se"}
             </Button>
           </form>
 

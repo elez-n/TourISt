@@ -8,7 +8,7 @@ const AuthCard = () => {
   const navigate = useNavigate();
 
   return (
-    <Card className="w-72 rounded-xl shadow-lg border border-gray-200 animate-fadeInUp">
+    <Card className="w-85 rounded-xl shadow-lg border border-gray-200 animate-fadeInUp">
       <CardContent className="flex flex-col items-center gap-4 text-center">
         <CardTitle className="text-lg font-bold text-gray-800">
           Dobrodošli!
@@ -21,14 +21,14 @@ const AuthCard = () => {
       <CardFooter className="flex gap-3 px-6 py-4">
         <Button
           variant="default"
-          className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#5C5C99]! hover:bg-[#272757]! text-white"
           onClick={() => navigate("/login")}
         >
           <LogIn size={18} /> Prijavi se
         </Button>
         <Button
           variant="default"
-          className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#5C5C99]! hover:bg-[#272757]! text-white"
           onClick={() => navigate("/signup")}
         >
           <UserPlus size={18} /> Registruj se

@@ -2,7 +2,7 @@
 
 const HeroObjekti = () => {
   return (
-    <section className="relative w-full h-[200px] md:h-[300px] mb-8 mt-20">
+    <section className="relative w-full h-50 md:h-75 mb-8 mt-20">
       <img
         src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
         alt="Lis"

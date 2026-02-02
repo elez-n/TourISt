@@ -196,14 +196,25 @@ namespace API.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            var accessToken = CreateToken(user);
+            var refreshToken = await GenerateAndSaveRefreshTokenAsync(user);
+
+            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
-                message = "Registracija uspješna.",
-                userId = user.Id,
-                username = user.Username,
-                role = user.Role
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
+
+            return Ok(new TokenResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = "",
+                UserId = user.Id.ToString()
             });
         }
+
 
         [Authorize]
         [HttpGet("me")]

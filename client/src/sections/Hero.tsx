@@ -18,7 +18,7 @@ const HeroImageSlider = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[250px] md:h-[400px] rounded-2xl overflow-hidden">
+    <div className="relative w-full h-62.5 md:h-100 rounded-2xl overflow-hidden">
       {images.map((img, i) => (
         <img
           key={i}
@@ -45,7 +45,7 @@ const Hero = () => {
             Centralna evidencija i promocija hotela, apartmana i drugih
             smještajnih kapaciteta.
           </p>
-          <Button className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400">
+          <Button className="bg-[#5C5C99]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400">
             Pogledaj objekte
           </Button>
         </div>

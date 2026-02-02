@@ -1,71 +1,71 @@
-import type { TokenResponseDto } from "./../types/User";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { BaseQueryApi, FetchArgs } from "@reduxjs/toolkit/query/react";
+import type { TokenResponseDto, UserInfoDto } from "../types/User";
 
 interface LoginCredentials {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
+  firstName?: string; // samo za register
+  lastName?: string;  // samo za register
+  email?: string;
 }
 
-interface CurrentUserDto {
-    id: string;
-    username: string;
-    role: string;
-    accessToken: string;
-}
 
-export const userApi = {
-    login: async (credentials: LoginCredentials): Promise<{ data: TokenResponseDto }> => {
-        const result = await customBaseQuery(
-            { url: "auth/login", method: "POST", body: credentials } as FetchArgs,
-            {} as BaseQueryApi,
-            {}
-        );
+export const userApi = createApi({
+  reducerPath: "userApi",
+  baseQuery: customBaseQuery,
+  tagTypes: ["User"],
 
-        if (result.error) {
-            console.error("Login failed:", result.error);
-            throw new Error("Login failed");
-        }
+  endpoints: (builder) => ({
+    login: builder.mutation<TokenResponseDto, LoginCredentials>({
+      query: (credentials) => ({
+        url: "auth/login",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["User"],
+    }),
 
-        return { data: result.data as TokenResponseDto };
-    },
+    register: builder.mutation<TokenResponseDto, LoginCredentials>({
+      query: (credentials) => ({
+        url: "auth/register",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
 
-    refresh: async (): Promise<{ data: TokenResponseDto }> => {
-        const result = await customBaseQuery(
-            { url: "auth/refresh-token", method: "POST" } as FetchArgs,
-            {} as BaseQueryApi,
-            {}
-        );
+    refreshToken: builder.mutation<TokenResponseDto, void>({
+      query: () => ({
+        url: "auth/refresh-token",
+        method: "POST",
+        credentials: "include",
+      }),
+      invalidatesTags: ["User"],
+    }),
 
-        if ("error" in result) {
-            throw new Error("Refresh failed");
-        }
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: "auth/logout",
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
 
-        return { data: result.data as TokenResponseDto };
-    },
+    getCurrentUser: builder.query<UserInfoDto, void>({
+      query: (body) => ({
+        url: "auth/me",
+        body
+      }), 
+      providesTags: ["User"],
+    
+    }),
+  }),
+});
 
-    logout: async (): Promise<void> => {
-        const result = await customBaseQuery(
-            { url: "auth/logout", method: "POST" } as FetchArgs,
-            {} as BaseQueryApi,
-            {}
-        );
-
-        if ("error" in result) throw new Error("Logout failed");
-    },
-
-    getCurrentUser: async (): Promise<{ data: CurrentUserDto }> => {
-        const result = await customBaseQuery(
-            { url: "auth/refresh-token", method: "POST" } as FetchArgs,
-            {} as BaseQueryApi,
-            {}
-        );
-
-        if (result.error) {
-            console.error("Get current user failed:", result.error);
-            throw new Error("Get current user failed");
-        }
-
-        return { data: result.data as CurrentUserDto };
-    },
-};
+export const {
+  useLoginMutation,
+  useRefreshTokenMutation,
+  useLogoutMutation,
+  useGetCurrentUserQuery,
+  useRegisterMutation
+} = userApi;

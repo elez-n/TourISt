@@ -1,83 +1,93 @@
+import { useGetCurrentUserQuery, useLogoutMutation } from "@/store/api/userApi";
+import { useSelector } from "react-redux";
+import { logout, selectCurrentUser } from "@/store/slice/authSlice";
+import { useAppDispatch } from "@/store/store";
+import { setAccessToken } from "@/store/tokenStore";
+import { User, Mail, Info, LogOut } from "lucide-react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/store/store";
-import { logout as logoutSlice } from "@/store/slice/authSlice";
-import { setAccessToken } from "@/store/tokenStore";
-import { userApi } from "@/store/api/userApi";
-import { User, Mail, KeyRound, Info, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 
-interface UserCardProps {
-    user: {
-        id: string;
-        username: string;
-        role: string;
-    };
-}
+const UserCard: FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-const UserCard: FC<UserCardProps> = ({ user }) => {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+  const currentUser = useSelector(selectCurrentUser);
+  const userId = currentUser?.id;
 
-    const handleLogout = async () => {
-        try {
-            await userApi.logout();
-            setAccessToken(null);
-            dispatch(logoutSlice());
-            navigate("/", { replace: true });
-        } catch (err) {
-            console.error("Logout failed", err);
-        }
-    };
+  const { data: user, isLoading } = useGetCurrentUserQuery(undefined, {
+    skip: !userId, 
+  });
 
-    return (
-        <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp">
-            <div className="bg-indigo-600 p-4 flex items-center gap-3">
-                <User className="text-white w-10 h-10" />
-                <div>
-                    <p className="text-white font-bold text-lg">{user.username}</p>
-                    <p className="text-indigo-200 text-sm">{user.role}</p>
-                </div>
-            </div>
+  const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
-            <div className="p-4 flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-gray-600">
-                    <Mail className="w-5 h-5 text-indigo-500" />
-                    <span>{user.username}@example.com</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                    <KeyRound className="w-5 h-5 text-indigo-500" />
-                    <span>ID: {user.id}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                    <Info className="w-5 h-5 text-indigo-500" />
-                    <span>Role: {user.role}</span>
-                </div>
-            </div>
+  const handleLogout = async () => {
+    try {
+      await logoutApi().unwrap();
+      setAccessToken(null);
+      dispatch(logout());
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
 
-            <div className="p-4 border-t border-gray-200">
-                <Button
-                    variant="default"
-                    className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white"
-                    onClick={handleLogout}
-                >
-                    <LogOut className="w-5 h-5" /> Logout
-                </Button>
-            </div>
+  if (isLoading) return <p className="p-4 text-gray-600">Loading user...</p>;
+  if (!user) return <p className="p-4 text-gray-600">User not found.</p>;
 
-            <style>
-                {`
-          @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeInUp {
-            animation: fadeInUp 0.5s ease-out forwards;
-          }
-        `}
-            </style>
+  const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
+
+  return (
+    <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp hover:shadow-2xl transition-shadow duration-300">      <div className="bg-[#5c5c99]! p-4 flex items-center gap-3 rounded-t-xl">
+        <div className="w-12 h-12 rounded-full bg-indigo-400 flex items-center justify-center text-white font-bold text-lg">
+          {initials}
         </div>
-    );
+        <div>
+          <p className="text-white font-bold text-lg">{user.username ?? "Unknown"}</p>
+          <p className="text-indigo-200 text-sm">{user.role ?? "No role"}</p>
+        </div>
+      </div>
+
+      <div className="p-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-gray-600">
+          <User className="w-5 h-5 text-indigo-500" />
+          <span>{`${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "N/A"}</span>
+        </div>
+        <div className="flex items-center gap-2 text-gray-600">
+          <Mail className="w-5 h-5 text-indigo-500" />
+          <span>{user.email ?? "N/A"}</span>
+        </div>
+        <div className="flex items-center gap-2 text-gray-600">
+          <Info className="w-5 h-5 text-indigo-500" />
+          <span>Role: {user.role ?? "N/A"}</span>
+        </div>
+        {user.position && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Info className="w-5 h-5 text-indigo-500" />
+            <span>Position: {user.position}</span>
+          </div>
+        )}
+        {user.municipalityName && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Info className="w-5 h-5 text-indigo-500" />
+            <span>Municipality: {user.municipalityName}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 border-t border-gray-200">
+        <Button
+          variant="default"
+          className="w-full flex items-center justify-center gap-2 bg-[#5c5c99]! hover:bg-[#272757]! text-white"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+        >
+          <LogOut className="w-5 h-5" />
+          {isLoggingOut ? "Odjava..." : "Logout"}
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default UserCard;
