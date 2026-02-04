@@ -22,7 +22,7 @@ const ObjectDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: object, isLoading, isError } = useGetTouristObjectByIdQuery(Number(id));
+  const { data: object, isLoading, isError, refetch } = useGetTouristObjectByIdQuery(Number(id));
   const [deleteObject, { isLoading: isDeleting }] = useDeleteTouristObjectMutation();
 
   const [editMode, setEditMode] = useState(false);
@@ -89,7 +89,7 @@ const ObjectDetailsPage = () => {
           <TouristObjectForm
             initialData={object}
             setEditMode={setEditMode}
-            refetch={() => window.location.reload()} 
+            refetch={() => window.location.reload()}
           />
         ) : (
           <>
@@ -106,7 +106,13 @@ const ObjectDetailsPage = () => {
               markers={markers}
               selectedId={object.id}
             />
-            <ReviewsSection />
+            <ReviewsSection
+              objectId={object.id}
+              averageRating={object.averageRating}
+              reviewCount={object.reviewCount}
+              refetchObject={refetch}
+            />
+
           </>
         )}
 

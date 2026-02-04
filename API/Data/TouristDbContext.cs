@@ -20,7 +20,18 @@ namespace Dipl.Api.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<OfficerProfile> OfficerProfiles { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Review>()
+                .HasIndex(r => new { r.UserId, r.TouristObjectId })
+                .IsUnique();
+        }
+
 
 
     }
+
+
 }

@@ -58,7 +58,7 @@ const Header = () => {
           {links.map((link) => (
             <span
               key={link.name}
-              className="flex items-center gap-2 text-white cursor-pointer text-lg font-medium px-2 py-1 transition-all hover:text-yellow-300 hover:scale-110"
+              className="flex items-center gap-2 text-white cursor-pointer text-lg font-medium px-2 py-1 transition-all hover:scale-110"
               onClick={() => handleNavigate(link.path)}
             >
               <img src={link.icon} alt={link.name} className="h-5 w-5" />
@@ -90,7 +90,7 @@ const Header = () => {
       </div>
 
       {open && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-indigo-700 flex flex-col items-center py-2 space-y-2">
+        <div className="md:hidden absolute top-full left-0 w-full bg-indigo-700! flex flex-col items-center py-2 space-y-2">
           {links.map((link) => (
             <span
               key={link.name}

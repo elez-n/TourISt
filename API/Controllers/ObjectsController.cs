@@ -65,7 +65,9 @@ namespace API.Controllers
                   .ToList(),
         Photographs = o.Photographs
                   .Select(p => new PhotographDto { Id = p.Id, Url = p.Url })
-                  .ToList()
+                  .ToList(),
+        ReviewCount = o.ReviewCount,
+        AverageRating = o.AverageRating
       });
 
       var pagedList = await PagedList<ObjectDto>.ToPagedList(
@@ -78,7 +80,6 @@ objectParams.PageSize
       return pagedList;
     }
 
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<ObjectDto>> GetObject(int id)
     {
@@ -111,6 +112,8 @@ objectParams.PageSize
         Featured = o.Featured,
         CategoryName = o.Category.Name,
         MunicipalityName = o.Municipality.Name,
+        ReviewCount = o.ReviewCount,
+        AverageRating = o.AverageRating,
         AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
         Photographs = o.Photographs
     .Select(p => new PhotographDto

@@ -38,13 +38,17 @@ const Objects = () => {
 
   const { objects, pagination } = data;
 
-  const markers: MapMarker[] = objects
-    .filter((o) => o.coordinate1 !== 0 && o.coordinate2 !== 0)
+  const markers: MapMarker[] =
+  objects
+    ?.filter((o) => o.coordinate1 !== 0 && o.coordinate2 !== 0)
     .map((o) => ({
       id: o.id,
       name: o.name,
-      position: [o.coordinate1, o.coordinate2],
-    }));
+      position: [o.coordinate1, o.coordinate2] as [number, number],
+      thumbnailUrl: o.photographs?.[0]?.url,
+      municipality: o.municipalityName,
+      category: o.categoryName,
+    })) ?? [];
 
   const handleSearchChange = (value: string) => {
     dispatch(setSearchTerm(value));

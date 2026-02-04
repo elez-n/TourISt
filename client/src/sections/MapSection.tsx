@@ -28,7 +28,10 @@ const highlightedIcon = L.icon({
 export interface MapMarker {
   id: number;
   name: string;
-  position: LatLngTuple;
+  position: [number, number];
+  thumbnailUrl?: string;  
+  municipality?: string;
+  category?: string;
 }
 
 interface MapSectionProps {
@@ -81,9 +84,32 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
                 icon={isSelected ? highlightedIcon : defaultIcon}
               >
                 <Popup>
-                  <strong>{marker.name}</strong>
-                  {isSelected && <div>(trenutni objekat)</div>}
+                  <div className="w-40  bg-white rounded-lg overflow-hidden flex flex-col">
+                    {marker.thumbnailUrl && (
+                      <img
+                        src={`https://localhost:5001${marker.thumbnailUrl}`}
+                        alt={marker.name}
+                        className="w-full h-25 object-cover block"
+                      />
+                    )}
+                    <div className="p-0 mt-2">
+                      <h3 className="text-sm font-semibold m-0 leading-none">
+                        {marker.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-0 leading-none">
+                        {marker.municipality} • {marker.category}
+                      </p>
+                    </div>
+
+                    <button
+                      className="text-xs text-blue-600 p-0 m-0 leading-none text-center"
+                      onClick={() => window.location.assign(`/objects/${marker.id}`)}
+                    >
+                      Pogledaj detalje
+                    </button>
+                  </div>
                 </Popup>
+
               </Marker>
             );
           })}

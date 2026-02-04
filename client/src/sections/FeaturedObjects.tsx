@@ -1,11 +1,14 @@
 "use client";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import LoadingSpinner from "@/components/ui/loading";
 import { useFetchFeaturedObjectsQuery } from "@/store/api/TouristObjectApi";
+import { useNavigate } from "react-router-dom";
 
 const FeaturedObjects = () => {
   const { data: objects = [], isLoading, isError } = useFetchFeaturedObjectsQuery();
+  const navigate = useNavigate();
 
   if (isLoading) return <LoadingSpinner />
   if (isError) return <p className="text-center py-16 text-red-500">Greška pri učitavanju.</p>;
@@ -37,6 +40,15 @@ const FeaturedObjects = () => {
                   {o.objectTypeName} • {o.municipalityName} • {o.categoryName}
                 </p>
               </CardContent>
+              <CardFooter>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate(`/objects/${o.id}`)}
+                >
+                  Detalji
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </div>

@@ -408,7 +408,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
 
         <div className="flex justify-end space-x-4 mt-6">
           <Button variant="outline" onClick={() => reset()}>Otkaži</Button>
-          <Button type="submit" disabled={isSubmitting || isCreating || isUpdating}>
+          <Button type="submit" disabled={isSubmitting || isCreating || isUpdating} className="bg-[#5c5c99]! hover:bg-[#272757]!">
             Sačuvaj
           </Button>
         </div>

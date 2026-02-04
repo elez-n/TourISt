@@ -48,5 +48,7 @@ export interface TouristObjectDto {
   municipalityName: string;
   additionalServices: string[];
   photographs: PhotographDto[];
+  averageRating: number,
+  reviewCount: number
 }
 

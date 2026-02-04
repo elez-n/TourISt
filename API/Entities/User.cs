@@ -9,8 +9,10 @@ namespace API.Entities
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-        public UserProfile Profile { get; set; } = null!;         
+        public UserProfile Profile { get; set; } = null!;
         public OfficerProfile? OfficerProfile { get; set; }
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
 
     }
 }

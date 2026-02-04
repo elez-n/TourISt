@@ -22,12 +22,12 @@ const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {
     <section className="w-full py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {objects.map((o) => (
-          <Card key={o.id} className="overflow-hidden">
+          <Card key={o.id} className="overflow-hidden pt-0">
             {o.photographs && o.photographs.length > 0 ? (
               <img
                 src={`https://localhost:5001${o.photographs[0].url}`}
                 alt={o.name}
-                className="h-48 w-full object-cover"
+                className="h-48 w-full object-cover mt-0"
               />
             ) : (
               <div className="h-48 w-full bg-gray-200 flex items-center justify-center text-gray-400">
@@ -35,7 +35,7 @@ const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {
               </div>
             )}
 
-            <CardContent className="pt-4">
+            <CardContent >
               <CardTitle className="text-lg">{o.name}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 {o.objectTypeName} • {o.municipalityName} • {o.categoryName}

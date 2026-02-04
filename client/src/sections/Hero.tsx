@@ -45,7 +45,7 @@ const Hero = () => {
             Centralna evidencija i promocija hotela, apartmana i drugih
             smještajnih kapaciteta.
           </p>
-          <Button className="bg-[#5C5C99]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400">
+          <Button className="bg-[#5C5C99]! hover:bg-[#272757]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400">
             Pogledaj objekte
           </Button>
         </div>
