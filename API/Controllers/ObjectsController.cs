@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.Data; 
+using API.Data;
 using API.Entities;
 using Dipl.Api.Data;
 using API.DTOs;
-using System.Collections.Immutable; 
+using System.Collections.Immutable;
 using API.Extensions;
 using API.RequestHelpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,8 +31,8 @@ namespace API.Controllers
           .AsQueryable();
 
       query = query
-          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories)
-          .Search(objectParams.SearchTerm)           
+          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories, objectParams.AdditionalServices)
+          .Search(objectParams.SearchTerm)
           .Sort(objectParams.OrderBy)
           .AsSplitQuery()
           .Include(o => o.ObjectType)
@@ -40,7 +40,7 @@ namespace API.Controllers
           .Include(o => o.Municipality)
           .Include(o => o.AdditionalServices)
           .Include(o => o.Photographs)
-          .Where(o => o.Status);   
+          .Where(o => o.Status);
 
       var dtoQuery = query.Select(o => new ObjectDto
       {
@@ -133,13 +133,16 @@ objectParams.PageSize
       var types = await _context.ObjectTypes.Select(x => x.Name).Distinct().ToListAsync();
       var municipalities = await _context.Municipalities.Select(x => x.Name).Distinct().ToListAsync();
       var categories = await _context.Categories.Select(x => x.Name).Distinct().ToListAsync();
+      var additionalServices = await _context.AdditionalServices.Select(x => x.Name).Distinct().ToListAsync();
+
 
 
       return Ok(new
       {
         types,
         municipalities,
-        categories
+        categories,
+        additionalServices
       });
     }
 
@@ -266,7 +269,7 @@ objectParams.PageSize
     public async Task<IActionResult> DeleteObject(int id)
     {
       var touristObject = await _context.TouristObjects
-          .Include(o => o.Photographs) 
+          .Include(o => o.Photographs)
           .FirstOrDefaultAsync(o => o.Id == id);
 
       if (touristObject == null)
@@ -295,7 +298,7 @@ objectParams.PageSize
       _context.TouristObjects.Remove(touristObject);
       await _context.SaveChangesAsync();
 
-      return NoContent(); 
+      return NoContent();
     }
 
     [HttpPut("edit/{id}")]
@@ -406,7 +409,7 @@ objectParams.PageSize
           .Include(o => o.Municipality)
           .Include(o => o.AdditionalServices)
           .Include(o => o.Photographs)
-          .Where(o => o.Status && o.Featured) 
+          .Where(o => o.Status && o.Featured)
           .Select(o => new ObjectDto
           {
             Id = o.Id,

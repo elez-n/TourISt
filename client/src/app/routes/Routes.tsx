@@ -6,6 +6,7 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Singup";
 import ObjectDetailsPage from "@/pages/ObjectDetails";
 import AddObject from "@/pages/AddObject";
+import ObjectsMap from "@/pages/ObjectsMap";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +18,9 @@ export const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/signup', element: <Signup /> },
       { path: '/objects/:id', element: <ObjectDetailsPage /> },
-      { path: '/add-object', element: <AddObject />}
+      { path: '/add-object', element: <AddObject /> },
+      { path: '/map', element: <ObjectsMap /> }
+
 
 
     ]

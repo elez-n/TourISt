@@ -6,11 +6,13 @@ namespace API.Extensions;
 public static class ObjectExtension
 {
   public static IQueryable<TouristObject> Filter(this IQueryable<TouristObject> query,
-      string? vrsta, string? municipality, string? category)
+      string? vrsta, string? municipality, string? category, string? additionalServices)
   {
     var vrstaList = new List<string>();
     var categoryList = new List<String>();
     var municipalityList = new List<String>();
+    var additionalServicesList = new List<String>();
+
 
     if (!string.IsNullOrEmpty(vrsta))
     {
@@ -24,10 +26,17 @@ public static class ObjectExtension
     {
       municipalityList.AddRange([.. municipality.Split(',')]);
     }
+    if (!string.IsNullOrEmpty(additionalServices))
+    {
+      additionalServicesList.AddRange([.. additionalServices.Split(',')]);
+    }
     query = query.Where(x => vrstaList.Count == 0 || vrstaList.Contains(x.ObjectType.Name));
     query = query.Where(x => categoryList.Count == 0 || categoryList.Contains(x.Category.Name));
     query = query.Where(x => municipalityList.Count == 0 || municipalityList.Contains(x.Municipality.Name));
-
+    if (additionalServicesList.Count > 0)
+    {
+      query = query.Where(o => additionalServicesList.All(req => o.AdditionalServices.Any(s => s.Name == req)));
+    }
 
     return query;
   }

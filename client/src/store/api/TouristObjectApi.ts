@@ -32,7 +32,7 @@ export const touristObjectApi = createApi({
       query: (id) => `objects/${id}`,
     }),
 
-    fetchFilters: builder.query<{ types: string[], municipalities: string[], categories: string[] }, void>({
+    fetchFilters: builder.query<{ types: string[], municipalities: string[], categories: string[], additionalServices: string[] }, void>({
       query: () => 'objects/filters'
     }),
     fetchObjectTypes: builder.query<{ id: number; name: string }[], void>({

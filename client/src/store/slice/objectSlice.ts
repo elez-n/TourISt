@@ -7,12 +7,13 @@ const initialState: ObjectParams = {
   objectTypes: "",
   categories: "",
   municipalities: "",
+  additionalServices: "",
   searchTerm: "",
   orderBy: "beds",
 };
 
 export const objectSlice = createSlice({
-  name: "pacijentSlice",
+  name: "objectSlice",
   initialState,
   reducers: {
     setPageNumber(state, action) {
@@ -41,6 +42,10 @@ export const objectSlice = createSlice({
       state.searchTerm = action.payload;
       state.pageNumber = 1;
     },
+        setAdditionalServices(state, action) {
+      state.additionalServices = action.payload;
+      state.pageNumber = 1;
+    },
     resetParams() {
       return initialState;
     },
@@ -51,6 +56,7 @@ export const {
   setType,
   setCategory,
   setMunicipality,
+  setAdditionalServices,
   setOrderBy,
   setPageNumber,
   setPageSize,

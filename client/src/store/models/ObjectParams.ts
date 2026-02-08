@@ -4,6 +4,7 @@ export type ObjectParams = {
   objectTypes?: string,
   categories?: string,
   municipalities?: string,
+  additionalServices?: string,
   searchTerm?: string,
   orderBy: string
 }

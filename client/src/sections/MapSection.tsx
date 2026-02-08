@@ -1,4 +1,3 @@
-import { Box, Container, Typography } from "@mui/material";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L, { type LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -6,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
+// Standard marker
 const defaultIcon = L.icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
@@ -15,6 +15,7 @@ const defaultIcon = L.icon({
   shadowSize: [41, 41],
 });
 
+// Highlighted marker
 const highlightedIcon = L.icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
@@ -29,7 +30,7 @@ export interface MapMarker {
   id: number;
   name: string;
   position: [number, number];
-  thumbnailUrl?: string;  
+  thumbnailUrl?: string;
   municipality?: string;
   category?: string;
 }
@@ -47,28 +48,17 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
       : [43.85, 18.39];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
+    <div className="max-w-7xl mx-auto w-full flex flex-col px-4 lg:px-0">
+      {/* Naslov */}
       {title && (
-        <Typography variant="h5" textAlign="center" gutterBottom>
+        <h2 className="text-lg font-semibold text-gray-700 mb-2 text-center lg:text-left">
           {title}
-        </Typography>
+        </h2>
       )}
 
-      <Box
-        sx={{
-          width: "100%",
-          height: { xs: "300px", md: "500px" },
-          borderRadius: 2,
-          overflow: "hidden",
-          boxShadow: 3,
-          mt: 2,
-        }}
-      >
-        <MapContainer
-          center={center}
-          zoom={13}
-          style={{ width: "100%", height: "100%" }}
-        >
+      {/* Mapa */}
+      <div className="w-full h-112.5 lg:h-137.5 rounded-xl overflow-hidden border shadow-sm">
+        <MapContainer center={center} zoom={13} className="w-full h-full">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; OpenStreetMap"
@@ -84,38 +74,40 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
                 icon={isSelected ? highlightedIcon : defaultIcon}
               >
                 <Popup>
-                  <div className="w-40  bg-white rounded-lg overflow-hidden flex flex-col">
+                  <div className="w-40 bg-white rounded-lg overflow-hidden flex flex-col">
                     {marker.thumbnailUrl && (
                       <img
                         src={`https://localhost:5001${marker.thumbnailUrl}`}
                         alt={marker.name}
-                        className="w-full h-25 object-cover block"
+                        className="w-full h-24 object-cover block"
                       />
                     )}
-                    <div className="p-0 mt-2">
-                      <h3 className="text-sm font-semibold m-0 leading-none">
+
+                    <div className="px-2 py-1">
+                      <h3 className="text-sm font-semibold leading-tight">
                         {marker.name}
                       </h3>
-                      <p className="text-xs text-muted-foreground mt-0 leading-none">
+                      <p className="text-xs text-gray-500 leading-tight">
                         {marker.municipality} • {marker.category}
                       </p>
                     </div>
 
                     <button
-                      className="text-xs text-blue-600 p-0 m-0 leading-none text-center"
-                      onClick={() => window.location.assign(`/objects/${marker.id}`)}
+                      className="text-xs text-blue-600 px-2 pb-2 text-left hover:underline"
+                      onClick={() =>
+                        window.location.assign(`/objects/${marker.id}`)
+                      }
                     >
                       Pogledaj detalje
                     </button>
                   </div>
                 </Popup>
-
               </Marker>
             );
           })}
         </MapContainer>
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

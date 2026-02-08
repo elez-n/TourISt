@@ -22,7 +22,7 @@ const Header = () => {
   const links = [
     { name: "Početna", path: "/", icon: homeIcon },
     { name: "Lista objekata", path: "/objects", icon: listIcon },
-    { name: "Mapa", path: "#mapa", icon: mapIcon },
+    { name: "Mapa", path: "/map", icon: mapIcon },
     { name: "Kontakt", path: "/kontakt", icon: contactIcon },
   ];
 

@@ -1,5 +1,4 @@
 import Header from "../components/Header";
-import ObjectsHero from "../sections/ObjectsHero";
 import AllObjects from "../sections/AllObjects";
 import MapSection, { type MapMarker } from "../sections/MapSection";
 import Footer from "../components/Footer";
@@ -19,8 +18,12 @@ import {
   setType,
   setMunicipality,
   setCategory,
+  setAdditionalServices,
 } from "@/store/slice/objectSlice";
 import LoadingSpinner from "@/components/ui/loading";
+import background1 from "../assets/background1.jpg";
+import PagesHero from "@/sections/PagesHero";
+
 
 const Objects = () => {
   const dispatch = useAppDispatch();
@@ -28,7 +31,7 @@ const Objects = () => {
 
   const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
   const {
-    data: filters = { types: [], municipalities: [], categories: [] },
+    data: filters = { types: [], municipalities: [], categories: [], additionalServices: [] },
     isLoading: isFiltersLoading,
   } = useFetchFiltersQuery();
 
@@ -63,7 +66,7 @@ const Objects = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <ObjectsHero />
+      <PagesHero title="Turistički objekti" imageSrc={background1}/>
 
       <div className="flex-1 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 px-4 lg:px-8 py-6 w-full">
 
@@ -141,6 +144,20 @@ const Objects = () => {
             }}
           />
 
+          <Filters
+            title="Dodatne usluge"
+            typesList={filters.additionalServices}
+            selected={
+              objectParams.additionalServices
+                ? objectParams.additionalServices.split(",")
+                : []
+            }
+            onChange={(v) => {
+              dispatch(setAdditionalServices(v.join(",")));
+              dispatch(setPageNumber(1));
+            }}
+          />
+
           <Button
             variant="outline"
             className="w-full"
@@ -151,7 +168,7 @@ const Objects = () => {
         </div>
       </div>
 
-      <MapSection title="Mapa svih objekata" markers={markers} />
+      <MapSection markers={markers} />
       <Footer />
     </div>
   );

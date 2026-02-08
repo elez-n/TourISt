@@ -39,7 +39,7 @@ const Home = () => {
       <FeaturedObjects />
 
 
-      <MapSection title="Mapa turističkih objekata" markers={markers} />
+      <MapSection markers={markers} />
 
       <Footer />
     </Box>
