@@ -45,7 +45,7 @@ TourISt is a web application designed for centralized management and public prom
 - **Frontend:** React, TypeScript, TailwindCSS
 - **Backend:** .NET 9 (ASP.NET Core Web API)
 - **Database:** SQL Server Express 
-- **Other:** Redux, RESTful API, responsive design
+- **Other:** Redux, RESTful API, MVC, responsive design
 
 
 > **Note:** Currently, the backend uses **SQL Server Express** for local development. Multi-user functionality and full user registration are still in progress.
