@@ -66,11 +66,8 @@ const ObjectsMap = () => {
 
       <div className="flex-1 max-w-7xl mx-auto px-4 lg:px-8 py-6 w-full">
         <div className="flex flex-col lg:flex-row gap-6">
-
-          {/* MAPA + SEARCH */}
           <div className="flex-1 flex flex-col gap-4">
 
-            {/* SEARCH BAR */}
             <div className="bg-white p-3 rounded-xl shadow-sm border flex items-center gap-2">
               <input
                 type="text"
@@ -81,13 +78,11 @@ const ObjectsMap = () => {
               />
             </div>
 
-            {/* MAPA */}
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
               <MapSection markers={markers} />
             </div>
           </div>
 
-          {/* FILTERI SIDEBAR */}
           <div className="w-full lg:w-72 bg-white rounded-xl shadow-sm border p-4 space-y-4 h-fit sticky top-24">
 
             <h3 className="font-semibold text-gray-700 text-lg">

@@ -5,7 +5,6 @@ import "leaflet/dist/leaflet.css";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
-// Standard marker
 const defaultIcon = L.icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
@@ -15,7 +14,6 @@ const defaultIcon = L.icon({
   shadowSize: [41, 41],
 });
 
-// Highlighted marker
 const highlightedIcon = L.icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
@@ -49,14 +47,12 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
 
   return (
     <div className="max-w-7xl mx-auto w-full flex flex-col px-4 lg:px-0">
-      {/* Naslov */}
       {title && (
         <h2 className="text-lg font-semibold text-gray-700 mb-2 text-center lg:text-left">
           {title}
         </h2>
       )}
 
-      {/* Mapa */}
       <div className="w-full h-112.5 lg:h-137.5 rounded-xl overflow-hidden border shadow-sm">
         <MapContainer center={center} zoom={13} className="w-full h-full">
           <TileLayer
