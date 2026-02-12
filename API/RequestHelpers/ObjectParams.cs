@@ -10,6 +10,8 @@ public class ObjectParams : PaginationParams
     public string? Municipalities { get; set; }
     public string? Categories { get; set; }
     public string? AdditionalServices { get; set; }
+    public bool? Status { get; set; }
+
 
 
 }

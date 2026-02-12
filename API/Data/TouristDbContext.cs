@@ -20,6 +20,9 @@ namespace Dipl.Api.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<OfficerProfile> OfficerProfiles { get; set; }
+        public DbSet<Criteria> Criterias { get; set; }
+        public DbSet<Evaluation> Evaluations { get; set; }
+        public DbSet<EvaluationScore> EvaluationScores { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

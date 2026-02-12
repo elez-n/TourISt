@@ -20,8 +20,8 @@ namespace API.Entities
         public string Description { get; set; } = null!;
         public string Owner { get; set; } = null!;
         public bool Featured { get; set; }
-        public int CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
+        public int? CategoryId { get; set; }
+        public Category? Category { get; set; }
         public int MunicipalityId { get; set; }
         public Municipality Municipality { get; set; } = null!;
         public ICollection<AdditionalService> AdditionalServices { get; set; } = new List<AdditionalService>();
