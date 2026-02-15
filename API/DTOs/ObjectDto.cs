@@ -16,7 +16,7 @@ public class ObjectDto
     public string Owner { get; set; } = null!;
     public bool Featured { get; set; }
 
-    public string CategoryName { get; set; } = null!;
+    public string? CategoryName { get; set; }
     public string MunicipalityName { get; set; } = null!;
     public List<string> AdditionalServices { get; set; } = new();
     public List<PhotographDto> Photographs { get; set; } = new();

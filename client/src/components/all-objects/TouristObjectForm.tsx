@@ -63,7 +63,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
         description: "",
         owner: "",
         featured: false,
-        categoryId: 0,
+        //categoryId: 0,
         municipalityId: 0,
         additionalServiceIds: [],
         photographs: [],
@@ -87,7 +87,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
       description: initialData.description,
       owner: initialData.owner,
       featured: initialData.featured,
-      categoryId: categories?.find(c => c.name === initialData.categoryName)?.id || 0,
+      //categoryId: categories?.find(c => c.name === initialData.categoryName)?.id || 0,
       municipalityId: municipalities?.find(m => m.name === initialData.municipalityName)?.id || 0,
       additionalServiceIds: initialData.additionalServices?.map(
         name => additionalServices?.find(s => s.name === name)?.id
@@ -288,7 +288,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
               )}
             />
           </div>
-
+            {/*
           <div>
             <Label>Kategorija</Label>
             <Controller
@@ -301,7 +301,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
                 </select>
               )}
             />
-          </div>
+          </div> */}
 
           <div>
             <Label>Opština</Label>

@@ -23,6 +23,8 @@ namespace Dipl.Api.Data
         public DbSet<Criteria> Criterias { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
         public DbSet<EvaluationScore> EvaluationScores { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

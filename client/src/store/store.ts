@@ -5,11 +5,13 @@ import { objectSlice } from "./slice/objectSlice";
 import { authSlice } from "./slice/authSlice";
 import { userApi } from "./api/userApi";
 import { reviewsApi } from "./api/reviewsApi";
+import { evaluationApi } from "./api/evaluationApi";
 export const store = configureStore({
   reducer: {
     [touristObjectApi.reducerPath]: touristObjectApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [reviewsApi.reducerPath]: reviewsApi.reducer,
+    [evaluationApi.reducerPath]: evaluationApi.reducer,
     touristObject: objectSlice.reducer,
     auth: authSlice.reducer,
   },
@@ -17,7 +19,8 @@ export const store = configureStore({
   getDefaultMiddleware({ serializableCheck: false }).concat(
     touristObjectApi.middleware,
     userApi.middleware,
-    reviewsApi.middleware
+    reviewsApi.middleware,
+    evaluationApi.middleware,
   ),
 });
 

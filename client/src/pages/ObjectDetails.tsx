@@ -13,10 +13,12 @@ import AmenitiesSection from "@/components/object-details/AmenitiesSection";
 import OwnerSection from "@/components/object-details/OwnerSection";
 import MapSection from "@/sections/MapSection";
 import ReviewsSection from "@/components/object-details/ReviewsSection";
+import { EvaluationForm } from "@/components/object-details/EvaluationForm";
 
 import TouristObjectForm from "../components/all-objects/TouristObjectForm";
 import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "../store/api/TouristObjectApi";
 import LoadingSpinner from "@/components/ui/loading";
+import { Modal } from "@/components/object-details/Modal";
 
 const ObjectDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +28,7 @@ const ObjectDetailsPage = () => {
   const [deleteObject, { isLoading: isDeleting }] = useDeleteTouristObjectMutation();
 
   const [editMode, setEditMode] = useState(false);
+  const [showEvaluationForm, setShowEvaluationForm] = useState(false);
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("Da li ste sigurni da želite obrisati objekat?")) return;
@@ -37,8 +40,7 @@ const ObjectDetailsPage = () => {
     }
   };
 
-  if (isLoading)
-    return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />;
 
   if (isError || !object)
     return (
@@ -60,7 +62,6 @@ const ObjectDetailsPage = () => {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 space-y-16 py-10 mt-30">
-
         <div className="flex justify-between items-center">
           <ObjectHeader object={object} />
 
@@ -81,6 +82,13 @@ const ObjectDetailsPage = () => {
             >
               <Trash2 size={22} />
               <span className="text-sm">Obriši objekat</span>
+            </button>
+
+            <button
+              onClick={() => setShowEvaluationForm(true)}
+              className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition flex items-center gap-1"
+            >
+              <span className="text-sm">Dodaj evaluaciju</span>
             </button>
           </div>
         </div>
@@ -112,11 +120,20 @@ const ObjectDetailsPage = () => {
               reviewCount={object.reviewCount}
               refetchObject={refetch}
             />
-
           </>
         )}
-
       </div>
+      
+      <Modal isOpen={showEvaluationForm} onClose={() => setShowEvaluationForm(false)}>
+        <h2 className="text-lg font-semibold mb-4">Evaluacija objekta</h2>
+        <EvaluationForm
+          touristObjectId={object.id}
+          onSuccess={() => {
+            setShowEvaluationForm(false);
+            refetch();
+          }}
+        />
+      </Modal>
 
       <Footer />
     </>

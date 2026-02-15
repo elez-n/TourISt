@@ -58,7 +58,7 @@ namespace API.Controllers
         Description = o.Description,
         Owner = o.Owner,
         Featured = o.Featured,
-        CategoryName = o.Category.Name,
+        CategoryName = o.Category == null ? null : o.Category.Name,
         MunicipalityName = o.Municipality.Name,
         AdditionalServices = o.AdditionalServices
                   .Select(s => s.Name)
@@ -110,7 +110,7 @@ objectParams.PageSize
         Description = o.Description,
         Owner = o.Owner,
         Featured = o.Featured,
-        CategoryName = o.Category.Name,
+        CategoryName = o.Category != null ? o.Category.Name : null,
         MunicipalityName = o.Municipality.Name,
         ReviewCount = o.ReviewCount,
         AverageRating = o.AverageRating,
@@ -197,7 +197,7 @@ objectParams.PageSize
         Description = dto.Description,
         Owner = dto.Owner,
         Featured = dto.Featured,
-        CategoryId = dto.CategoryId,
+        CategoryId = null,
         MunicipalityId = dto.MunicipalityId
       };
 
@@ -250,7 +250,7 @@ objectParams.PageSize
         Description = touristObject.Description,
         Owner = touristObject.Owner,
         Featured = touristObject.Featured,
-        CategoryName = (await _context.Categories.FindAsync(touristObject.CategoryId))?.Name ?? "",
+        CategoryName = null,
         MunicipalityName = (await _context.Municipalities.FindAsync(touristObject.MunicipalityId))?.Name ?? "",
         AdditionalServices = touristObject.AdditionalServices.Select(s => s.Name).ToList(),
         Photographs = touristObject.Photographs
@@ -325,7 +325,7 @@ objectParams.PageSize
       touristObject.Description = dto.Description;
       touristObject.Owner = dto.Owner;
       touristObject.Featured = dto.Featured;
-      touristObject.CategoryId = dto.CategoryId;
+      //touristObject.CategoryId = dto.CategoryId;
       touristObject.MunicipalityId = dto.MunicipalityId;
 
       touristObject.AdditionalServices.Clear();
@@ -426,7 +426,7 @@ objectParams.PageSize
             Description = o.Description,
             Owner = o.Owner,
             Featured = o.Featured,
-            CategoryName = o.Category.Name,
+            CategoryName = o.Category != null ? o.Category.Name : null,
             MunicipalityName = o.Municipality.Name,
             AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
             Photographs = o.Photographs

@@ -87,7 +87,6 @@ namespace API.Controllers
                     Scores = e.Scores.Select(s => new EvaluationScoreDto
                     {
                         CriteriaId = s.CriteriaId,
-                        CriteriaName = s.Criteria.Name,
                         Points = s.Points
                     }).ToList()
                 })
@@ -97,6 +96,22 @@ namespace API.Controllers
                 return NotFound("Nema evaluacija za ovaj objekat.");
 
             return Ok(evals);
+        }
+
+        [HttpGet("criteria")]
+        public async Task<IActionResult> GetCriteria()
+        {
+            var criteria = await _context.Criterias
+                .Select(c => new CriteriaDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    MaxPoints = c.MaxPoints,
+                    Description = c.Description
+                })
+                .ToListAsync();
+
+            return Ok(criteria);
         }
     }
 }

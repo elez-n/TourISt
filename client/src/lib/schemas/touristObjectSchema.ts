@@ -23,7 +23,7 @@ export const touristObjectSchema = z.object({
   description: z.string().min(10, "Opis mora imati najmanje 10 karaktera"),
   owner: z.string().min(2, "Ime vlasnika mora biti uneseno"),
   featured: z.boolean(),
-  categoryId: z.number().int().positive("Odaberi kategoriju"),
+  //categoryId: z.number().int().positive("Odaberi kategoriju"),
   municipalityId: z.number().int().positive("Odaberi opštinu"),
   additionalServiceIds: z.array(z.number().int().positive()).optional(),
  photographs: z
