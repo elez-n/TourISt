@@ -4,9 +4,10 @@ namespace API.Extensions
 {
     public static class UserExtensions
     {
-        public static string? GetUserId(this ClaimsPrincipal user)
+        public static Guid? GetUserId(this ClaimsPrincipal user)
         {
-            return user.FindFirstValue(ClaimTypes.NameIdentifier);
+            var id = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            return id is null ? null : Guid.Parse(id);
         }
     }
 }

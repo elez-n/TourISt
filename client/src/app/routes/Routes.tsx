@@ -7,6 +7,7 @@ import Signup from "@/pages/Singup";
 import ObjectDetailsPage from "@/pages/ObjectDetails";
 import AddObject from "@/pages/AddObject";
 import ObjectsMap from "@/pages/ObjectsMap";
+import Favorites from "@/pages/Favorites";
 
 export const router = createBrowserRouter([
   {
@@ -19,7 +20,10 @@ export const router = createBrowserRouter([
       { path: '/signup', element: <Signup /> },
       { path: '/objects/:id', element: <ObjectDetailsPage /> },
       { path: '/add-object', element: <AddObject /> },
-      { path: '/map', element: <ObjectsMap /> }
+      { path: '/map', element: <ObjectsMap /> },
+      { path: '/fav', element: <Favorites /> }
+
+
 
 
 

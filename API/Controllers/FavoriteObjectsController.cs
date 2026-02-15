@@ -2,12 +2,14 @@ using System.Security.Claims;
 using Dipl.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using API.DTOs;
+using API.Extensions;
+using API.RequestHelpers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] 
+[Authorize]
 public class FavoritesController : ControllerBase
 {
     private readonly TouristDbContext _context;
@@ -20,17 +22,22 @@ public class FavoritesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddFavorite([FromBody] FavoriteDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim))
-            return Unauthorized("User not authenticated.");
+        var userId = User.GetUserId();
+        if (userId == null) return Unauthorized();
 
-        var userId = Guid.Parse(userIdClaim);
+        var exists = await _context.Favorites
+            .AnyAsync(f => f.UserId == userId && f.TouristObjectId == dto.ObjectId);
 
-        if (await _context.Favorites.AnyAsync(f => f.UserId == userId && f.TouristObjectId == dto.ObjectId))
+        if (exists)
             return BadRequest("Već dodano u omiljene.");
 
-        var favorite = new Favorite { UserId = userId, TouristObjectId = dto.ObjectId };
-        _context.Favorites.Add(favorite);
+        _context.Favorites.Add(new Favorite
+        {
+            UserId = userId.Value,
+            TouristObjectId = dto.ObjectId,
+            CreatedAt = DateTime.UtcNow
+        });
+
         await _context.SaveChangesAsync();
         return Ok(new { message = "Objekat dodan u omiljene." });
     }
@@ -38,68 +45,75 @@ public class FavoritesController : ControllerBase
     [HttpDelete("{objectId}")]
     public async Task<IActionResult> RemoveFavorite(int objectId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim))
-            return Unauthorized("User not authenticated.");
+        var userId = User.GetUserId();
+        if (userId == null) return Unauthorized();
 
-        var userId = Guid.Parse(userIdClaim);
-        var favorite = await _context.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.TouristObjectId == objectId);
+        var favorite = await _context.Favorites
+            .FirstOrDefaultAsync(f => f.UserId == userId && f.TouristObjectId == objectId);
 
-        if (favorite == null) return NotFound();
+        if (favorite == null)
+            return NotFound();
 
         _context.Favorites.Remove(favorite);
         await _context.SaveChangesAsync();
+
         return Ok(new { message = "Objekat uklonjen iz omiljenih." });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetFavorites()
+    [HttpGet("ids")]
+    public async Task<ActionResult<List<int>>> GetFavoriteIds()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim))
-            return Unauthorized("User not authenticated.");
+        var userId = User.GetUserId();
+        if (userId == null) return Unauthorized();
 
-        var userId = Guid.Parse(userIdClaim);
-
-        var favorites = await _context.Favorites
+        var favoriteIds = await _context.Favorites
             .Where(f => f.UserId == userId)
-            .Include(f => f.TouristObject)
-                .ThenInclude(o => o.ObjectType)
-            .Include(f => f.TouristObject)
-                .ThenInclude(o => o.Category)
-            .Include(f => f.TouristObject)
-                .ThenInclude(o => o.Municipality)
-            .Include(f => f.TouristObject)
-                .ThenInclude(o => o.AdditionalServices)
-            .Include(f => f.TouristObject)
-                .ThenInclude(o => o.Photographs)
+            .Select(f => f.TouristObjectId)
             .ToListAsync();
 
-        var response = favorites.Select(f => new FavoriteObjectDto
-        {
-            Id = f.TouristObject.Id,
-            Name = f.TouristObject.Name,
-            ObjectTypeName = f.TouristObject.ObjectType.Name,
-            Status = f.TouristObject.Status,
-            Address = f.TouristObject.Address,
-            Coordinate1 = f.TouristObject.Coordinate1,
-            Coordinate2 = f.TouristObject.Coordinate2,
-            ContactPhone = f.TouristObject.ContactPhone,
-            ContactEmail = f.TouristObject.ContactEmail,
-            NumberOfUnits = f.TouristObject.NumberOfUnits,
-            NumberOfBeds = f.TouristObject.NumberOfBeds,
-            Description = f.TouristObject.Description,
-            Owner = f.TouristObject.Owner,
-            Featured = f.TouristObject.Featured,
-            CategoryName = f.TouristObject.Category?.Name,
-            MunicipalityName = f.TouristObject.Municipality.Name,
-            AdditionalServices = f.TouristObject.AdditionalServices.Select(s => s.Name).ToList(),
-            Photographs = f.TouristObject.Photographs.Select(p => new PhotographDto { Id = p.Id, Url = p.Url }).ToList(),
-            ReviewCount = f.TouristObject.ReviewCount,
-            AverageRating = f.TouristObject.AverageRating,
-            AddedAt = f.CreatedAt
-        }).ToList();
+        return Ok(favoriteIds);
+    }
 
-        return Ok(response);
+    [HttpGet]
+    public async Task<ActionResult<PagedList<ObjectDto>>> GetFavorites([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    {
+        var userId = User.GetUserId();
+        if (userId == null) return Unauthorized();
+
+        var query = _context.Favorites
+            .Where(f => f.UserId == userId)
+            .Select(f => f.TouristObject)
+            .Where(o => o.Status) 
+            .Include(o => o.ObjectType)
+            .Include(o => o.Category)
+            .Include(o => o.Municipality)
+            .Include(o => o.Photographs)
+            .AsQueryable();
+
+        var dtoQuery = query.Select(o => new ObjectDto
+        {
+            Id = o.Id,
+            Name = o.Name,
+            ObjectTypeName = o.ObjectType.Name,
+            Status = o.Status,
+            Address = o.Address,
+            Coordinate1 = o.Coordinate1,
+            Coordinate2 = o.Coordinate2,
+            ContactPhone = o.ContactPhone,
+            ContactEmail = o.ContactEmail,
+            NumberOfUnits = o.NumberOfUnits,
+            NumberOfBeds = o.NumberOfBeds,
+            Description = o.Description,
+            Owner = o.Owner,
+            Featured = o.Featured,
+            CategoryName = o.Category != null ? o.Category.Name : null,
+            MunicipalityName = o.Municipality.Name,
+            Photographs = o.Photographs.Select(p => new PhotographDto { Id = p.Id, Url = p.Url }).ToList()
+        });
+
+        var pagedList = await PagedList<ObjectDto>.ToPagedList(dtoQuery, pageNumber, pageSize);
+
+        Response.AddPaginationHeader(pagedList.Metadata);
+        return Ok(pagedList);
     }
 }

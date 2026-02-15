@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2, Heart } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -20,15 +20,39 @@ import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "..
 import LoadingSpinner from "@/components/ui/loading";
 import { Modal } from "@/components/object-details/Modal";
 
+import { useGetFavoritesQuery, useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/store/api/favoritesApi";
+import { useAppSelector } from "@/store/store"; // Dodaj auth state
+
 const ObjectDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const user = useAppSelector(state => state.auth.user); // Provjera da li je korisnik logovan
 
   const { data: object, isLoading, isError, refetch } = useGetTouristObjectByIdQuery(Number(id));
   const [deleteObject, { isLoading: isDeleting }] = useDeleteTouristObjectMutation();
 
   const [editMode, setEditMode] = useState(false);
   const [showEvaluationForm, setShowEvaluationForm] = useState(false);
+
+  const { data: favorites = [] } = useGetFavoritesQuery();
+  const [addFavorite] = useAddFavoriteMutation();
+  const [removeFavorite] = useRemoveFavoriteMutation();
+
+  const favoriteIds = useMemo(() => new Set(favorites.map(f => f.id)), [favorites]);
+  const isFavorite = object ? favoriteIds.has(object.id) : false;
+
+  const toggleFavorite = async () => {
+    if (!object) return;
+    try {
+      if (isFavorite) {
+        await removeFavorite(object.id);
+      } else {
+        await addFavorite(object.id);
+      }
+    } catch {
+      alert("Greška pri izmjeni omiljenih");
+    }
+  };
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("Da li ste sigurni da želite obrisati objekat?")) return;
@@ -63,7 +87,19 @@ const ObjectDetailsPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 space-y-16 py-10 mt-30">
         <div className="flex justify-between items-center">
-          <ObjectHeader object={object} />
+          <div className="flex items-center gap-4">
+            <ObjectHeader object={object} />
+            
+            {user && (
+              <button
+                onClick={toggleFavorite}
+                className={`p-1 rounded-full transition ${isFavorite ? "text-red-500" : "text-gray-400"} `}
+                title={isFavorite ? "Ukloni iz omiljenih" : "Dodaj u omiljene"}
+              >
+                <Heart size={28} />
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2">
             <button
@@ -123,7 +159,7 @@ const ObjectDetailsPage = () => {
           </>
         )}
       </div>
-      
+
       <Modal isOpen={showEvaluationForm} onClose={() => setShowEvaluationForm(false)}>
         <h2 className="text-lg font-semibold mb-4">Evaluacija objekta</h2>
         <EvaluationForm
