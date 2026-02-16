@@ -7,6 +7,7 @@ import { userApi } from "./api/userApi";
 import { reviewsApi } from "./api/reviewsApi";
 import { evaluationApi } from "./api/evaluationApi";
 import { favoritesApi } from "./api/favoritesApi";
+import { adminApi } from "./api/adminApi";
 export const store = configureStore({
   reducer: {
     [touristObjectApi.reducerPath]: touristObjectApi.reducer,
@@ -14,6 +15,7 @@ export const store = configureStore({
     [reviewsApi.reducerPath]: reviewsApi.reducer,
     [evaluationApi.reducerPath]: evaluationApi.reducer,
     [favoritesApi.reducerPath]: favoritesApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
     touristObject: objectSlice.reducer,
     auth: authSlice.reducer,
   },
@@ -24,6 +26,7 @@ export const store = configureStore({
     reviewsApi.middleware,
     evaluationApi.middleware,
     favoritesApi.middleware,
+    adminApi.middleware
   ),
 });
 

@@ -3,10 +3,9 @@ import { useSelector } from "react-redux";
 import { logout, selectCurrentUser } from "@/store/slice/authSlice";
 import { useAppDispatch } from "@/store/store";
 import { setAccessToken } from "@/store/tokenStore";
-import { User, Mail, Info, LogOut } from "lucide-react";
+import { User, Mail, Info, LogOut, Heart } from "lucide-react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
 
 const UserCard: FC = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +15,7 @@ const UserCard: FC = () => {
   const userId = currentUser?.id;
 
   const { data: user, isLoading } = useGetCurrentUserQuery(undefined, {
-    skip: !userId, 
+    skip: !userId,
   });
 
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
@@ -38,7 +37,10 @@ const UserCard: FC = () => {
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
 
   return (
-    <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp hover:shadow-2xl transition-shadow duration-300">      <div className="bg-[#5c5c99]! p-4 flex items-center gap-3 rounded-t-xl">
+    <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp hover:shadow-2xl transition-shadow duration-300">
+      
+      {/* HEADER */}
+      <div className="bg-[#5c5c99]! p-4 flex items-center gap-3 rounded-t-xl">
         <div className="w-12 h-12 rounded-full bg-indigo-400 flex items-center justify-center text-white font-bold text-lg">
           {initials}
         </div>
@@ -48,6 +50,7 @@ const UserCard: FC = () => {
         </div>
       </div>
 
+      {/* USER INFO */}
       <div className="p-4 flex flex-col gap-2">
         <div className="flex items-center gap-2 text-gray-600">
           <User className="w-5 h-5 text-indigo-500" />
@@ -75,16 +78,27 @@ const UserCard: FC = () => {
         )}
       </div>
 
-      <div className="p-4 border-t border-gray-200">
-        <Button
-          variant="default"
-          className="w-full flex items-center justify-center gap-2 bg-[#5c5c99]! hover:bg-[#272757]! text-white"
+      {/* MENU ACTIONS */}
+      <div className="p-4 border-t border-gray-200 flex flex-col gap-2">
+
+        {/* FAVORITES BUTTON */}
+        <button
+          onClick={() => navigate("/favorites")}
+          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-gray-700"
+        >
+          <Heart className="w-5 h-5 text-red-500" />
+          Omiljeni objekti
+        </button>
+
+        {/* LOGOUT BUTTON */}
+        <button
           onClick={handleLogout}
           disabled={isLoggingOut}
+          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 text-red-600 transition"
         >
           <LogOut className="w-5 h-5" />
           {isLoggingOut ? "Odjava..." : "Logout"}
-        </Button>
+        </button>
       </div>
     </div>
   );

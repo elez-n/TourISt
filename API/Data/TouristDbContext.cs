@@ -24,6 +24,7 @@ namespace Dipl.Api.Data
         public DbSet<Evaluation> Evaluations { get; set; }
         public DbSet<EvaluationScore> EvaluationScores { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<PasswordToken> PasswordTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

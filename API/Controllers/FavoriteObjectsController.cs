@@ -75,22 +75,22 @@ public class FavoritesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedList<ObjectDto>>> GetFavorites([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<List<ObjectDto>>> GetFavorites()
     {
         var userId = User.GetUserId();
         if (userId == null) return Unauthorized();
 
-        var query = _context.Favorites
-            .Where(f => f.UserId == userId)
-            .Select(f => f.TouristObject)
-            .Where(o => o.Status) 
+        var objects = await _context.TouristObjects
+            .Where(o => o.Status &&
+                        _context.Favorites
+                            .Any(f => f.UserId == userId && f.TouristObjectId == o.Id))
             .Include(o => o.ObjectType)
             .Include(o => o.Category)
             .Include(o => o.Municipality)
             .Include(o => o.Photographs)
-            .AsQueryable();
+            .ToListAsync();
 
-        var dtoQuery = query.Select(o => new ObjectDto
+        var result = objects.Select(o => new ObjectDto
         {
             Id = o.Id,
             Name = o.Name,
@@ -108,12 +108,16 @@ public class FavoritesController : ControllerBase
             Featured = o.Featured,
             CategoryName = o.Category != null ? o.Category.Name : null,
             MunicipalityName = o.Municipality.Name,
-            Photographs = o.Photographs.Select(p => new PhotographDto { Id = p.Id, Url = p.Url }).ToList()
-        });
+            Photographs = o.Photographs
+                .Select(p => new PhotographDto
+                {
+                    Id = p.Id,
+                    Url = p.Url
+                }).ToList()
+        }).ToList();
 
-        var pagedList = await PagedList<ObjectDto>.ToPagedList(dtoQuery, pageNumber, pageSize);
-
-        Response.AddPaginationHeader(pagedList.Metadata);
-        return Ok(pagedList);
+        return Ok(result);
     }
+
+
 }

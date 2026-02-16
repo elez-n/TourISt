@@ -8,6 +8,8 @@ import ObjectDetailsPage from "@/pages/ObjectDetails";
 import AddObject from "@/pages/AddObject";
 import ObjectsMap from "@/pages/ObjectsMap";
 import Favorites from "@/pages/Favorites";
+import CreateOfficerForm from "@/pages/CreateOfficer";
+import SetPasswordPage from "@/pages/SetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -21,8 +23,9 @@ export const router = createBrowserRouter([
       { path: '/objects/:id', element: <ObjectDetailsPage /> },
       { path: '/add-object', element: <AddObject /> },
       { path: '/map', element: <ObjectsMap /> },
-      { path: '/fav', element: <Favorites /> }
-
+      { path: '/favorites', element: <Favorites /> },
+      { path: '/create-officer', element: <CreateOfficerForm /> },
+      { path: '/set-password', element: <SetPasswordPage /> }
 
 
 

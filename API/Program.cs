@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DotNetEnv;
 
 
+Env.Load(); // Ovo učitava .env fajl u Environment varijable
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
