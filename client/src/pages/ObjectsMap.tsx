@@ -5,7 +5,8 @@ import Filters from "../components/all-objects/Filters";
 import { Button } from "@/components/ui/button";
 
 import {
-  useGetTouristObjectsQuery,
+  useGetTouristObjectsOfficerQuery,
+  useGetTouristObjectsVisitorQuery,
   useFetchFiltersQuery,
 } from "@/store/api/TouristObjectApi";
 import { useAppSelector, useAppDispatch } from "@/store/store";
@@ -24,8 +25,15 @@ import background from "../assets/mapa.jpg"
 const ObjectsMap = () => {
   const dispatch = useAppDispatch();
   const objectParams = useAppSelector((state) => state.touristObject);
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const isOfficer = currentUser?.role === "Officer";
 
-  const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
+  // Pozovi oba hooka, React vidi redoslijed, a mi kasnije biramo koji rezultat koristiti
+  const officerQuery = useGetTouristObjectsOfficerQuery(objectParams, {skip: !isOfficer});
+  const visitorQuery = useGetTouristObjectsVisitorQuery(objectParams, {skip: isOfficer});
+
+  const { data, isLoading } = isOfficer ? officerQuery : visitorQuery;
+
   const {
     data: filters = { types: [], municipalities: [], categories: [] },
     isLoading: isFiltersLoading,
@@ -62,7 +70,7 @@ const ObjectsMap = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <PagesHero title="Mapa objekata" imageSrc={background}/>
+      <PagesHero title="Mapa objekata" imageSrc={background} />
 
       <div className="flex-1 max-w-7xl mx-auto px-4 lg:px-8 py-6 w-full">
         <div className="flex flex-col lg:flex-row gap-6">

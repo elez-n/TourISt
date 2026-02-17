@@ -51,7 +51,7 @@ const Login = () => {
         })
       );
 
-      navigate("/", { replace: true });
+      window.location.href = "/";
     } catch (err) {
       console.error("Login error:", err);
       setError("Neispravni podaci za prijavu.");

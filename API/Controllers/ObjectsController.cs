@@ -10,6 +10,7 @@ using API.RequestHelpers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Azure;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -18,67 +19,103 @@ namespace API.Controllers
   public class ObjectsController : ControllerBase
   {
     private readonly TouristDbContext _context;
+    private readonly ILogger<ObjectsController> _logger;
 
-    public ObjectsController(TouristDbContext context)
+
+    public ObjectsController(TouristDbContext context, ILogger<ObjectsController> logger)
     {
       _context = context;
+      _logger = logger;
+
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjects([FromQuery] ObjectParams objectParams)
+    [HttpGet("visitor")]
+    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForVisitor([FromQuery] ObjectParams objectParams)
     {
-      var query = _context.TouristObjects
-          .AsQueryable();
-
-      query = query
-          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories, objectParams.AdditionalServices)
-          .Search(objectParams.SearchTerm)
-          .Sort(objectParams.OrderBy)
-          .AsSplitQuery()
-          .Include(o => o.ObjectType)
-          .Include(o => o.Category)
-          .Include(o => o.Municipality)
-          .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs)
-          .Where(o => o.Status);
-
-      var dtoQuery = query.Select(o => new ObjectDto
-      {
-        Id = o.Id,
-        Name = o.Name,
-        ObjectTypeName = o.ObjectType.Name,
-        Status = o.Status,
-        Address = o.Address,
-        Coordinate1 = o.Coordinate1,
-        Coordinate2 = o.Coordinate2,
-        ContactPhone = o.ContactPhone,
-        ContactEmail = o.ContactEmail,
-        NumberOfUnits = o.NumberOfUnits,
-        NumberOfBeds = o.NumberOfBeds,
-        Description = o.Description,
-        Owner = o.Owner,
-        Featured = o.Featured,
-        CategoryName = o.Category == null ? null : o.Category.Name,
-        MunicipalityName = o.Municipality.Name,
-        AdditionalServices = o.AdditionalServices
-                  .Select(s => s.Name)
-                  .ToList(),
-        Photographs = o.Photographs
-                  .Select(p => new PhotographDto { Id = p.Id, Url = p.Url })
-                  .ToList(),
-        ReviewCount = o.ReviewCount,
-        AverageRating = o.AverageRating
-      });
-
-      var pagedList = await PagedList<ObjectDto>.ToPagedList(
-dtoQuery,
-objectParams.PageNumber,
-objectParams.PageSize
-);
-
-      Response.AddPaginationHeader(pagedList.Metadata);
-      return pagedList;
+        var pagedList = await GetObjectsCommon(objectParams, officerId: null, officerMunicipalityId: null);
+        Response.AddPaginationHeader(pagedList.Metadata);
+        return pagedList;
     }
+
+    [Authorize(Roles = "Officer")]
+    [HttpGet("officer")]
+    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForOfficer([FromQuery] ObjectParams objectParams)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var officer = await _context.Users
+            .Include(u => u.OfficerProfile)
+            .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
+
+        if (officer?.OfficerProfile == null)
+            return Forbid();
+
+        var municipalityId = officer.OfficerProfile.MunicipalityId;
+
+        var pagedList = await GetObjectsCommon(objectParams, officerId: officer.Id, officerMunicipalityId: municipalityId);
+        Response.AddPaginationHeader(pagedList.Metadata);
+        return pagedList;
+    }
+
+    private async Task<PagedList<ObjectDto>> GetObjectsCommon(
+        ObjectParams objectParams,
+        Guid? officerId,
+        int? officerMunicipalityId)
+    {
+        var query = _context.TouristObjects
+            .AsQueryable()
+            .Include(o => o.ObjectType)
+            .Include(o => o.Category)
+            .Include(o => o.Municipality)
+            .Include(o => o.AdditionalServices)
+            .Include(o => o.Photographs)
+            .Where(o => o.Status);
+
+        if (officerId.HasValue && officerMunicipalityId.HasValue)
+        {
+            query = query.Where(o => o.MunicipalityId == officerMunicipalityId.Value);
+        }
+
+        query = query
+            .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories, objectParams.AdditionalServices)
+            .Search(objectParams.SearchTerm)
+            .Sort(objectParams.OrderBy);
+
+        var dtoQuery = query.Select(o => new ObjectDto
+        {
+            Id = o.Id,
+            Name = o.Name,
+            ObjectTypeName = o.ObjectType.Name,
+            Status = o.Status,
+            Address = o.Address,
+            Coordinate1 = o.Coordinate1,
+            Coordinate2 = o.Coordinate2,
+            ContactPhone = o.ContactPhone,
+            ContactEmail = o.ContactEmail,
+            NumberOfUnits = o.NumberOfUnits,
+            NumberOfBeds = o.NumberOfBeds,
+            Description = o.Description,
+            Owner = o.Owner,
+            Featured = o.Featured,
+            CategoryName = o.Category != null ? o.Category.Name : null,
+            MunicipalityName = o.Municipality.Name,
+            AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
+            Photographs = o.Photographs.Select(p => new PhotographDto { Id = p.Id, Url = p.Url }).ToList(),
+            ReviewCount = o.ReviewCount,
+            AverageRating = o.AverageRating
+        });
+
+        var pagedList = await PagedList<ObjectDto>.ToPagedList(
+            dtoQuery,
+            objectParams.PageNumber,
+            objectParams.PageSize
+        );
+
+        return pagedList;
+    }
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ObjectDto>> GetObject(int id)

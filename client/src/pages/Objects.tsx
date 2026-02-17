@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import ObjectsPagination from "@/components/all-objects/ObjectsPagination";
 
 import {
-  useGetTouristObjectsQuery,
   useFetchFiltersQuery,
+  useGetTouristObjectsOfficerQuery,
+  useGetTouristObjectsVisitorQuery,
 } from "@/store/api/TouristObjectApi";
 import { useAppSelector, useAppDispatch } from "@/store/store";
 import {
@@ -27,8 +28,14 @@ import PagesHero from "@/sections/PagesHero";
 const Objects = () => {
   const dispatch = useAppDispatch();
   const objectParams = useAppSelector((state) => state.touristObject);
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const isOfficer = currentUser?.role === "Officer";
 
-  const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
+  const officerQuery = useGetTouristObjectsOfficerQuery(objectParams, {skip: !isOfficer });
+  const visitorQuery = useGetTouristObjectsVisitorQuery(objectParams, {skip: isOfficer});
+
+  const { data, isLoading } = isOfficer ? officerQuery : visitorQuery;
+
   const {
     data: filters = { types: [], municipalities: [], categories: [], additionalServices: [] },
     isLoading: isFiltersLoading,

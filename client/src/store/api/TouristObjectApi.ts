@@ -10,10 +10,10 @@ export const touristObjectApi = createApi({
   tagTypes: ["TouristObjects"],
 
   endpoints: (builder) => ({
-    getTouristObjects: builder.query<{ objects: TouristObjectDto[]; pagination: Pagination }, ObjectParams>({
+    getTouristObjectsVisitor: builder.query<{ objects: TouristObjectDto[]; pagination: Pagination }, ObjectParams>({
       query: (ObjectParams) => {
         return {
-          url: 'objects',
+          url: 'objects/visitor',
           params: ObjectParams
         }
       },
@@ -27,7 +27,23 @@ export const touristObjectApi = createApi({
       providesTags: ["TouristObjects"]
     }),
 
-    // GET: api/objects/{id}
+    getTouristObjectsOfficer: builder.query<{ objects: TouristObjectDto[]; pagination: Pagination }, ObjectParams>({
+      query: (ObjectParams) => {
+        return {
+          url: 'objects/officer',
+          params: ObjectParams
+        }
+      },
+      transformResponse: (objects: TouristObjectDto[], meta) => {
+        const paginationHeader = meta?.response?.headers.get("Pagination");
+        const pagination = paginationHeader
+          ? JSON.parse(paginationHeader)
+          : null;
+        return { objects, pagination };
+      },
+      providesTags: ["TouristObjects"]
+    }),
+
     getTouristObjectById: builder.query<TouristObjectDto, number>({
       query: (id) => `objects/${id}`,
     }),
@@ -38,18 +54,13 @@ export const touristObjectApi = createApi({
     fetchObjectTypes: builder.query<{ id: number; name: string }[], void>({
       query: () => "objects/object-types",
     }),
-
-    // Fetch Categories
     fetchCategories: builder.query<{ id: number; name: string }[], void>({
       query: () => "objects/categories",
     }),
-
-    // Fetch Municipalities
     fetchMunicipalities: builder.query<{ id: number; name: string }[], void>({
       query: () => "objects/municipalities",
     }),
 
-    // Fetch Additional Services
     fetchAdditionalServices: builder.query<{ id: number; name: string }[], void>({
       query: () => "objects/additional-services",
     }),
@@ -72,7 +83,7 @@ export const touristObjectApi = createApi({
       }),
     }),
 
-    deleteTouristObject: builder.mutation<void, number> ({
+    deleteTouristObject: builder.mutation<void, number>({
       query: (id) => ({
         url: `objects/delete/${id}`,
         method: "DELETE"
@@ -80,15 +91,18 @@ export const touristObjectApi = createApi({
       invalidatesTags: ["TouristObjects"]
     }),
 
-    FetchFeaturedObjects: builder.query<TouristObjectDto[], void> ({
+    FetchFeaturedObjects: builder.query<TouristObjectDto[], void>({
       query: () => 'objects/featured-objects'
     })
   }),
 
 });
 
+
+
 export const {
-  useGetTouristObjectsQuery,
+  useGetTouristObjectsVisitorQuery,
+  useGetTouristObjectsOfficerQuery,
   useGetTouristObjectByIdQuery,
   useFetchFiltersQuery,
   useCreateTouristObjectMutation,

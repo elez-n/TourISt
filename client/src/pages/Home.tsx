@@ -3,24 +3,20 @@ import Footer from "../components/Footer";
 import Hero from "../sections/Hero";
 import MapSection, { type MapMarker } from "../sections/MapSection";
 import { Box } from "@mui/material";
-import { useGetTouristObjectsQuery } from "@/store/api/TouristObjectApi";
-import { useAppSelector } from "@/store/store";
+import { useFetchFeaturedObjectsQuery } from "@/store/api/TouristObjectApi";
 import FeaturedObjects from "@/sections/FeaturedObjects";
 import LoadingSpinner from "@/components/ui/loading";
 
 const Home = () => {
-  const objectParams = useAppSelector((state) => state.touristObject);
 
-  const { data, isLoading } = useGetTouristObjectsQuery(objectParams);
+  const { data, isLoading } = useFetchFeaturedObjectsQuery();
 
   if (isLoading || !data) {
     return <LoadingSpinner />
   }
 
-  const { objects } = data;
-
   const markers: MapMarker[] =
-  objects
+  data
     ?.filter((o) => o.coordinate1 !== 0 && o.coordinate2 !== 0)
     .map((o) => ({
       id: o.id,

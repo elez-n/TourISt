@@ -22,11 +22,9 @@ namespace API.Controllers
         [HttpPost("create-officer")]
         public async Task<IActionResult> CreateOfficer(OfficerDto dto)
         {
-            // Provjera da li username već postoji
             if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
                 return BadRequest("Username already exists");
 
-            // Kreiraj korisnika
             var user = new User
             {
                 Id = Guid.NewGuid(),
@@ -50,7 +48,6 @@ namespace API.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Generiši token za setovanje lozinke
             var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             var expiry = DateTime.UtcNow.AddHours(24);
 
@@ -65,10 +62,8 @@ namespace API.Controllers
             _context.PasswordTokens.Add(passwordToken);
             await _context.SaveChangesAsync();
 
-            // Link za frontend (lokalni port 3000)
-            var link = $"https://localhost:3000/set-password?token={token}";
+            var link = $"https://localhost:3000/set-password?token={token}&username={dto.Username}";
 
-            // Pošalji stvarni email preko Gmail App Password
             await SendSetPasswordEmail(dto.Email, dto.Username, link);
 
             return Ok(new { message = "Officer created and email sent to user." });
@@ -91,7 +86,6 @@ namespace API.Controllers
             };
 
             using var client = new SmtpClient();
-            // Gmail SMTP
             await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(Environment.GetEnvironmentVariable("EMAIL"), Environment.GetEnvironmentVariable("PASS")); // <-- tvoj App Password
             await client.SendAsync(message);

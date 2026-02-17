@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch } from "@/store/store";
 import { setUser } from "@/store/slice/authSlice";
 import { setAccessToken } from "@/store/tokenStore";
@@ -6,10 +6,13 @@ import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@/store/models/JwtPayload";
 import { useRefreshTokenMutation } from "@/store/api/userApi";
 
-const UserInitializer = () => {
+interface UserInitializerProps {
+  onInitialized: () => void; 
+}
+
+const UserInitializer = ({ onInitialized }: UserInitializerProps) => {
   const dispatch = useAppDispatch();
   const [refreshToken] = useRefreshTokenMutation();
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const initUser = async () => {
@@ -18,7 +21,7 @@ const UserInitializer = () => {
         const { accessToken } = response;
 
         if (accessToken) {
-          setAccessToken(accessToken);
+          setAccessToken(accessToken); 
 
           const decoded = jwtDecode<JwtPayload>(accessToken);
 
@@ -31,18 +34,16 @@ const UserInitializer = () => {
           );
         }
       } catch (err) {
-        console.log("No session", err);
+        console.log("No session", err); 
       } finally {
-        setInitialized(true);
+        onInitialized(); 
       }
     };
 
     initUser();
-  }, [dispatch, refreshToken]);
+  }, [dispatch, refreshToken, onInitialized]);
 
-  if (!initialized) return null; 
-
-  return null;
+  return null; 
 };
 
 export default UserInitializer;

@@ -25,7 +25,7 @@ const UserCard: FC = () => {
       await logoutApi().unwrap();
       setAccessToken(null);
       dispatch(logout());
-      navigate("/", { replace: true });
+      window.location.href = "/";
     } catch (err) {
       console.error("Logout failed", err);
     }
@@ -39,7 +39,6 @@ const UserCard: FC = () => {
   return (
     <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp hover:shadow-2xl transition-shadow duration-300">
       
-      {/* HEADER */}
       <div className="bg-[#5c5c99]! p-4 flex items-center gap-3 rounded-t-xl">
         <div className="w-12 h-12 rounded-full bg-indigo-400 flex items-center justify-center text-white font-bold text-lg">
           {initials}
@@ -50,7 +49,6 @@ const UserCard: FC = () => {
         </div>
       </div>
 
-      {/* USER INFO */}
       <div className="p-4 flex flex-col gap-2">
         <div className="flex items-center gap-2 text-gray-600">
           <User className="w-5 h-5 text-indigo-500" />
@@ -78,10 +76,8 @@ const UserCard: FC = () => {
         )}
       </div>
 
-      {/* MENU ACTIONS */}
       <div className="p-4 border-t border-gray-200 flex flex-col gap-2">
 
-        {/* FAVORITES BUTTON */}
         <button
           onClick={() => navigate("/favorites")}
           className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-gray-700"
@@ -90,7 +86,6 @@ const UserCard: FC = () => {
           Omiljeni objekti
         </button>
 
-        {/* LOGOUT BUTTON */}
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
