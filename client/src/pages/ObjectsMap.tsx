@@ -5,9 +5,9 @@ import Filters from "../components/all-objects/Filters";
 import { Button } from "@/components/ui/button";
 
 import {
-  useGetTouristObjectsOfficerQuery,
-  useGetTouristObjectsVisitorQuery,
   useFetchFiltersQuery,
+  useGetObjectsForMapVisitorQuery,
+  useGetObjectsForMapOfficerQuery,
 } from "@/store/api/TouristObjectApi";
 import { useAppSelector, useAppDispatch } from "@/store/store";
 import {
@@ -28,9 +28,8 @@ const ObjectsMap = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const isOfficer = currentUser?.role === "Officer";
 
-  // Pozovi oba hooka, React vidi redoslijed, a mi kasnije biramo koji rezultat koristiti
-  const officerQuery = useGetTouristObjectsOfficerQuery(objectParams, {skip: !isOfficer});
-  const visitorQuery = useGetTouristObjectsVisitorQuery(objectParams, {skip: isOfficer});
+  const officerQuery = useGetObjectsForMapOfficerQuery(objectParams, {skip: !isOfficer});
+  const visitorQuery = useGetObjectsForMapVisitorQuery(objectParams, {skip: isOfficer});
 
   const { data, isLoading } = isOfficer ? officerQuery : visitorQuery;
 
@@ -43,16 +42,15 @@ const ObjectsMap = () => {
     return <LoadingSpinner />;
   }
 
-  const { objects } = data;
 
   const markers: MapMarker[] =
-    objects
+    data
       ?.filter((o) => o.coordinate1 !== 0 && o.coordinate2 !== 0)
       .map((o) => ({
         id: o.id,
         name: o.name,
         position: [o.coordinate1, o.coordinate2] as [number, number],
-        thumbnailUrl: o.photographs?.[0]?.url,
+        thumbnailUrl: o.thumbnailUrl,
         municipality: o.municipalityName,
         category: o.categoryName,
       })) ?? [];

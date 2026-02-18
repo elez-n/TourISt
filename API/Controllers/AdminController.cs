@@ -5,6 +5,10 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using API.Extensions;
+using API.RequestHelpers;
+using API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -113,10 +117,104 @@ namespace API.Controllers
             return Ok("Password set successfully.");
         }
 
+        [HttpPost("create-admin-temp")]
+        public async Task<IActionResult> CreateAdminTemp()
+        {
+            var username = "admin";
+            var email = "admin@test.com";
+            var password = "Admin123!";
+
+            if (await _context.Users.AnyAsync(u => u.Username == username))
+                return BadRequest("Admin already exists.");
+
+            var admin = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = username,
+                Role = "Admin",
+                IsActive = true,
+                Profile = new UserProfile
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "System",
+                    LastName = "Administrator",
+                    Email = email
+                }
+            };
+
+            var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<User>();
+            admin.PasswordHash = hasher.HashPassword(admin, password);
+
+            _context.Users.Add(admin);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Admin created successfully.",
+                username,
+                password
+            });
+        }
+
+        //[Authorize(Roles = "Admin")]
+        [HttpGet("users")]
+        public async Task<ActionResult<IEnumerable<UserListDto>>> GetUsers(
+    [FromQuery] UserParams userParams)
+        {
+            var query = _context.Users
+                .Include(u => u.Profile)
+                .AsQueryable();
+
+            query = query
+                .Filter(userParams.Role)
+                .Search(userParams.SearchTerm)
+                .Sort(userParams.OrderBy);
+
+            var dtoQuery = query.Select(u => new UserListDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                FirstName = u.Profile.FirstName,
+                LastName = u.Profile.LastName,
+                Email = u.Profile.Email,
+                Role = u.Role,
+                IsActive = u.IsActive,
+                LastLogin = u.LastLogin
+            });
+
+            var pagedList = await PagedList<UserListDto>.ToPagedList(
+                dtoQuery,
+                userParams.PageNumber,
+                userParams.PageSize
+            );
+
+            Response.AddPaginationHeader(pagedList.Metadata);
+
+            return pagedList;
+        }
+
+        [HttpPatch("toggle-active/{userId}")]
+        public async Task<IActionResult> ToggleUserActiveStatus(Guid userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            user.IsActive = !user.IsActive;
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = $"Korisnik '{user.Username}' je sada {(user.IsActive ? "aktivan" : "deaktiviran")}.",
+                isActive = user.IsActive
+            });
+        }
     }
 
     public class SetPasswordDto
     {
         public string NewPassword { get; set; } = string.Empty;
     }
+
+
 }

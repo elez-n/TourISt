@@ -10,6 +10,7 @@ import ObjectsMap from "@/pages/ObjectsMap";
 import Favorites from "@/pages/Favorites";
 import CreateOfficerForm from "@/pages/CreateOfficer";
 import SetPasswordPage from "@/pages/SetPassword";
+import Users from "@/pages/Users";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +26,9 @@ export const router = createBrowserRouter([
       { path: '/map', element: <ObjectsMap /> },
       { path: '/favorites', element: <Favorites /> },
       { path: '/create-officer', element: <CreateOfficerForm /> },
-      { path: '/set-password', element: <SetPasswordPage /> }
+      { path: '/set-password', element: <SetPasswordPage /> },
+      { path: '/users', element: <Users /> },
+
 
 
 

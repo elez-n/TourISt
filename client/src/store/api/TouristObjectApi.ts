@@ -3,6 +3,7 @@ import { customBaseQuery } from "./baseApi";
 import type { TouristObjectDto } from "../types/TouristObject";
 import type { ObjectParams } from "../models/ObjectParams";
 import type { Pagination } from "../types/Pagination";
+import type { MapObjectDto } from "../types/MapObject";
 
 export const touristObjectApi = createApi({
   reducerPath: "touristObjectApi",
@@ -93,7 +94,21 @@ export const touristObjectApi = createApi({
 
     FetchFeaturedObjects: builder.query<TouristObjectDto[], void>({
       query: () => 'objects/featured-objects'
-    })
+    }),
+
+    getObjectsForMapVisitor: builder.query<MapObjectDto[], ObjectParams>({
+      query: (ObjectParams) => ({
+        url: "objects/map/visitor",
+        params: ObjectParams,
+      }),
+    }),
+    getObjectsForMapOfficer: builder.query<MapObjectDto[], ObjectParams>({
+      query: (ObjectParams) => ({
+        url: "objects/map/officer",
+        params: ObjectParams,
+      }),
+    }),
+
   }),
 
 });
@@ -112,5 +127,7 @@ export const {
   useFetchMunicipalitiesQuery,
   useFetchAdditionalServicesQuery,
   useDeleteTouristObjectMutation,
-  useFetchFeaturedObjectsQuery
+  useFetchFeaturedObjectsQuery,
+  useGetObjectsForMapVisitorQuery,
+  useGetObjectsForMapOfficerQuery,
 } = touristObjectApi;

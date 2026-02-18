@@ -35,11 +35,17 @@ namespace API.Controllers
             if (user is null)
                 return BadRequest("Pogrešno korisničko ime ili lozinka.");
 
+            if (!user.IsActive)
+                return BadRequest("Nalog je deaktiviran. Kontaktirajte administratora.");
+
             var passwordCheck = new PasswordHasher<User>()
                 .VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
             if (passwordCheck == PasswordVerificationResult.Failed)
                 return BadRequest("Pogrešno korisničko ime ili lozinka.");
+
+            user.LastLogin = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
 
             var accessToken = CreateToken(user);
             var refreshToken = await GenerateAndSaveRefreshTokenAsync(user);
@@ -51,6 +57,8 @@ namespace API.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddDays(7)
             });
+
+
 
             return Ok(new TokenResponseDto
             {
@@ -179,7 +187,7 @@ namespace API.Controllers
             {
                 Id = Guid.NewGuid(),
                 Username = request.Username,
-                Role = "Visitor" 
+                Role = "Visitor"
             };
 
             user.PasswordHash = new PasswordHasher<User>().HashPassword(user, request.Password);

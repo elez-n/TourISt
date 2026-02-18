@@ -18,5 +18,9 @@ export interface UserInfoDto {
   email: string;
   position?: string | null;
   municipalityName?: string | null;
+  isActive: boolean;
+  lastLogin?: string;
 }
+
+
 
