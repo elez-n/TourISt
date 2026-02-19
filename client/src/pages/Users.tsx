@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PagesHero from "../sections/PagesHero";
@@ -6,16 +7,46 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/loading";
 import { useAppSelector, useAppDispatch } from "@/store/store";
-import { setPageNumber, setSearchTerm, setRole, setOrderBy, resetParams } from "@/store/slice/userSlice";
-import { useGetUsersQuery, useToggleUserActiveStatusMutation } from "@/store/api/adminApi";
-import { LucideSearch, LucideUserX, LucideUserCheck } from "lucide-react";
+import {
+  setPageNumber,
+  setSearchTerm,
+  setRole,
+  setOrderBy,
+  resetParams,
+} from "@/store/slice/userSlice";
+import {
+  useGetUsersQuery,
+  useToggleUserActiveStatusMutation,
+  useGetUserDetailsQuery, 
+} from "@/store/api/adminApi";
+import { LucideSearch, LucideUserX, LucideUserCheck, LucideEdit } from "lucide-react";
 import ObjectsPagination from "@/components/all-objects/ObjectsPagination";
+import type { UserInfoDto } from "@/store/types/User";
+import { EditUserModal } from "@/components/users/EditUserForm";
 
 const Users = () => {
   const dispatch = useAppDispatch();
   const userParams = useAppSelector((state) => state.user);
   const { data, isLoading, error, refetch } = useGetUsersQuery(userParams);
   const [toggleUserStatus] = useToggleUserActiveStatusMutation();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
+  const { data: userDetails } = useGetUserDetailsQuery(selectedUserId!, {
+    skip: !selectedUserId,
+  });
+
+  const handleOpenModal = (user: UserInfoDto) => {
+    setSelectedUserId(user.id); 
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedUserId(null); 
+    setIsModalOpen(false);
+    refetch();
+  };
 
   const handleSearchChange = (value: string) => {
     dispatch(setSearchTerm(value));
@@ -50,7 +81,12 @@ const Users = () => {
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <p className="text-red-500 text-center py-6">Greška prilikom učitavanja korisnika.</p>;
+  if (error)
+    return (
+      <p className="text-red-500 text-center py-6">
+        Greška prilikom učitavanja korisnika.
+      </p>
+    );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -92,7 +128,9 @@ const Users = () => {
             <option value="lastnamedesc">Prezime Z → A</option>
           </select>
 
-          <Button variant="outline" onClick={handleResetFilters}>Resetuj filtere</Button>
+          <Button variant="outline" onClick={handleResetFilters}>
+            Resetuj filtere
+          </Button>
         </div>
 
         <div className="overflow-x-auto rounded-lg shadow-md bg-white">
@@ -111,7 +149,12 @@ const Users = () => {
             </thead>
             <tbody>
               {data?.users.map((user, idx) => (
-                <tr key={user.id} className={`hover:bg-gray-50 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
+                <tr
+                  key={user.id}
+                  className={`hover:bg-gray-50 ${
+                    idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  }`}
+                >
                   <td className="p-3 border-b">{user.username}</td>
                   <td className="p-3 border-b">{user.firstName}</td>
                   <td className="p-3 border-b">{user.lastName}</td>
@@ -121,24 +164,43 @@ const Users = () => {
                   <td className="p-3 border-b">
                     {user.lastLogin
                       ? new Date(user.lastLogin).toLocaleString("sr-RS", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit"
-                      })
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })
                       : "-"}
                   </td>
-                  <td className="p-3 border-b">
+                  <td className="p-3 border-b flex gap-2">
                     <Button
                       size="sm"
-                      className={`flex items-center gap-1 ${user.isActive ? "bg-red-300! hover:bg-red-400! text-white" : "bg-green-300! hover:bg-green-400! text-white"
-                        }`}
-                      onClick={() => handleToggleStatus(user.id, user.username, user.isActive)}
+                      className={`flex items-center gap-1 ${
+                        user.isActive
+                          ? "bg-red-300! hover:bg-red-400! text-white"
+                          : "bg-green-300! hover:bg-green-400! text-white"
+                      }`}
+                      onClick={() =>
+                        handleToggleStatus(user.id, user.username, user.isActive)
+                      }
                     >
-                      {user.isActive ? <LucideUserX className="w-4 h-4" /> : <LucideUserCheck className="w-4 h-4" />}
+                      {user.isActive ? (
+                        <LucideUserX className="w-4 h-4" />
+                      ) : (
+                        <LucideUserCheck className="w-4 h-4" />
+                      )}
                       {user.isActive ? "Deaktiviraj" : "Aktiviraj"}
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex items-center gap-1"
+                      onClick={() => handleOpenModal(user)}
+                    >
+                      <LucideEdit className="w-4 h-4" />
+                      Edit
                     </Button>
                   </td>
                 </tr>
@@ -159,6 +221,12 @@ const Users = () => {
       </div>
 
       <Footer />
+
+      <EditUserModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        user={userDetails ?? null} 
+      />
     </div>
   );
 };

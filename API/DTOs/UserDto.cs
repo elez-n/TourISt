@@ -21,9 +21,9 @@ public class UserInfoDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-
-    public string? EmployeeNumber { get; set; }
     public string? Position { get; set; }
     public string? MunicipalityName { get; set; }
+    public int? MunicipalityId { get; set; }
+
 }
 

@@ -209,6 +209,64 @@ namespace API.Controllers
                 isActive = user.IsActive
             });
         }
+
+        [HttpGet("users/{id}")]
+        public async Task<ActionResult<UserInfoDto>> GetUserDetails(Guid id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Profile)
+                .Include(u => u.OfficerProfile)
+                .ThenInclude(o => o!.Municipality) 
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            var dto = new UserInfoDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Role = user.Role,
+                FirstName = user.Profile.FirstName,
+                LastName = user.Profile.LastName,
+                Email = user.Profile.Email,
+                Position = user.OfficerProfile?.Position,
+                MunicipalityName = user.OfficerProfile?.Municipality?.Name,
+                MunicipalityId = user.OfficerProfile?.MunicipalityId,
+            };
+
+            return Ok(dto);
+        }
+
+        [HttpPut("users/{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, AdminUpdateUserDto dto)
+        {
+            var user = await _context.Users
+                .Include(u => u.Profile)
+                .Include(u => u.OfficerProfile)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            user.Username = dto.Username;
+            user.Profile.FirstName = dto.FirstName;
+            user.Profile.LastName = dto.LastName;
+            user.Profile.Email = dto.Email;
+
+            if (user.Role == "Officer" && user.OfficerProfile != null)
+            {
+                if (dto.Position != null)
+                    user.OfficerProfile.Position = dto.Position;
+
+                if (dto.MunicipalityId.HasValue)
+                    user.OfficerProfile.MunicipalityId = dto.MunicipalityId.Value;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 
     public class SetPasswordDto

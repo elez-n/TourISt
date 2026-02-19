@@ -11,3 +11,13 @@ public class UserListDto
     public bool IsActive { get; set; }
     public DateTime? LastLogin { get; set; }
 }
+
+public class AdminUpdateUserDto
+{
+    public string Username { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? Position { get; set; }
+    public int? MunicipalityId { get; set; }
+}

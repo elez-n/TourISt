@@ -18,9 +18,22 @@ export interface UserInfoDto {
   email: string;
   position?: string | null;
   municipalityName?: string | null;
+  municipalityId?: number,
   isActive: boolean;
   lastLogin?: string;
 }
+
+export interface UpdateUserDto {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  position?: string | null;
+  municipalityId?: number | null;
+}
+
+
 
 
 

@@ -5,8 +5,8 @@ import type { TokenResponseDto, UserInfoDto } from "../types/User";
 interface LoginCredentials {
   username: string;
   password: string;
-  firstName?: string; // samo za register
-  lastName?: string;  // samo za register
+  firstName?: string; 
+  lastName?: string;  
   email?: string;
 }
 
@@ -52,13 +52,13 @@ export const userApi = createApi({
     }),
 
     getCurrentUser: builder.query<UserInfoDto, void>({
-      query: (body) => ({
+      query: () => ({
         url: "auth/me",
-        body
-      }), 
+      }),
       providesTags: ["User"],
-    
+
     }),
+
   }),
 });
 
@@ -67,5 +67,5 @@ export const {
   useRefreshTokenMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
-  useRegisterMutation
+  useRegisterMutation,
 } = userApi;

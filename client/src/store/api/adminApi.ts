@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
 import type { CreateOfficerResponse, Officer, SetPasswordDto } from "../types/Officer";
-import type { UserInfoDto } from "../types/User";
+import type { UpdateUserDto, UserInfoDto } from "../types/User";
 import type { Pagination } from "../types/Pagination";
 import type { UserParams } from "../models/UserParams";
 
@@ -41,6 +41,24 @@ export const adminApi = createApi({
       },
     }),
 
+    getUserDetails: builder.query<UserInfoDto, string>({
+      query: (id) => `admin/users/${id}`,
+      providesTags: (_result, _error, id) => [{ type: "Users", id }],
+    }),
+
+    updateUser: builder.mutation<void, { id: string; data: UpdateUserDto }>({
+      query: ({ id, data }) => ({
+        url: `admin/users/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Users", id },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
+
+
     toggleUserActiveStatus: builder.mutation<{ message: string; isActive: boolean }, string>({
       query: (userId) => ({
         url: `admin/toggle-active/${userId}`,
@@ -56,4 +74,6 @@ export const {
   useSetPasswordMutation,
   useGetUsersQuery,
   useToggleUserActiveStatusMutation,
+  useGetUserDetailsQuery,
+  useUpdateUserMutation
 } = adminApi;
