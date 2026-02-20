@@ -141,7 +141,7 @@ namespace API.Controllers
                 issuer: _configuration["AppSettings:Issuer"],
                 audience: _configuration["AppSettings:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddSeconds(15),
+                expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: creds
             );
 
