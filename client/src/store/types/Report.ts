@@ -2,7 +2,8 @@ export interface ReportDto {
   objectTypeIds?: number[];   
   categoryIds?: number[];      
   municipalityIds?: number[];  
-  status?: boolean;            
+  status?: boolean;  
+  sort?: string;          
 }
 
 export interface ReportResultDto {

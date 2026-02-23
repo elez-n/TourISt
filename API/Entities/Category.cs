@@ -4,6 +4,7 @@ namespace API.Entities
     {
         public int Id { get; set; }                 
         public string Name { get; set; } = null!;  
+        public int Stars {get;set;}
         public int MinPoints { get; set; }          
         public int MaxPoints { get; set; }     
         public ICollection<TouristObject>? TouristObjects { get; set; }

@@ -12,6 +12,7 @@ import CreateOfficerForm from "@/pages/CreateOfficer";
 import SetPasswordPage from "@/pages/SetPassword";
 import Users from "@/pages/Users";
 import Reports from "@/pages/Reports";
+import Statistics from "@/pages/Statistics";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,8 @@ export const router = createBrowserRouter([
       { path: '/set-password', element: <SetPasswordPage /> },
       { path: '/users', element: <Users /> },
       { path: '/reports', element: <Reports /> },
+      { path: '/stats', element: <Statistics /> },
+
 
 
 

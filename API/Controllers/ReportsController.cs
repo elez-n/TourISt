@@ -165,7 +165,7 @@ public class ReportsController : ControllerBase
         ws.Cell(row++, 1).Value = $"Kategorije: {(categoryNames.Any() ? string.Join(", ", categoryNames) : "Sve")}";
         ws.Cell(row++, 1).Value = $"Opštine: {(municipalityNames.Any() ? string.Join(", ", municipalityNames) : "Sve")}";
 
-        row++; 
+        row++;
 
         ws.Cell(row, 1).Value = "Naziv";
         ws.Cell(row, 2).Value = "Tip";
@@ -263,6 +263,37 @@ public class ReportsController : ControllerBase
 
         if (request.CategoryIds?.Any() == true)
             query = query.Where(o => o.CategoryId.HasValue && request.CategoryIds.Contains(o.CategoryId.Value));
+
+        if (!string.IsNullOrWhiteSpace(request.Sort))
+        {
+            switch (request.Sort.ToLower())
+            {
+                case "stars":
+                    query = query
+                        .OrderByDescending(o => o.Category != null) // prvo oni sa kategorijom
+                        .ThenBy(o => o.Category!.Stars);
+                    break;
+
+                case "starsdesc":
+                    query = query
+                        .OrderByDescending(o => o.Category != null)
+                        .ThenByDescending(o => o.Category!.Stars);
+                    break;
+
+                case "namedesc":
+                    query = query.OrderByDescending(o => o.Name);
+                    break;
+
+                case "name":
+                default:
+                    query = query.OrderBy(o => o.Name);
+                    break;
+            }
+        }
+        else
+        {
+            query = query.OrderBy(o => o.Name);
+        }
 
         return query;
     }
