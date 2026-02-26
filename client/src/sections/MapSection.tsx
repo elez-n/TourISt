@@ -43,7 +43,7 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
   const center: LatLngTuple =
     selectedId && markers.find((m) => m.id === selectedId)
       ? markers.find((m) => m.id === selectedId)!.position
-      : [43.85, 18.39];
+      : [43.7, 18.5];
 
   return (
     <div className="max-w-7xl mx-auto w-full flex flex-col px-4 lg:px-0">
@@ -54,7 +54,7 @@ const MapSection = ({ markers, selectedId, title }: MapSectionProps) => {
       )}
 
       <div className="w-full h-112.5 lg:h-137.5 rounded-xl overflow-hidden border shadow-sm">
-        <MapContainer center={center} zoom={13} className="w-full h-full">
+        <MapContainer center={center} zoom={10} className="w-full h-full">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; OpenStreetMap"

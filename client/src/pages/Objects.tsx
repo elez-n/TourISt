@@ -24,6 +24,7 @@ import {
 import LoadingSpinner from "@/components/ui/loading";
 import background1 from "../assets/background1.jpg";
 import PagesHero from "@/sections/PagesHero";
+import { useNavigate } from "react-router-dom";
 
 const Objects = () => {
   const dispatch = useAppDispatch();
@@ -31,8 +32,9 @@ const Objects = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const isOfficer = currentUser?.role === "Officer";
 
-  const officerQuery = useGetTouristObjectsOfficerQuery(objectParams, {skip: !isOfficer });
-  const visitorQuery = useGetTouristObjectsVisitorQuery(objectParams, {skip: isOfficer});
+  const officerQuery = useGetTouristObjectsOfficerQuery(objectParams, { skip: !isOfficer });
+  const visitorQuery = useGetTouristObjectsVisitorQuery(objectParams, { skip: isOfficer });
+  const navigate = useNavigate();
 
   const { data, isLoading } = isOfficer ? officerQuery : visitorQuery;
 
@@ -69,6 +71,7 @@ const Objects = () => {
     dispatch(setPageNumber(1));
   };
 
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -85,12 +88,13 @@ const Objects = () => {
               className="flex-1 p-2 border rounded shadow-sm"
             />
 
-            <Button
+            {(currentUser?.role === "Officer" || currentUser?.role === "Admin") && (<Button
               style={{ backgroundColor: "#5C5C99", color: "white" }}
-              onClick={() => { window.location.href = "/add-object"; }}
+              onClick={() => navigate("/add-object")}
             >
               Dodaj novi objekat
             </Button>
+            )}
           </div>
 
           <AllObjects objects={objects} />
@@ -106,39 +110,47 @@ const Objects = () => {
           )}
         </div>
 
-        <div className="w-full lg:w-64 space-y-4">
-          <Filters
-            title="Tip objekta"
-            typesList={filters.types}
-            selected={objectParams.objectTypes ? objectParams.objectTypes.split(",") : []}
-            onChange={(v) => { dispatch(setType(v.join(","))); dispatch(setPageNumber(1)); }}
-          />
-          <Filters
-            title="Opština"
-            typesList={filters.municipalities}
-            selected={objectParams.municipalities ? objectParams.municipalities.split(",") : []}
-            onChange={(v) => { dispatch(setMunicipality(v.join(","))); dispatch(setPageNumber(1)); }}
-          />
-          <Filters
-            title="Kategorija"
-            typesList={filters.categories}
-            selected={objectParams.categories ? objectParams.categories.split(",") : []}
-            onChange={(v) => { dispatch(setCategory(v.join(","))); dispatch(setPageNumber(1)); }}
-          />
-          <Filters
-            title="Dodatne usluge"
-            typesList={filters.additionalServices}
-            selected={objectParams.additionalServices ? objectParams.additionalServices.split(",") : []}
-            onChange={(v) => { dispatch(setAdditionalServices(v.join(","))); dispatch(setPageNumber(1)); }}
-          />
+        <div className="w-full lg:w-80">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-6">
+              Filteri
+            </h3>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleResetFilters}
-          >
-            Resetuj filtere
-          </Button>
+            <div className="space-y-6">
+              <Filters
+                title="Tip objekta"
+                typesList={filters.types}
+                selected={objectParams.objectTypes ? objectParams.objectTypes.split(",") : []}
+                onChange={(v) => { dispatch(setType(v.join(","))); dispatch(setPageNumber(1)); }}
+              />
+              <Filters
+                title="Opština"
+                typesList={filters.municipalities}
+                selected={objectParams.municipalities ? objectParams.municipalities.split(",") : []}
+                onChange={(v) => { dispatch(setMunicipality(v.join(","))); dispatch(setPageNumber(1)); }}
+              />
+              <Filters
+                title="Kategorija"
+                typesList={filters.categories}
+                selected={objectParams.categories ? objectParams.categories.split(",") : []}
+                onChange={(v) => { dispatch(setCategory(v.join(","))); dispatch(setPageNumber(1)); }}
+              />
+              <Filters
+                title="Dodatne usluge"
+                typesList={filters.additionalServices}
+                selected={objectParams.additionalServices ? objectParams.additionalServices.split(",") : []}
+                onChange={(v) => { dispatch(setAdditionalServices(v.join(","))); dispatch(setPageNumber(1)); }}
+              />
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResetFilters}
+              >
+                Resetuj filtere
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 

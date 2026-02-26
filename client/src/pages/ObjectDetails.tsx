@@ -21,12 +21,13 @@ import LoadingSpinner from "@/components/ui/loading";
 import { Modal } from "@/components/object-details/Modal";
 
 import { useGetFavoritesQuery, useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/store/api/favoritesApi";
-import { useAppSelector } from "@/store/store"; // Dodaj auth state
+import { useAppSelector } from "@/store/store";
+import CategorizationSection from "@/components/object-details/CategorizationSection";
 
 const ObjectDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAppSelector(state => state.auth.user); // Provjera da li je korisnik logovan
+  const user = useAppSelector(state => state.auth.user);
 
   const { data: object, isLoading, isError, refetch } = useGetTouristObjectByIdQuery(Number(id));
   const [deleteObject, { isLoading: isDeleting }] = useDeleteTouristObjectMutation();
@@ -85,50 +86,52 @@ const ObjectDetailsPage = () => {
     <>
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 space-y-16 py-10 mt-30">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <ObjectHeader object={object} />
-            
+      <main className="max-w-7xl mx-auto px-4 space-y-12 py-10 mt-20">
+        {/* Header i akcije */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
+          <ObjectHeader object={object} />
+          <div className="flex items-center gap-2 flex-wrap">
             {user && (
               <button
                 onClick={toggleFavorite}
-                className={`p-1 rounded-full transition ${isFavorite ? "text-red-500" : "text-gray-400"} `}
+                className={`p-2 rounded-full transition ${isFavorite ? "text-red-500 bg-gray-100" : "text-gray-400 hover:text-red-500"
+                  }`}
                 title={isFavorite ? "Ukloni iz omiljenih" : "Dodaj u omiljene"}
               >
                 <Heart size={28} />
               </button>
             )}
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setEditMode(true)}
-              className="bg-[#5c5c99]! text-white px-3 py-1 rounded hover:bg-[#272757]! transition flex items-center gap-1"
-            >
-              <Edit2 size={18} />
-              <span className="text-sm">Edituj objekat</span>
-            </button>
+            {(user?.role === "Admin" || user?.role === "Officer") && (
+              <>
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="bg-[#5c5c99]! text-white px-4 py-2 rounded-lg hover:bg-[#272757]! transition flex items-center gap-2 text-sm"
+                >
+                  <Edit2 size={18} /> Uredi objekat
+                </button>
 
-            <button
-              onClick={() => handleDelete(object.id)}
-              disabled={isDeleting}
-              className="text-red-600 hover:text-red-700 transition flex items-center gap-1"
-              title="Obriši objekat"
-            >
-              <Trash2 size={22} />
-              <span className="text-sm">Obriši objekat</span>
-            </button>
+                <button
+                  onClick={() => setShowEvaluationForm(true)}
+                  className="bg-[#5c5c99]! text-white px-4 py-2 rounded-lg hover:bg-[#272757]! transition flex items-center gap-2 text-sm"
+                >
+                  <Edit2 size={18} /> Postavi kategoriju
+                </button>
 
-            <button
-              onClick={() => setShowEvaluationForm(true)}
-              className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition flex items-center gap-1"
-            >
-              <span className="text-sm">Dodaj evaluaciju</span>
-            </button>
+                <button
+                  onClick={() => handleDelete(object.id)}
+                  disabled={isDeleting}
+                  className="text-red-600 hover:text-red-700 transition flex items-center gap-2 text-sm"
+                  title="Obriši objekat"
+                >
+                  <Trash2 size={20} /> Obriši objekat
+                </button>
+              </>
+            )}
           </div>
         </div>
 
+        {/* Forma za edit */}
         {editMode ? (
           <TouristObjectForm
             initialData={object}
@@ -137,31 +140,53 @@ const ObjectDetailsPage = () => {
           />
         ) : (
           <>
-            <GallerySection photographs={object.photographs} />
-            <MainInfoSection object={object} />
-            <AmenitiesSection additionalServices={object.additionalServices} />
-            <OwnerSection
-              owner={object.owner}
-              contactPhone={object.contactPhone}
-              email={object.contactEmail}
-            />
-            <MapSection
-              title="Lokacija objekta"
-              markers={markers}
-              selectedId={object.id}
-            />
-            <ReviewsSection
-              objectId={object.id}
-              averageRating={object.averageRating}
-              reviewCount={object.reviewCount}
-              refetchObject={refetch}
-            />
+            {/* Galerija */}
+            <section className="rounded-2xl overflow-hidden shadow-lg">
+              <GallerySection photographs={object.photographs} />
+            </section>
+
+            {/* Glavne informacije + dodatne usluge */}
+            <section className="bg-white rounded-2xl shadow p-6 space-y-6">
+              <MainInfoSection object={object} />
+              <AmenitiesSection additionalServices={object.additionalServices} />
+            </section>
+
+            <CategorizationSection objectId={object.id} />
+
+            {/* Vlasnik objekta */}
+            <section className="bg-white rounded-2xl shadow p-6">
+              <OwnerSection
+                owner={object.owner}
+                contactPhone={object.contactPhone}
+                email={object.contactEmail}
+              />
+            </section>
+
+            {/* Mapa */}
+            <section className="rounded-2xl overflow-hidden shadow-lg">
+              <MapSection
+                title="Lokacija objekta"
+                markers={markers}
+                selectedId={object.id}
+              />
+            </section>
+
+            {/* Recenzije */}
+            <section className="bg-white rounded-2xl shadow p-6">
+              <ReviewsSection
+                objectId={object.id}
+                averageRating={object.averageRating}
+                reviewCount={object.reviewCount}
+                refetchObject={refetch}
+              />
+            </section>
           </>
         )}
-      </div>
+      </main>
 
+      {/* Modal za kategorizaciju */}
       <Modal isOpen={showEvaluationForm} onClose={() => setShowEvaluationForm(false)}>
-        <h2 className="text-lg font-semibold mb-4">Evaluacija objekta</h2>
+        <h2 className="text-lg font-semibold mb-4">Kategorizacija objekta</h2>
         <EvaluationForm
           touristObjectId={object.id}
           onSuccess={() => {

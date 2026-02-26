@@ -1,46 +1,110 @@
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAppDispatch } from "@/store/store";
-import { setPageNumber } from "@/store/slice/objectSlice";
+import { useState } from "react";
+import { ChevronDown, X } from "lucide-react";
 
-type Props = {
-  title: string;           
-  selected: string[];      
-  onChange: (types: string[]) => void; 
-  typesList: string[];     
-};
+interface FiltersProps {
+  title: string;
+  typesList: string[];
+  selected: string[];
+  onChange: (values: string[]) => void;
+}
 
-const Filters: React.FC<Props> = ({ title, selected, onChange, typesList }) => {
-  const dispatch = useAppDispatch();
+const Filters = ({ title, typesList, selected, onChange }: FiltersProps) => {
+  const [open, setOpen] = useState(true);
 
-  const toggleType = (type: string) => {
-    const newSelected = selected.includes(type)
-      ? selected.filter((t) => t !== type)
-      : [...selected, type];
-    onChange(newSelected);
-    dispatch(setPageNumber(1));
+  const toggleValue = (value: string) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter((v) => v !== value));
+    } else {
+      onChange([...selected, value]);
+    }
   };
 
-  if (!typesList || typesList.length === 0) return <div>Učitavanje filtera...</div>;
+  const clearSection = () => {
+    onChange([]);
+  };
 
   return (
-    <div className="bg-white shadow rounded p-4 space-y-4">
-      <h3 className="text-sm font-medium text-gray-700">{title}</h3>
-      <ScrollArea className="h-40">
-        <div className="flex flex-col gap-2">
-          {typesList.map((type) => (
-            <Button
-              key={type}
-              size="sm"
-              variant={selected.includes(type) ? "default" : "outline"}
-              className="text-left"
-              onClick={() => toggleType(type)}
-            >
-              {type}
-            </Button>
-          ))}
+    <div className="border-b border-gray-100 pb-4">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center group"
+      >
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-800 group-hover:text-[#5C5C99] transition">
+            {title}
+          </span>
+
+          {selected.length > 0 && (
+            <span className="bg-[#5C5C99] text-white text-xs px-2 py-0.5 rounded-full">
+              {selected.length}
+            </span>
+          )}
         </div>
-      </ScrollArea>
+
+        <ChevronDown
+          className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="space-y-2 max-h-52 overflow-y-auto pr-1 custom-scroll">
+          {typesList.map((type) => {
+            const isChecked = selected.includes(type);
+
+            return (
+              <label
+                key={type}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleValue(type)}
+                    className="peer sr-only"
+                  />
+
+                  <div
+                    className={`
+                      w-5 h-5 rounded-md border-2 flex items-center justify-center
+                      transition-all duration-200
+                      ${
+                        isChecked
+                          ? "bg-[#5C5C99] border-[#5C5C99]"
+                          : "border-gray-300 group-hover:border-[#5C5C99]"
+                      }
+                    `}
+                  >
+                    {isChecked && (
+                      <div className="w-2.5 h-2.5 bg-white rounded-sm animate-scaleIn" />
+                    )}
+                  </div>
+                </div>
+
+                <span className="text-sm text-gray-600 group-hover:text-gray-900 transition">
+                  {type}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+
+        {selected.length > 0 && (
+          <button
+            onClick={clearSection}
+            className="flex items-center gap-1 text-xs text-red-500 mt-2 hover:underline"
+          >
+            <X size={14} />
+            Očisti sekciju
+          </button>
+        )}
+      </div>
     </div>
   );
 };

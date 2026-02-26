@@ -87,7 +87,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
         ))}
 
         {visibleCount < reviews.length && (
-          <Button onClick={() => setVisibleCount((prev) => prev + 1)} className="w-full">
+          <Button onClick={() => setVisibleCount((prev) => prev + 1)} className="w-full bg-[#272757]!">
             Učitaj još
           </Button>
         )}

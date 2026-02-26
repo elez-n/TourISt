@@ -17,9 +17,8 @@ interface AllObjectsProps {
 
 const AllObjects: React.FC<AllObjectsProps> = ({ objects = [] }) => {
   const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth.user); // provjera logovanog korisnika
+  const user = useAppSelector((state) => state.auth.user);
 
-  // RTK Query hook za omiljene (samo ako je korisnik logovan)
   const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
     skip: !user,
   });

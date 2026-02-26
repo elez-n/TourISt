@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import grad1 from "../assets/grad1.jpg";
 import grad2 from "../assets/grad2.jpg";
 import grad3 from "../assets/grad3.jpg";
+import { useNavigate } from "react-router-dom";
 
 const images = [grad1, grad2, grad3];
 
@@ -34,6 +35,7 @@ const HeroImageSlider = () => {
 };
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="w-full py-16 md:py-24 bg-gray-100 mt-10">
       <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
@@ -45,7 +47,8 @@ const Hero = () => {
             Centralna evidencija i promocija hotela, apartmana i drugih
             smještajnih kapaciteta.
           </p>
-          <Button className="bg-[#5C5C99]! hover:bg-[#272757]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400">
+          <Button className="bg-[#5C5C99]! hover:bg-[#272757]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400"
+          onClick={() => navigate("/objects")}>
             Pogledaj objekte
           </Button>
         </div>
