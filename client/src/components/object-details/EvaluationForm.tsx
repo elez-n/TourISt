@@ -10,7 +10,7 @@ type EvaluationFormValues = {
     scores: { criteriaId: number; points: number }[];
 };
 
-const createEvaluationSchema = (criteria: { id: number; name: string; maxPoints: number }[]) =>
+const createEvaluationSchema = (criteria: { id: number; name: string; maxPoints: number; description: string}[]) =>
     z.object({
         scores: z
             .array(
@@ -43,7 +43,7 @@ interface Props {
 }
 
 export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) => {
-    const { data: criteria, isLoading } = useGetAllCriteriaQuery();
+    const { data: criteria } = useGetAllCriteriaQuery();
     const [createEvaluation, { isLoading: isSubmitting }] = useCreateEvaluationMutation();
     const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
 
@@ -72,32 +72,23 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
 
     const onSubmit: SubmitHandler<EvaluationFormValues> = async (values) => {
         if (!currentUserId) return alert("Korisnik nije prijavljen");
-        console.log("Payload za slanje:", {
-            touristObjectId,
-            userId: currentUserId,
-            scores: values.scores,
-        });
-
-
+    
         try {
             await createEvaluation({
                 touristObjectId,
                 userId: currentUserId,
                 scores: values.scores,
             }).unwrap();
-
-            alert("Evaluacija kreirana!");
             onSuccess?.();
         } catch (err: unknown) {
             if (err && typeof err === "object" && "data" in err) {
-                alert(err || "Greška prilikom kreiranja evaluacije");
+                alert(err || "Greška prilikom kategorizacije.");
             } else {
-                alert("Greška prilikom kreiranja evaluacije");
+                alert("Greška prilikom kategorizacije.");
             }
         }
     };
 
-    if (isLoading) return <p>Učitavanje kriterija...</p>;
     if (!criteria || criteria.length === 0) return <p>Nema definisanih kriterija.</p>;
 
     return (
@@ -105,11 +96,8 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
         <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200">
 
             <div className="px-6 py-5 border-b border-gray-100">
-                <h2 className="text-xl font-semibold text-gray-800">
-                    Kreiranje evaluacije
-                </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                    Unesite bodove za svaki kriterij
+                    Unesite bodove za svaki kriterijum.
                 </p>
             </div>
 
@@ -119,7 +107,8 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
                     <table className="w-full text-sm border-collapse">
                         <thead className="bg-gray-100 text-gray-700 text-xs uppercase">
                             <tr>
-                                <th className="px-4 py-3 text-left">Kriterij</th>
+                                <th className="px-4 py-3 text-left">Kriterijum</th>
+                                <th className="px-4 py-3 text-left">Opis</th>
                                 <th className="px-4 py-3 text-left">Maks. bodova</th>
                                 <th className="px-4 py-3 text-left">Vaš unos</th>
                             </tr>
@@ -130,6 +119,9 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
                                 <tr key={c.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-4 font-medium text-gray-800">
                                         {c.name}
+                                    </td>
+                                    <td className="px-4 py-4 font-medium text-gray-800">
+                                        {c.description}
                                     </td>
 
                                     <td className="px-4 py-4 text-gray-600">
@@ -184,8 +176,8 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="px-6 py-2 rounded-md bg-blue-600 text-white
-                                   hover:bg-blue-700 disabled:bg-blue-400
+                        className="px-6 py-2 rounded-md bg-[#5c5c99]! text-white
+                                   hover:bg-[#272757]!
                                    transition"
                     >
                         {isSubmitting ? "Šaljem..." : "Sačuvaj evaluaciju"}

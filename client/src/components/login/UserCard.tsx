@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { logout, selectCurrentUser } from "@/store/slice/authSlice";
 import { useAppDispatch } from "@/store/store";
 import { setAccessToken } from "@/store/tokenStore";
-import { User, Mail, Info, LogOut, Heart } from "lucide-react";
+import { User, Mail, Info, LogOut, Heart, BarChart3, FileText, Users } from "lucide-react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -35,52 +35,90 @@ const UserCard: FC = () => {
   if (!user) return <p className="p-4 text-gray-600">User not found.</p>;
 
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
+  const isAdmin = user.role === "Admin";
+  const isSluzbenik = user.role === "Officer";
 
   return (
-    <div className="w-72 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 animate-fadeInUp hover:shadow-2xl transition-shadow duration-300">
-      
-      <div className="bg-[#5c5c99]! p-4 flex items-center gap-3 rounded-t-xl">
-        <div className="w-12 h-12 rounded-full bg-indigo-400 flex items-center justify-center text-white font-bold text-lg">
+    <div className="w-80 bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100 animate-fadeInUp transition-all duration-300">
+
+      <div className="bg-linear-to-r from-indigo-600 to-purple-600 p-5 flex items-center gap-4">
+        <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white font-bold text-xl">
           {initials}
         </div>
         <div>
-          <p className="text-white font-bold text-lg">{user.username ?? "Unknown"}</p>
-          <p className="text-indigo-200 text-sm">{user.role ?? "No role"}</p>
+          <p className="text-white font-semibold text-lg">
+            {user.username ?? "Unknown"}
+          </p>
+          <p className="text-indigo-100 text-sm">
+            {user.role ?? "No role"}
+          </p>
         </div>
       </div>
 
-      <div className="p-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-gray-600">
+      <div className="p-5 flex flex-col gap-3 text-sm">
+        <div className="flex items-center gap-3 text-gray-600">
           <User className="w-5 h-5 text-indigo-500" />
           <span>{`${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "N/A"}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
+
+        <div className="flex items-center gap-3 text-gray-600">
           <Mail className="w-5 h-5 text-indigo-500" />
           <span>{user.email ?? "N/A"}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Info className="w-5 h-5 text-indigo-500" />
-          <span>Role: {user.role ?? "N/A"}</span>
-        </div>
-        {user.position && (
-          <div className="flex items-center gap-2 text-gray-600">
-            <Info className="w-5 h-5 text-indigo-500" />
-            <span>Position: {user.position}</span>
-          </div>
-        )}
+
         {user.municipalityName && (
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-3 text-gray-600">
             <Info className="w-5 h-5 text-indigo-500" />
-            <span>Municipality: {user.municipalityName}</span>
+            <span>{user.municipalityName}</span>
           </div>
         )}
       </div>
 
-      <div className="p-4 border-t border-gray-200 flex flex-col gap-2">
+      {(isAdmin || isSluzbenik) && (
+        <div className="px-5 pb-4">
+          <div className="border-t border-gray-200 pt-4">
+            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+              Administracija
+            </p>
+
+            <div className="flex flex-col gap-1">
+
+              <button
+                onClick={() => navigate("/stats")}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-indigo-50 transition text-gray-700"
+              >
+                <BarChart3 className="w-5 h-5 text-indigo-600" />
+                Statistika
+              </button>
+
+              <button
+                onClick={() => navigate("/reports")}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-indigo-50 transition text-gray-700"
+              >
+                <FileText className="w-5 h-5 text-indigo-600" />
+                Izvještaji
+              </button>
+
+              {isAdmin && (
+                <button
+                  onClick={() => navigate("/users")}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-indigo-50 transition text-gray-700"
+                >
+                  <Users className="w-5 h-5 text-indigo-600" />
+                  Korisnici
+                </button>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="px-5 pb-5 border-t border-gray-200 flex flex-col gap-2">
 
         <button
           onClick={() => navigate("/favorites")}
-          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-gray-700"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition text-gray-700 mt-5"
         >
           <Heart className="w-5 h-5 text-red-500" />
           Omiljeni objekti
@@ -89,10 +127,10 @@ const UserCard: FC = () => {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 text-red-600 transition"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 text-red-600 transition"
         >
           <LogOut className="w-5 h-5" />
-          {isLoggingOut ? "Odjava..." : "Logout"}
+          {isLoggingOut ? "Odjava..." : "Odjavi se"}
         </button>
       </div>
     </div>

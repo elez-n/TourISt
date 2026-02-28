@@ -106,7 +106,9 @@ const Reports = () => {
           <h2 className="text-lg font-bold">Filteri</h2>
 
           <div
-            className={`grid grid-cols-1 md:grid-cols-${currentUser?.role === "Officer" ? 4 : 5
+            className={`grid grid-cols-1 sm:grid-cols-2 ${currentUser?.role === "Officer"
+                ? "lg:grid-cols-4"
+                : "lg:grid-cols-5"
               } gap-4`}
           >
             <Select
@@ -270,13 +272,13 @@ const Reports = () => {
 
           <div className="flex gap-4">
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-[#5c5c99]! text-white px-4 py-2 rounded hover:bg-[#272757]!"
               onClick={downloadFromModal}
             >
               Preuzmi
             </button>
             <button
-              className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+              className="bg-gray-400! text-white px-4 py-2 rounded hover:bg-gray-500!"
               onClick={() => setModalOpen(false)}
             >
               Zatvori

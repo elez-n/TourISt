@@ -22,7 +22,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(0);
 
-  const [visibleCount, setVisibleCount] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(5);
   const reviewsToShow = useMemo(() => reviews.slice(0, visibleCount), [reviews, visibleCount]);
 
   const handleSubmit = async () => {
@@ -36,8 +36,8 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
       setNewComment("");
       setNewRating(0);
       setVisibleCount((prev) => prev + 1); 
-    } catch (err) {
-      alert(err || "Greška pri slanju recenzije");
+    } catch {
+      alert("Prijavite se da biste ostavili recenziju.");
     }
   };
 
@@ -87,7 +87,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
         ))}
 
         {visibleCount < reviews.length && (
-          <Button onClick={() => setVisibleCount((prev) => prev + 1)} className="w-full bg-[#272757]!">
+          <Button onClick={() => setVisibleCount((prev) => prev + 5)} className="w-full bg-[#272757]!">
             Učitaj još
           </Button>
         )}

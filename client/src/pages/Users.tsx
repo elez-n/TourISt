@@ -17,12 +17,13 @@ import {
 import {
   useGetUsersQuery,
   useToggleUserActiveStatusMutation,
-  useGetUserDetailsQuery, 
+  useGetUserDetailsQuery,
 } from "@/store/api/adminApi";
 import { LucideSearch, LucideUserX, LucideUserCheck, LucideEdit } from "lucide-react";
 import ObjectsPagination from "@/components/all-objects/ObjectsPagination";
 import type { UserInfoDto } from "@/store/types/User";
 import { EditUserModal } from "@/components/users/EditUserForm";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
   const dispatch = useAppDispatch();
@@ -38,12 +39,12 @@ const Users = () => {
   });
 
   const handleOpenModal = (user: UserInfoDto) => {
-    setSelectedUserId(user.id); 
+    setSelectedUserId(user.id);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedUserId(null); 
+    setSelectedUserId(null);
     setIsModalOpen(false);
     refetch();
   };
@@ -79,6 +80,7 @@ const Users = () => {
       }
     }
   };
+  const navigate = useNavigate();
 
   if (isLoading) return <LoadingSpinner />;
   if (error)
@@ -111,9 +113,11 @@ const Users = () => {
             onChange={(e) => handleRoleChange(e.target.value)}
             className="p-2 border rounded shadow-sm bg-white"
           >
-            <option value="">Sve role</option>
+            <option value="">Sve uloge</option>
             <option value="Admin">Admin</option>
-            <option value="Officer">Officer</option>
+            <option value="Officer">Službenik</option>
+            <option value="Visitor">Posjetilac</option>
+
           </select>
 
           <select
@@ -131,6 +135,12 @@ const Users = () => {
           <Button variant="outline" onClick={handleResetFilters}>
             Resetuj filtere
           </Button>
+          <Button
+            onClick={() => navigate("/create-officer")}
+            className="ml-auto bg-[#5c5c99]! hover:bg-[#272757]! text-white"
+          >
+            Dodaj službenika
+          </Button>
         </div>
 
         <div className="overflow-x-auto rounded-lg shadow-md bg-white">
@@ -141,7 +151,7 @@ const Users = () => {
                 <th className="p-3 border-b font-medium text-gray-700">Ime</th>
                 <th className="p-3 border-b font-medium text-gray-700">Prezime</th>
                 <th className="p-3 border-b font-medium text-gray-700">Email</th>
-                <th className="p-3 border-b font-medium text-gray-700">Role</th>
+                <th className="p-3 border-b font-medium text-gray-700">Uloga</th>
                 <th className="p-3 border-b font-medium text-gray-700">Aktivan</th>
                 <th className="p-3 border-b font-medium text-gray-700">Posljednja aktivnost</th>
                 <th className="p-3 border-b font-medium text-gray-700">Akcija</th>
@@ -151,9 +161,8 @@ const Users = () => {
               {data?.users.map((user, idx) => (
                 <tr
                   key={user.id}
-                  className={`hover:bg-gray-50 ${
-                    idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`hover:bg-gray-50 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
                 >
                   <td className="p-3 border-b">{user.username}</td>
                   <td className="p-3 border-b">{user.firstName}</td>
@@ -164,23 +173,22 @@ const Users = () => {
                   <td className="p-3 border-b">
                     {user.lastLogin
                       ? new Date(user.lastLogin).toLocaleString("sr-RS", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })
                       : "-"}
                   </td>
                   <td className="p-3 border-b flex gap-2">
                     <Button
                       size="sm"
-                      className={`flex items-center gap-1 ${
-                        user.isActive
-                          ? "bg-red-300! hover:bg-red-400! text-white"
-                          : "bg-green-300! hover:bg-green-400! text-white"
-                      }`}
+                      className={`flex items-center gap-1 ${user.isActive
+                        ? "bg-red-300! hover:bg-red-400! text-white"
+                        : "bg-green-300! hover:bg-green-400! text-white"
+                        }`}
                       onClick={() =>
                         handleToggleStatus(user.id, user.username, user.isActive)
                       }
@@ -225,7 +233,7 @@ const Users = () => {
       <EditUserModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        user={userDetails ?? null} 
+        user={userDetails ?? null}
       />
     </div>
   );

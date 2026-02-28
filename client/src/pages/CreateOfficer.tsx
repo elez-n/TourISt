@@ -10,6 +10,8 @@ import { z } from "zod";
 import { useState } from "react";
 import { useCreateOfficerMutation } from "@/store/api/adminApi";
 import { useFetchMunicipalitiesQuery } from "@/store/api/TouristObjectApi";
+import { useNavigate } from "react-router-dom";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const officerSchema = z.object({
   username: z.string().min(3, "Username mora imati barem 3 karaktera"),
@@ -23,9 +25,12 @@ const officerSchema = z.object({
 type OfficerFormSchema = z.infer<typeof officerSchema>;
 
 const CreateOfficerForm = () => {
+  const navigate = useNavigate();
   const { data: municipalities = [], isLoading } = useFetchMunicipalitiesQuery();
   const [createOfficer] = useCreateOfficerMutation();
-  const [successMessage, setSuccessMessage] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -38,20 +43,41 @@ const CreateOfficerForm = () => {
   });
 
   const onSubmit = async (data: OfficerFormSchema) => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
     try {
       await createOfficer(data).unwrap();
       setSuccessMessage("Službenik uspješno kreiran!");
       reset();
-    } catch (err) {
-      console.error(err);
+
+      setTimeout(() => navigate("/users"), 1000);
+    } catch (err: unknown) {
+      let message = "Došlo je do greške prilikom kreiranja službenika.";
+
+      if ((err as FetchBaseQueryError)?.status) {
+        const fetchErr = err as FetchBaseQueryError;
+
+        if ("data" in fetchErr && fetchErr.data) {
+          if (typeof fetchErr.data === "string") {
+            message = fetchErr.data;
+          }
+          else if (
+            typeof fetchErr.data === "object" &&
+            "message" in fetchErr.data
+          ) {
+            message = (fetchErr.data as { message: string }).message;
+          }
+        }
+      }
+
+      setErrorMessage(message);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
-        
-        {/* LIJEVA STRANA */}
         <div className="hidden md:flex flex-col justify-center items-center bg-[#272757] text-white p-10">
           <img src={logo} alt="Logo" className="w-64" />
           <p className="text-center text-indigo-100 max-w-xs mt-4">
@@ -64,49 +90,87 @@ const CreateOfficerForm = () => {
             Dodaj novog službenika
           </h2>
 
+          {errorMessage && (
+            <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+          )}
+          {successMessage && (
+            <p className="text-green-500 text-center mb-4">{successMessage}</p>
+          )}
+
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            
             <div className="relative">
               <Label className="text-xs text-gray-400">Ime</Label>
               <User className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
-              <Input placeholder="Unesite ime" className="pl-10" {...register("firstName")} />
+              <Input
+                placeholder="Unesite ime"
+                className="pl-10"
+                {...register("firstName")}
+              />
               {errors.firstName && (
-                <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
             <div className="relative">
               <Label className="text-xs text-gray-400">Prezime</Label>
               <User className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
-              <Input placeholder="Unesite prezime" className="pl-10" {...register("lastName")} />
+              <Input
+                placeholder="Unesite prezime"
+                className="pl-10"
+                {...register("lastName")}
+              />
               {errors.lastName && (
-                <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
 
             <div className="relative">
               <Label className="text-xs text-gray-400">Email</Label>
               <Mail className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
-              <Input type="email" placeholder="Unesite email" className="pl-10" {...register("email")} />
+              <Input
+                type="email"
+                placeholder="Unesite email"
+                className="pl-10"
+                {...register("email")}
+              />
               {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             <div className="relative">
               <Label className="text-xs text-gray-400">Korisničko ime</Label>
               <User className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
-              <Input placeholder="Unesite username" className="pl-10" {...register("username")} />
+              <Input
+                placeholder="Unesite username"
+                className="pl-10"
+                {...register("username")}
+              />
               {errors.username && (
-                <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.username.message}
+                </p>
               )}
             </div>
+
             <div className="relative">
               <Label className="text-xs text-gray-400">Pozicija</Label>
               <Briefcase className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
-              <Input placeholder="Unesite poziciju" className="pl-10" {...register("position")} />
+              <Input
+                placeholder="Unesite poziciju"
+                className="pl-10"
+                {...register("position")}
+              />
               {errors.position && (
-                <p className="text-red-500 text-xs mt-1">{errors.position.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.position.message}
+                </p>
               )}
             </div>
 
@@ -126,7 +190,9 @@ const CreateOfficerForm = () => {
                 ))}
               </select>
               {errors.municipalityId && (
-                <p className="text-red-500 text-xs mt-1">{errors.municipalityId.message}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.municipalityId.message}
+                </p>
               )}
             </div>
 
@@ -137,10 +203,6 @@ const CreateOfficerForm = () => {
             >
               {isSubmitting ? "Kreiranje..." : "Kreiraj službenika"}
             </Button>
-
-            {successMessage && (
-              <p className="text-green-500 text-center mt-4">{successMessage}</p>
-            )}
           </form>
         </div>
       </div>

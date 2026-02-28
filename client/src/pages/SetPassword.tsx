@@ -1,14 +1,9 @@
 import { useSetPasswordMutation } from "@/store/api/adminApi";
 import { useLoginMutation } from "@/store/api/userApi";
-
 import { setAccessToken } from "@/store/tokenStore";
 import { setUser, logout } from "@/store/slice/authSlice";
-import type { JwtPayload } from "@/store/models/JwtPayload";
-
 import { useAppDispatch } from "@/store/store";
-import { jwtDecode } from "jwt-decode";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import { Input } from "@/components/ui/input";
@@ -17,51 +12,60 @@ import { Label } from "@/components/ui/label";
 
 import { Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/logooo.png";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+  userId: string;
+  username: string;
+  role: string;
+}
 
 const SetPasswordPage = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
-
   const token = searchParams.get("token") || "";
   const username = searchParams.get("username") || "";
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [setPasswordApi, { isLoading }] = useSetPasswordMutation();
+  const [setPasswordApi, { isLoading: isSetting }] = useSetPasswordMutation();
   const [login] = useLoginMutation();
+
+  useEffect(() => {
+    if (!token || !username) {
+      navigate("/", { replace: true });
+    } else {
+      setLoading(false);
+    }
+  }, [token, username, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!token) return setError("Token nedostaje.");
-    if (!username) return setError("Username nedostaje.");
-    if (password !== confirmPassword)
+    if (password !== confirmPassword) {
       return setError("Lozinke se ne podudaraju.");
+    }
 
     try {
-      await setPasswordApi({
-        token,
-        data: { newPassword: password },
-      }).unwrap();
+      await setPasswordApi({ token, data: { newPassword: password } }).unwrap();
 
       const response = await login({ username, password }).unwrap();
       const { accessToken } = response;
 
-      if (!accessToken) {
-        throw new Error("No access token returned");
-      }
+      if (!accessToken) throw new Error("Nije vraćen access token");
 
       setAccessToken(accessToken);
 
       const decoded = jwtDecode<JwtPayload>(accessToken);
-
       dispatch(
         setUser({
           id: decoded.userId,
@@ -71,20 +75,21 @@ const SetPasswordPage = () => {
       );
 
       navigate("/", { replace: true });
-    } catch (err) {
-      console.error("Set password / login error:", err);
+    } catch {
       setError("Greška prilikom postavljanja lozinke.");
       dispatch(logout());
     }
   };
+
+  if (loading) return <p className="text-center mt-20 text-gray-600">Provjera linka...</p>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
         
         <div className="hidden md:flex flex-col justify-center items-center bg-[#272757] text-white p-10">
-          <img src={logo} alt="Logo" className="w-64" />
-          <p className="text-center text-indigo-100 max-w-xs mt-4">
+          <img src={logo} alt="Logo" className="w-64 mb-6" />
+          <p className="text-center text-indigo-100 max-w-xs">
             Postavite sigurnu lozinku i automatski ćete biti prijavljeni.
           </p>
         </div>
@@ -99,7 +104,6 @@ const SetPasswordPage = () => {
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            
             <div className="relative">
               <Label className="text-xs text-gray-400">Nova lozinka</Label>
               <Lock className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
@@ -120,9 +124,7 @@ const SetPasswordPage = () => {
             </div>
 
             <div className="relative">
-              <Label className="text-xs text-gray-400">
-                Potvrdite lozinku
-              </Label>
+              <Label className="text-xs text-gray-400">Potvrdite lozinku</Label>
               <Lock className="absolute top-5.5 left-3 text-gray-400 h-5 w-5" />
               <Input
                 type={showConfirmPassword ? "text" : "password"}
@@ -134,24 +136,18 @@ const SetPasswordPage = () => {
               />
               <div
                 className="absolute right-3 top-6 cursor-pointer text-gray-400"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
             </div>
 
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={isSetting}
               className="w-full bg-[#5C5C99]! hover:bg-[#272757]! text-white font-semibold hover:scale-105 transition-transform"
             >
-              {isLoading ? "Postavljanje..." : "Postavi lozinku"}
+              {isSetting ? "Postavljanje..." : "Postavi lozinku"}
             </Button>
           </form>
         </div>
