@@ -15,6 +15,7 @@ import Reports from "@/pages/Reports";
 import Statistics from "@/pages/Statistics";
 import ProtectedRoute from "./ProtectedRoute";
 import ContactPage from "@/pages/Contact";
+import RegistrationRequestsPage from "@/pages/RegistrationRequests";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,12 @@ export const router = createBrowserRouter([
         path: '/stats',
         element: <ProtectedRoute roles={["Admin", "Officer"]}>
           <Statistics />
+        </ProtectedRoute>
+      },
+      {
+        path: '/registration-requests',
+        element: <ProtectedRoute roles={["Officer"]}>
+          <RegistrationRequestsPage />
         </ProtectedRoute>
       },
 

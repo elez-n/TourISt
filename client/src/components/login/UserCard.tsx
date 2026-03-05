@@ -6,6 +6,7 @@ import { setAccessToken } from "@/store/tokenStore";
 import { User, Mail, Info, LogOut, Heart, BarChart3, FileText, Users } from "lucide-react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetRequestsQuery } from "@/store/api/registrationRequestsApi";
 
 const UserCard: FC = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +17,13 @@ const UserCard: FC = () => {
 
   const { data: user, isLoading } = useGetCurrentUserQuery(undefined, {
     skip: !userId,
+  });
+
+  const isAdmin = user?.role === "Admin";
+  const isSluzbenik = user?.role === "Officer";
+
+  const { data: requests = [] } = useGetRequestsQuery(undefined, {
+    skip: !isSluzbenik,
   });
 
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
@@ -35,8 +43,6 @@ const UserCard: FC = () => {
   if (!user) return <p className="p-4 text-gray-600">User not found.</p>;
 
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
-  const isAdmin = user.role === "Admin";
-  const isSluzbenik = user.role === "Officer";
 
   return (
     <div className="w-80 bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100 animate-fadeInUp transition-all duration-300">
@@ -98,6 +104,24 @@ const UserCard: FC = () => {
                 <FileText className="w-5 h-5 text-indigo-600" />
                 Izvještaji
               </button>
+
+              {isSluzbenik && (
+                <button
+                  onClick={() => navigate("/registration-requests")}
+                  className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-indigo-50 transition text-gray-700"
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-indigo-600" />
+                    Zahtjevi za registraciju
+                  </div>
+
+                  {requests.length > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {requests.length}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {isAdmin && (
                 <button

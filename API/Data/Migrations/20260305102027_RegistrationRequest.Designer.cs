@@ -4,6 +4,7 @@ using Dipl.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(TouristDbContext))]
-    partial class TouristDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305102027_RegistrationRequest")]
+    partial class RegistrationRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -471,60 +474,6 @@ namespace API.Data.Migrations
                     b.ToTable("OfficerProfiles");
                 });
 
-            modelBuilder.Entity("RegistrationRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MunicipalityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ObjectName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ObjectTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OwnerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerFirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerLastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerPhone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MunicipalityId");
-
-                    b.HasIndex("ObjectTypeId");
-
-                    b.ToTable("RegistrationRequests");
-                });
-
             modelBuilder.Entity("UserProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -728,25 +677,6 @@ namespace API.Data.Migrations
                     b.Navigation("Municipality");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RegistrationRequest", b =>
-                {
-                    b.HasOne("API.Entities.Municipality", "Municipality")
-                        .WithMany()
-                        .HasForeignKey("MunicipalityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Entities.ObjectType", "ObjectType")
-                        .WithMany()
-                        .HasForeignKey("ObjectTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Municipality");
-
-                    b.Navigation("ObjectType");
                 });
 
             modelBuilder.Entity("UserProfile", b =>
