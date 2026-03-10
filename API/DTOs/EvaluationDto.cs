@@ -6,9 +6,9 @@ public class EvaluationCreateDto
 }
     public class CriteriaDto
     {
-        public int Id { get; set; }                // ID kriterija
-        public string Name { get; set; } = string.Empty;  // Naziv kriterija
-        public int MaxPoints { get; set; }         // Maksimalni broj bodova koji se može dodijeliti za ovaj kriterij
+        public int Id { get; set; }                
+        public string Name { get; set; } = string.Empty;  
+        public int MaxPoints { get; set; }        
         public string? Description { get; set; }
     }
 
@@ -27,3 +27,11 @@ public class EvaluationDto
     public DateTime CreatedAt { get; set; }        
     public string OfficerFullName { get; set; } = string.Empty;
 }
+
+ public class EvaluationResultDto
+    {
+        public int Id { get; set; }
+        public int TotalPoints { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }

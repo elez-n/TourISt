@@ -1,23 +1,18 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using API.Services;
 using Dipl.Api.Data;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-[ApiController]
-[Route("api/[controller]")]
-public class RegistrationRequestsController : ControllerBase
+public class RegistrationRequestService : IRegistrationRequestService
 {
     private readonly TouristDbContext _context;
 
-    public RegistrationRequestsController(TouristDbContext context)
+    public RegistrationRequestService(TouristDbContext context)
     {
         _context = context;
     }
 
-    [Authorize(Roles = "Visitor")]
-    [HttpPost]
-    public async Task<ActionResult> CreateRequest(RegistrationRequestDto dto)
+    public async Task CreateRequestAsync(RegistrationRequestDto dto)
     {
         var request = new RegistrationRequest
         {
@@ -35,35 +30,30 @@ public class RegistrationRequestsController : ControllerBase
 
         _context.RegistrationRequests.Add(request);
         await _context.SaveChangesAsync();
-
-        return Ok();
     }
 
-    [HttpGet]
-    [Authorize(Roles = "Officer,Admin")]
-    public async Task<ActionResult<IEnumerable<GetRegistrationRequestDto>>> GetRequests()
+    public async Task<IEnumerable<GetRegistrationRequestDto>> GetRequestsForOfficerAsync(string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
+            throw new UnauthorizedAccessException();
 
         var officer = await _context.Users
             .Include(u => u.OfficerProfile)
             .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
 
         if (officer?.OfficerProfile == null)
-            return Forbid();
+            throw new InvalidOperationException("User is not an officer");
 
         var municipalityId = officer.OfficerProfile.MunicipalityId;
 
         var requests = await _context.RegistrationRequests
-     .Include(r => r.ObjectType)
-     .Include(r => r.Municipality)
-     .Where(r => r.MunicipalityId == municipalityId && r.Status == "Na čekanju")
-     .OrderByDescending(r => r.CreatedAt)
-     .ToListAsync();
+            .Include(r => r.ObjectType)
+            .Include(r => r.Municipality)
+            .Where(r => r.MunicipalityId == municipalityId && r.Status == "Na čekanju")
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
 
-        var dtoList = requests.Select(r => new GetRegistrationRequestDto
+        return requests.Select(r => new GetRegistrationRequestDto
         {
             Id = r.Id,
             OwnerFirstName = r.OwnerFirstName,
@@ -77,20 +67,16 @@ public class RegistrationRequestsController : ControllerBase
             Status = r.Status,
             CreatedAt = r.CreatedAt
         }).ToList();
-
-        return dtoList;
     }
-    
-[Authorize(Roles = "Officer,Admin")]
-[HttpPut("{id}/status")]
-public async Task<ActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
-{
-    var request = await _context.RegistrationRequests.FindAsync(id);
-    if (request == null) return NotFound();
 
-    request.Status = dto.Status;
-    await _context.SaveChangesAsync();
+    public async Task<bool> UpdateStatusAsync(int id, string status)
+    {
+        var request = await _context.RegistrationRequests.FindAsync(id);
+        if (request == null) return false;
 
-    return NoContent();
-}
+        request.Status = status;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

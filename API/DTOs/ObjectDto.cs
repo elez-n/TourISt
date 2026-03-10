@@ -17,7 +17,7 @@ public class ObjectDto
     public bool Featured { get; set; }
 
     public string? CategoryName { get; set; }
-    public string MunicipalityName { get; set; } = null!;
+    public string? MunicipalityName { get; set; } 
     public List<string> AdditionalServices { get; set; } = new();
     public List<PhotographDto> Photographs { get; set; } = new();
     public double AverageRating { get; set; }

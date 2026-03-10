@@ -21,7 +21,6 @@ const ContactPage = () => {
     setSuccess("");
     setError("");
 
-    // primjer validacije
     if (!name || !email || !subject || !message) {
       setError("Molimo popunite sva polja.");
       return;

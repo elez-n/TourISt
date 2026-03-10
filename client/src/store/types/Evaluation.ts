@@ -16,7 +16,7 @@ export interface EvaluationDto {
 
 export interface CreateEvaluationDto {
   touristObjectId: number;
-  userId: string; // GUID iz Redux-a
+  userId: string; 
   scores: {
     criteriaId: number;
     points: number;

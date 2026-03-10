@@ -10,7 +10,7 @@ type EvaluationFormValues = {
     scores: { criteriaId: number; points: number }[];
 };
 
-const createEvaluationSchema = (criteria: { id: number; name: string; maxPoints: number; description: string}[]) =>
+const createEvaluationSchema = (criteria: { id: number; name: string; maxPoints: number; description: string }[]) =>
     z.object({
         scores: z
             .array(
@@ -72,7 +72,7 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
 
     const onSubmit: SubmitHandler<EvaluationFormValues> = async (values) => {
         if (!currentUserId) return alert("Korisnik nije prijavljen");
-    
+
         try {
             await createEvaluation({
                 touristObjectId,
@@ -92,101 +92,99 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
     if (!criteria || criteria.length === 0) return <p>Nema definisanih kriterija.</p>;
 
     return (
-    <div className="w-full h-full overflow-y-auto px-4 py-6">
-        <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200">
+        <div className="w-full h-full overflow-y-auto px-4 py-6">
+            <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200">
 
-            <div className="px-6 py-5 border-b border-gray-100">
-                <p className="text-sm text-gray-500 mt-1">
-                    Unesite bodove za svaki kriterijum.
-                </p>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-
-                <div className="w-full overflow-x-auto">
-                    <table className="w-full text-sm border-collapse">
-                        <thead className="bg-gray-100 text-gray-700 text-xs uppercase">
-                            <tr>
-                                <th className="px-4 py-3 text-left">Kriterijum</th>
-                                <th className="px-4 py-3 text-left">Opis</th>
-                                <th className="px-4 py-3 text-left">Maks. bodova</th>
-                                <th className="px-4 py-3 text-left">Vaš unos</th>
-                            </tr>
-                        </thead>
-
-                        <tbody className="divide-y divide-gray-100">
-                            {criteria.map((c, index) => (
-                                <tr key={c.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-4 font-medium text-gray-800">
-                                        {c.name}
-                                    </td>
-                                    <td className="px-4 py-4 font-medium text-gray-800">
-                                        {c.description}
-                                    </td>
-
-                                    <td className="px-4 py-4 text-gray-600">
-                                        {c.maxPoints}
-                                    </td>
-
-                                    <td className="px-4 py-4">
-                                        <Controller
-                                            name={`scores.${index}.points`}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <div>
-                                                    <input
-                                                        type="number"
-                                                        value={field.value ?? 0}
-                                                        onChange={(e) =>
-                                                            field.onChange(
-                                                                Number(e.target.value)
-                                                            )
-                                                        }
-                                                        min={0}
-                                                        max={c.maxPoints}
-                                                        className="w-24 px-3 py-2 border border-gray-300 rounded-md
-                                                                   focus:ring-2 focus:ring-blue-500
-                                                                   focus:outline-none transition"
-                                                    />
-                                                    {errors.scores?.[index]?.points && (
-                                                        <p className="text-xs text-red-500 mt-1">
-                                                            {errors.scores[index]?.points?.message}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            )}
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="px-6 py-5 border-b border-gray-100">
+                    <p className="text-sm text-gray-500 mt-1">
+                        Unesite bodove za svaki kriterijum.
+                    </p>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button
-                        type="button"
-                        onClick={() => onSuccess?.()}
-                        className="px-4 py-2 rounded-md border border-gray-300
-                                   text-gray-600 hover:bg-gray-100 transition"
-                    >
-                        Otkaži
-                    </button>
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
 
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="px-6 py-2 rounded-md bg-[#5c5c99]! text-white
+                    <div className="w-full overflow-x-auto">
+                        <table className="w-full text-sm border-collapse">
+                            <thead className="bg-gray-100 text-gray-700 text-xs uppercase">
+                                <tr>
+                                    <th className="px-4 py-3 text-left">Kriterijum</th>
+                                    <th className="px-4 py-3 text-left">Opis</th>
+                                    <th className="px-4 py-3 text-left">Maks. bodova</th>
+                                    <th className="px-4 py-3 text-left">Vaš unos</th>
+                                </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-100">
+                                {criteria.map((c, index) => (
+                                    <tr key={c.id} className="hover:bg-gray-50">
+                                        <td className="px-4 py-4 font-medium text-gray-800">
+                                            {c.name}
+                                        </td>
+                                        <td className="px-4 py-4 font-medium text-gray-800">
+                                            {c.description}
+                                        </td>
+
+                                        <td className="px-4 py-4 text-gray-600">
+                                            {c.maxPoints}
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <Controller
+                                                name={`scores.${index}.points`}
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <input
+                                                            type="number"
+                                                            value={field.value ?? ""}
+                                                            onChange={(e) =>
+                                                                field.onChange(e.target.value === "" ? "" : Number(e.target.value))
+                                                            }
+                                                            min={0}
+                                                            max={c.maxPoints}
+                                                            className="w-24 px-3 py-2 border border-gray-300 rounded-md
+             focus:ring-2 focus:ring-blue-500
+             focus:outline-none transition"
+                                                        />
+                                                        {errors.scores?.[index]?.points && (
+                                                            <p className="text-xs text-red-500 mt-1">
+                                                                {errors.scores[index]?.points?.message}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button
+                            type="button"
+                            onClick={() => onSuccess?.()}
+                            className="px-4 py-2 rounded-md border border-gray-300
+                                   text-gray-600 hover:bg-gray-100 transition"
+                        >
+                            Otkaži
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-6 py-2 rounded-md bg-[#5c5c99]! text-white
                                    hover:bg-[#272757]!
                                    transition"
-                    >
-                        {isSubmitting ? "Šaljem..." : "Sačuvaj evaluaciju"}
-                    </button>
-                </div>
+                        >
+                            {isSubmitting ? "Šaljem..." : "Sačuvaj"}
+                        </button>
+                    </div>
 
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-);
+    );
 
 };

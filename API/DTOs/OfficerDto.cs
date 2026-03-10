@@ -9,4 +9,11 @@ namespace API.DTO
         public string Position { get; set; } = string.Empty;
         public int MunicipalityId { get; set; }
     }
+
+    public class OfficerProfileDto
+    {
+        public Guid Id { get; set; }
+        public int MunicipalityId { get; set; }
+    }
+
 }

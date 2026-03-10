@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+using API.Services;
+using API.Services.Interfaces;
 
 
-Env.Load(); // Ovo učitava .env fajl u Environment varijable
+Env.Load(); 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -43,6 +45,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true
         };
     });
+
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IEvaluationService, EvaluationService>();
+builder.Services.AddScoped<IFavoritesService, FavoritesService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IObjectsService, ObjectsService>();
+builder.Services.AddScoped<IRegistrationRequestService, RegistrationRequestService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IReportsService, ReportsService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+
+
+
+
 
 var app = builder.Build();
 

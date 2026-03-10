@@ -1,553 +1,146 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using API.Data;
-using API.Entities;
-using Dipl.Api.Data;
-using API.DTOs;
-using System.Collections.Immutable;
-using API.Extensions;
-using API.RequestHelpers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Azure;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using API.DTOs;
+using API.RequestHelpers;
+using API.Services;
+using API.Extensions;
 
 namespace API.Controllers
 {
-  [Route("api/[controller]")]
-  [ApiController]
-  public class ObjectsController : ControllerBase
-  {
-    private readonly TouristDbContext _context;
-    private readonly ILogger<ObjectsController> _logger;
-
-
-    public ObjectsController(TouristDbContext context, ILogger<ObjectsController> logger)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ObjectsController : ControllerBase
     {
-      _context = context;
-      _logger = logger;
+        private readonly IObjectsService _service;
 
-    }
-
-    [HttpGet("visitor")]
-    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForVisitor([FromQuery] ObjectParams objectParams)
-    {
-      var pagedList = await GetObjectsCommon(objectParams, officerId: null, officerMunicipalityId: null);
-      Response.AddPaginationHeader(pagedList.Metadata);
-      return pagedList;
-    }
-
-    [Authorize(Roles = "Officer")]
-    [HttpGet("officer")]
-    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForOfficer([FromQuery] ObjectParams objectParams)
-    {
-      var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-      if (string.IsNullOrEmpty(userId))
-        return Unauthorized();
-
-      var officer = await _context.Users
-          .Include(u => u.OfficerProfile)
-          .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-
-      if (officer?.OfficerProfile == null)
-        return Forbid();
-
-      var municipalityId = officer.OfficerProfile.MunicipalityId;
-
-      var pagedList = await GetObjectsCommon(objectParams, officerId: officer.Id, officerMunicipalityId: municipalityId);
-      Response.AddPaginationHeader(pagedList.Metadata);
-      return pagedList;
-    }
-
-    private async Task<PagedList<ObjectDto>> GetObjectsCommon(
-        ObjectParams objectParams,
-        Guid? officerId,
-        int? officerMunicipalityId)
-    {
-      var query = _context.TouristObjects
-          .AsQueryable()
-          .Include(o => o.ObjectType)
-          .Include(o => o.Category)
-          .Include(o => o.Municipality)
-          .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs)
-          .Where(o => o.Status);
-
-      if (officerId.HasValue && officerMunicipalityId.HasValue)
-      {
-        query = query.Where(o => o.MunicipalityId == officerMunicipalityId.Value);
-      }
-
-      query = query
-          .Filter(objectParams.ObjectTypes, objectParams.Municipalities, objectParams.Categories, objectParams.AdditionalServices)
-          .Search(objectParams.SearchTerm)
-          .Sort(objectParams.OrderBy);
-
-      var dtoQuery = query.Select(o => new ObjectDto
-      {
-        Id = o.Id,
-        Name = o.Name,
-        ObjectTypeName = o.ObjectType.Name,
-        Status = o.Status,
-        Address = o.Address,
-        Coordinate1 = o.Coordinate1,
-        Coordinate2 = o.Coordinate2,
-        ContactPhone = o.ContactPhone,
-        ContactEmail = o.ContactEmail,
-        NumberOfUnits = o.NumberOfUnits,
-        NumberOfBeds = o.NumberOfBeds,
-        Description = o.Description,
-        Owner = o.Owner,
-        Featured = o.Featured,
-        CategoryName = o.Category != null ? o.Category.Name : null,
-        MunicipalityName = o.Municipality.Name,
-        AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
-        Photographs = o.Photographs.Select(p => new PhotographDto { Id = p.Id, Url = p.Url }).ToList(),
-        ReviewCount = o.ReviewCount,
-        AverageRating = o.AverageRating
-      });
-
-      var pagedList = await PagedList<ObjectDto>.ToPagedList(
-          dtoQuery,
-          objectParams.PageNumber,
-          objectParams.PageSize
-      );
-
-      return pagedList;
-    }
-
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ObjectDto>> GetObject(int id)
-    {
-      var o = await _context.TouristObjects
-          .Include(x => x.ObjectType)
-          .Include(x => x.Category)
-          .Include(x => x.Municipality)
-          .Include(x => x.AdditionalServices)
-          .Include(x => x.Photographs)
-          .FirstOrDefaultAsync(x => x.Id == id);
-
-      if (o == null)
-        return NotFound();
-
-      var dto = new ObjectDto
-      {
-        Id = o.Id,
-        Name = o.Name,
-        ObjectTypeName = o.ObjectType.Name,
-        Status = o.Status,
-        Address = o.Address,
-        Coordinate1 = o.Coordinate1,
-        Coordinate2 = o.Coordinate2,
-        ContactPhone = o.ContactPhone,
-        ContactEmail = o.ContactEmail,
-        NumberOfUnits = o.NumberOfUnits,
-        NumberOfBeds = o.NumberOfBeds,
-        Description = o.Description,
-        Owner = o.Owner,
-        Featured = o.Featured,
-        CategoryName = o.Category != null ? o.Category.Name : null,
-        MunicipalityName = o.Municipality.Name,
-        ReviewCount = o.ReviewCount,
-        AverageRating = o.AverageRating,
-        AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
-        Photographs = o.Photographs
-    .Select(p => new PhotographDto
-    {
-      Id = p.Id,
-      Url = p.Url
-    })
-    .ToList()
-      };
-
-      return Ok(dto);
-    }
-
-    [HttpGet("filters")]
-    public async Task<IActionResult> GetFilters()
-    {
-      var types = await _context.ObjectTypes.Select(x => x.Name).Distinct().ToListAsync();
-      var municipalities = await _context.Municipalities.Select(x => x.Name).Distinct().ToListAsync();
-      var categories = await _context.Categories.Select(x => x.Name).Distinct().ToListAsync();
-      var additionalServices = await _context.AdditionalServices.Select(x => x.Name).Distinct().ToListAsync();
-
-
-
-      return Ok(new
-      {
-        types,
-        municipalities,
-        categories,
-        additionalServices
-      });
-    }
-
-    [HttpGet("object-types")]
-    public async Task<IActionResult> GetObjectTypes()
-    {
-      var types = await _context.ObjectTypes.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
-
-      return Ok(types);
-    }
-
-    [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories()
-    {
-      var categories = await _context.Categories.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
-
-      return Ok(categories);
-    }
-
-    [HttpGet("municipalities")]
-    public async Task<IActionResult> GetMunicipalities()
-    {
-      var municipalities = await _context.Municipalities.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
-
-      return Ok(municipalities);
-    }
-
-    [HttpGet("additional-services")]
-    public async Task<IActionResult> GetAdditionalServices()
-    {
-      var services = await _context.AdditionalServices.Select(x => new { x.Id, x.Name }).Distinct().ToListAsync();
-
-      return Ok(services);
-    }
-
-    [HttpPost]
-
-    public async Task<IActionResult> CreateObject([FromForm] TouristObjectCreateDto dto)
-    {
-      var touristObject = new TouristObject
-      {
-        Name = dto.Name,
-        ObjectTypeId = dto.ObjectTypeId,
-        Status = dto.Status,
-        Address = dto.Address,
-        Coordinate1 = dto.Coordinate1 / 100,
-        Coordinate2 = dto.Coordinate2 / 100,
-        ContactPhone = dto.ContactPhone,
-        ContactEmail = dto.ContactEmail,
-        NumberOfUnits = dto.NumberOfUnits,
-        NumberOfBeds = dto.NumberOfBeds,
-        Description = dto.Description,
-        Owner = dto.Owner,
-        Featured = dto.Featured,
-        CategoryId = null,
-        MunicipalityId = dto.MunicipalityId
-      };
-
-      if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
-      {
-        var services = await _context.AdditionalServices
-            .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
-            .ToListAsync();
-
-        foreach (var s in services)
-          touristObject.AdditionalServices.Add(s);
-      }
-
-      if (dto.Photographs != null && dto.Photographs.Any())
-      {
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-        if (!Directory.Exists(uploadsFolder))
-          Directory.CreateDirectory(uploadsFolder);
-
-        foreach (var file in dto.Photographs)
+        public ObjectsController(IObjectsService service)
         {
-          var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-          var filePath = Path.Combine(uploadsFolder, fileName);
-
-          using (var stream = new FileStream(filePath, FileMode.Create))
-          {
-            await file.CopyToAsync(stream);
-          }
-
-          touristObject.Photographs.Add(new Photograph { Url = "/uploads/" + fileName });
+            _service = service;
         }
-      }
 
-      _context.TouristObjects.Add(touristObject);
-      await _context.SaveChangesAsync();
-
-      var resultDto = new ObjectDto
-      {
-        Id = touristObject.Id,
-        Name = touristObject.Name,
-        ObjectTypeName = (await _context.ObjectTypes.FindAsync(touristObject.ObjectTypeId))?.Name ?? "",
-        Status = touristObject.Status,
-        Address = touristObject.Address,
-        Coordinate1 = touristObject.Coordinate1,
-        Coordinate2 = touristObject.Coordinate2,
-        ContactPhone = touristObject.ContactPhone,
-        ContactEmail = touristObject.ContactEmail,
-        NumberOfUnits = touristObject.NumberOfUnits,
-        NumberOfBeds = touristObject.NumberOfBeds,
-        Description = touristObject.Description,
-        Owner = touristObject.Owner,
-        Featured = touristObject.Featured,
-        CategoryName = null,
-        MunicipalityName = (await _context.Municipalities.FindAsync(touristObject.MunicipalityId))?.Name ?? "",
-        AdditionalServices = touristObject.AdditionalServices.Select(s => s.Name).ToList(),
-        Photographs = touristObject.Photographs
-    .Select(p => new PhotographDto
-    {
-      Id = p.Id,
-      Url = p.Url
-    })
-    .ToList()
-      };
-
-      return Ok(resultDto);
-    }
-
-    [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> DeleteObject(int id)
-    {
-      var touristObject = await _context.TouristObjects
-          .Include(o => o.Photographs)
-          .FirstOrDefaultAsync(o => o.Id == id);
-
-      if (touristObject == null)
-        return NotFound(new { message = "Objekat nije pronađen." });
-
-      if (touristObject.Photographs.Any())
-      {
-        var uploadsFolder = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot",
-            "uploads"
-        );
-
-        foreach (var photo in touristObject.Photographs)
+        [HttpGet("visitor")]
+        public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForVisitor([FromQuery] ObjectParams objectParams)
         {
-          var filePath = Path.Combine(
-              uploadsFolder,
-              Path.GetFileName(photo.Url)
-          );
-
-          if (System.IO.File.Exists(filePath))
-            System.IO.File.Delete(filePath);
+            var pagedList = await _service.GetObjectsForVisitor(objectParams);
+            Response.AddPaginationHeader(pagedList.Metadata);
+            return pagedList;
         }
-      }
 
-      _context.TouristObjects.Remove(touristObject);
-      await _context.SaveChangesAsync();
-
-      return NoContent();
-    }
-
-    [HttpPut("edit/{id}")]
-    public async Task<IActionResult> UpdateObject(int id, [FromForm] UpdateTouristObjectDto dto)
-    {
-      var touristObject = await _context.TouristObjects
-          .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs)
-          .FirstOrDefaultAsync(o => o.Id == id);
-
-      if (touristObject == null)
-        return NotFound(new { message = "Objekat nije pronađen." });
-
-      touristObject.Name = dto.Name;
-      touristObject.ObjectTypeId = dto.ObjectTypeId;
-      touristObject.Status = dto.Status;
-      touristObject.Address = dto.Address;
-      touristObject.Coordinate1 = dto.Coordinate1 / 100;
-      touristObject.Coordinate2 = dto.Coordinate2 / 100;
-      touristObject.ContactPhone = dto.ContactPhone;
-      touristObject.ContactEmail = dto.ContactEmail;
-      touristObject.NumberOfUnits = dto.NumberOfUnits;
-      touristObject.NumberOfBeds = dto.NumberOfBeds;
-      touristObject.Description = dto.Description;
-      touristObject.Owner = dto.Owner;
-      touristObject.Featured = dto.Featured;
-      //touristObject.CategoryId = dto.CategoryId;
-      touristObject.MunicipalityId = dto.MunicipalityId;
-
-      touristObject.AdditionalServices.Clear();
-
-      if (dto.AdditionalServiceIds != null && dto.AdditionalServiceIds.Any())
-      {
-        var services = await _context.AdditionalServices
-            .Where(s => dto.AdditionalServiceIds.Contains(s.Id))
-            .ToListAsync();
-
-        foreach (var s in services)
-          touristObject.AdditionalServices.Add(s);
-      }
-
-      if (dto.DeletedPhotographIds != null && dto.DeletedPhotographIds.Any())
-      {
-        var uploadsFolder = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot",
-            "uploads"
-        );
-
-        var photosToDelete = touristObject.Photographs
-            .Where(p => dto.DeletedPhotographIds.Contains(p.Id))
-            .ToList();
-
-        foreach (var photo in photosToDelete)
+        [Authorize(Roles = "Officer")]
+        [HttpGet("officer")]
+        public async Task<ActionResult<IEnumerable<ObjectDto>>> GetObjectsForOfficer([FromQuery] ObjectParams objectParams)
         {
-          var filePath = Path.Combine(
-              uploadsFolder,
-              Path.GetFileName(photo.Url)
-          );
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-          if (System.IO.File.Exists(filePath))
-            System.IO.File.Delete(filePath);
+            var officer = await _service.GetObjectOfficer(Guid.Parse(userId));
+            if (officer == null) return Forbid();
 
-          _context.Photographs.Remove(photo);
+            var pagedList = await _service.GetObjectsForOfficer(objectParams, officer.Id, officer.MunicipalityId);
+            Response.AddPaginationHeader(pagedList.Metadata);
+            return pagedList;
         }
-      }
 
-      if (dto.Photographs != null && dto.Photographs.Any())
-      {
-        var uploadsFolder = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot",
-            "uploads"
-        );
 
-        if (!Directory.Exists(uploadsFolder))
-          Directory.CreateDirectory(uploadsFolder);
-
-        foreach (var file in dto.Photographs)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ObjectDto>> GetObject(int id)
         {
-          var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-          var filePath = Path.Combine(uploadsFolder, fileName);
-
-          using (var stream = new FileStream(filePath, FileMode.Create))
-          {
-            await file.CopyToAsync(stream);
-          }
-
-          touristObject.Photographs.Add(new Photograph
-          {
-            Url = "/uploads/" + fileName
-          });
+            var dto = await _service.GetObject(id);
+            if (dto == null) return NotFound();
+            return Ok(dto);
         }
-      }
 
-      await _context.SaveChangesAsync();
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var filters = await _service.GetFilters();
+            return Ok(new
+            {
+                types = filters.types,
+                municipalities = filters.municipalities,
+                categories = filters.categories,
+                additionalServices = filters.services
+            });
+        }
 
-      return NoContent();
+        [HttpGet("object-types")]
+        public async Task<IActionResult> GetObjectTypes()
+        {
+            var types = await _service.GetObjectTypes();
+            return Ok(types);
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var categories = await _service.GetCategories();
+            return Ok(categories);
+        }
+
+        [HttpGet("municipalities")]
+        public async Task<IActionResult> GetMunicipalities()
+        {
+            var municipalities = await _service.GetMunicipalities();
+            return Ok(municipalities);
+        }
+
+        [HttpGet("additional-services")]
+        public async Task<IActionResult> GetAdditionalServices()
+        {
+            var services = await _service.GetAdditionalServices();
+            return Ok(services);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateObject([FromForm] TouristObjectCreateDto dto)
+        {
+            var resultDto = await _service.CreateObject(dto);
+            return Ok(resultDto);
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteObject(int id)
+        {
+            var deleted = await _service.DeleteObject(id);
+            if (!deleted) return NotFound(new { message = "Objekat nije pronađen." });
+            return NoContent();
+        }
+
+        [HttpPut("edit/{id}")]
+        public async Task<IActionResult> UpdateObject(int id, [FromForm] UpdateTouristObjectDto dto)
+        {
+            var updated = await _service.UpdateObject(id, dto);
+            if (!updated) return NotFound(new { message = "Objekat nije pronađen." });
+            return NoContent();
+        }
+
+        [HttpGet("featured-objects")]
+        public async Task<ActionResult<IEnumerable<ObjectDto>>> GetFeaturedObjects()
+        {
+            var featuredObjects = await _service.GetFeaturedObjects();
+            return Ok(featuredObjects);
+        }
+
+        [HttpGet("map/visitor")]
+        public async Task<ActionResult<IEnumerable<MapObjectDto>>> GetObjectsForMapVisitor([FromQuery] ObjectParams objectParams)
+        {
+            var result = await _service.GetObjectsForMapVisitor(objectParams);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Officer")]
+        [HttpGet("map/officer")]
+        public async Task<ActionResult<IEnumerable<MapObjectDto>>> GetObjectsForMapOfficer([FromQuery] ObjectParams objectParams)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var officer = await _service.GetObjectOfficer(Guid.Parse(userId));
+            if (officer == null) return Forbid();
+
+            var result = await _service.GetObjectsForMapOfficer(objectParams, officer.Id, officer.MunicipalityId);
+            return Ok(result);
+        }
     }
-
-    [HttpGet("featured-objects")]
-    public async Task<ActionResult<IEnumerable<ObjectDto>>> GetFeaturedObjects()
-    {
-      var featuredObjects = await _context.TouristObjects
-          .AsSplitQuery()
-          .Include(o => o.ObjectType)
-          .Include(o => o.Category)
-          .Include(o => o.Municipality)
-          .Include(o => o.AdditionalServices)
-          .Include(o => o.Photographs)
-          .Where(o => o.Status && o.Featured)
-          .Select(o => new ObjectDto
-          {
-            Id = o.Id,
-            Name = o.Name,
-            ObjectTypeName = o.ObjectType.Name,
-            Status = o.Status,
-            Address = o.Address,
-            Coordinate1 = o.Coordinate1,
-            Coordinate2 = o.Coordinate2,
-            ContactPhone = o.ContactPhone,
-            ContactEmail = o.ContactEmail,
-            NumberOfUnits = o.NumberOfUnits,
-            NumberOfBeds = o.NumberOfBeds,
-            Description = o.Description,
-            Owner = o.Owner,
-            Featured = o.Featured,
-            CategoryName = o.Category != null ? o.Category.Name : null,
-            MunicipalityName = o.Municipality.Name,
-            AdditionalServices = o.AdditionalServices.Select(s => s.Name).ToList(),
-            Photographs = o.Photographs
-                  .Select(p => new PhotographDto { Id = p.Id, Url = p.Url })
-                  .ToList()
-          })
-          .ToListAsync();
-
-      return Ok(featuredObjects);
-    }
-
-    private IQueryable<MapObjectDto> BuildMapQuery(
-    ObjectParams objectParams,
-    int? municipalityId = null)
-    {
-      var query = _context.TouristObjects
-          .AsQueryable()
-          .Include(o => o.Municipality)
-          .Include(o => o.Category)
-          .Include(o => o.Photographs)
-          .Where(o => o.Status);
-
-      if (municipalityId.HasValue)
-      {
-        query = query.Where(o => o.MunicipalityId == municipalityId.Value);
-      }
-
-      query = query
-          .Filter(objectParams.ObjectTypes,
-                  objectParams.Municipalities,
-                  objectParams.Categories,
-                  objectParams.AdditionalServices)
-          .Search(objectParams.SearchTerm);
-
-      return query
-          .Where(o => o.Coordinate1 != 0 && o.Coordinate2 != 0)
-          .Select(o => new MapObjectDto
-          {
-            Id = o.Id,
-            Name = o.Name,
-            Coordinate1 = o.Coordinate1,
-            Coordinate2 = o.Coordinate2,
-            MunicipalityName = o.Municipality.Name,
-            CategoryName = o.Category != null ? o.Category.Name : null,
-            ThumbnailUrl = o.Photographs
-                  .Select(p => p.Url)
-                  .FirstOrDefault()
-          });
-    }
-
-    [HttpGet("map/visitor")]
-    public async Task<ActionResult<IEnumerable<MapObjectDto>>> GetObjectsForMapVisitor(
-        [FromQuery] ObjectParams objectParams)
-    {
-      var result = await BuildMapQuery(objectParams)
-          .ToListAsync();
-
-      return Ok(result);
-    }
-
-    [Authorize(Roles = "Officer")]
-    [HttpGet("map/officer")]
-    public async Task<ActionResult<IEnumerable<MapObjectDto>>> GetObjectsForMapOfficer(
-        [FromQuery] ObjectParams objectParams)
-    {
-      var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-      if (string.IsNullOrEmpty(userId))
-        return Unauthorized();
-
-      var officer = await _context.Users
-          .Include(u => u.OfficerProfile)
-          .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-
-      if (officer?.OfficerProfile == null)
-        return Forbid();
-
-      var municipalityId = officer.OfficerProfile.MunicipalityId;
-
-      var result = await BuildMapQuery(objectParams, municipalityId)
-          .ToListAsync();
-
-      return Ok(result);
-    }
-
-
-  }
 }

@@ -62,7 +62,7 @@ const Signup = () => {
         })
       );
 
-      navigate("/"); // ili ruta koju želiš nakon logina
+      navigate("/"); 
     } catch (err) {
       console.error(err);
     }

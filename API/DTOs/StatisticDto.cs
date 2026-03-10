@@ -25,7 +25,7 @@ public class ObjectsByCategoryDto
 
 public class AverageRatingRangeDto
 {
-    public string Range { get; set; } = null!; // "1-2", "2-3", ...
+    public string Range { get; set; } = null!; 
     public int Count { get; set; }
 }
 

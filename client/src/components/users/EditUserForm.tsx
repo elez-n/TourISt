@@ -9,6 +9,7 @@ import { useUpdateUserMutation } from "@/store/api/adminApi";
 import type { UserInfoDto, UpdateUserDto } from "@/store/types/User";
 import { createUpdateUserSchema } from "@/lib/schemas/editUserSchema";
 import { z } from "zod";
+import { toast } from "sonner";
 
 interface Props {
   isOpen: boolean;
@@ -75,10 +76,10 @@ export const EditUserModal: React.FC<Props> = ({ isOpen, onClose, user }) => {
         } as UpdateUserDto,
       }).unwrap();
 
-      alert("Korisnik je uspješno ažuriran.");
+      toast.success("Korisnik je uspješno ažuriran.");
       onClose();
     } catch {
-      alert("Greška prilikom ažuriranja korisnika.");
+      toast.error("Greška prilikom ažuriranja korisnika.");
     }
   };
 
@@ -152,7 +153,7 @@ export const EditUserModal: React.FC<Props> = ({ isOpen, onClose, user }) => {
             Otkaži
           </Button>
 
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="bg-[#5c5c99]!">
             {isLoading ? "Čuvanje..." : "Sačuvaj izmjene"}
           </Button>
         </div>

@@ -136,10 +136,10 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
 
       if (initialData) {
         await updateTouristObject({ id: initialData.id, formData }).unwrap();
-        alert("Objekat uspješno ažuriran!");
+        //alert("Objekat uspješno ažuriran!");
       } else {
         await createTouristObject(formData).unwrap();
-        alert("Objekat uspješno kreiran!");
+        //alert("Objekat uspješno kreiran!");
       }
 
       reset();

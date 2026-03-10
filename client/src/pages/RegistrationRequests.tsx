@@ -31,8 +31,9 @@ const RegistrationRequestsPage = () => {
             {requests.map((r) => (
               <div key={r.id} className="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">{r.objectName}</p>
-                  <p className="text-sm text-gray-500">{r.ownerFirstName} {r.ownerLastName} - {r.ownerEmail}</p>
+                  <p className="font-semibold">Naziv objekta: {r.objectName}</p>
+                  <p className="text-sm text-gray-500">{r.ownerFirstName} {r.ownerLastName} - {r.ownerEmail}, {r.ownerPhone}</p>
+                  <p className="text-sm text-gray-500">{r.address}</p>
                   <p className="text-sm text-gray-500">Status: {r.status}</p>
                   <p className="text-xs text-gray-400">Kreirano: {new Date(r.createdAt).toLocaleDateString()}</p>
                 </div>
