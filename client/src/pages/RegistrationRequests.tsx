@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import PagesHero from "../sections/PagesHero";
 import LoadingSpinner from "@/components/ui/loading";
 import { Button } from "@/components/ui/button";
+import background from "@/assets/requests.jpg"
 
 import { useGetRequestsQuery, useUpdateStatusMutation } from "@/store/api/registrationRequestsApi";
 import { useAppSelector } from "@/store/store";
@@ -21,7 +22,7 @@ const RegistrationRequestsPage = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
 
-      <PagesHero title="Zahtjevi za registraciju objekata" imageSrc="/assets/banner.jpg" />
+      <PagesHero title="Zahtjevi za registraciju objekata" imageSrc={background} />
 
       <main className="flex-1 max-w-6xl mx-auto px-4 lg:px-8 py-8 w-full">
         {requests?.length === 0 ? (

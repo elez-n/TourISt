@@ -2,7 +2,7 @@ import { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PagesHero from "../sections/PagesHero";
-import background from "../assets/background.jpg"; 
+import background from "../assets/contact.jpg"; 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -49,21 +49,21 @@ const ContactPage = () => {
               Javite nam se
             </h2>
             <p className="text-gray-600">
-              Imate pitanje ili prijedlog? Pošaljite nam poruku i odgovorit ćemo u najkraćem mogućem roku.
+              Imate pitanje ili prijedlog? Pošaljite nam poruku i odgovorićemo u najkraćem mogućem roku.
             </p>
 
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#5c5c99]" />
-                <span className="text-gray-700">kontakt@firma.com</span>
+                <span className="text-gray-700">tourist@info.ba</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#5c5c99]" />
-                <span className="text-gray-700">+387 61 123 456</span>
+                <span className="text-gray-700">+387 57 330 200</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-[#5c5c99]" />
-                <span className="text-gray-700">Sarajevo, Bosna i Hercegovina</span>
+                <span className="text-gray-700">Istočno Sarajevo, Bosna i Hercegovina</span>
               </div>
             </div>
           </div>

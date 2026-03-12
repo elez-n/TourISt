@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/logooo.png";
 import { jwtDecode } from "jwt-decode";
+import LoadingSpinner from "@/components/ui/loading";
 
 interface JwtPayload {
   userId: string;
@@ -81,7 +82,7 @@ const SetPasswordPage = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-20 text-gray-600">Provjera linka...</p>;
+  if (loading) return <LoadingSpinner/>
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">

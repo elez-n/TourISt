@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "sonner";
 
 import MapPicker from "@/components/MapPicker";
 
@@ -136,10 +137,10 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
 
       if (initialData) {
         await updateTouristObject({ id: initialData.id, formData }).unwrap();
-        //alert("Objekat uspješno ažuriran!");
+        toast.success("Objekat uspješno ažuriran!");
       } else {
         await createTouristObject(formData).unwrap();
-        //alert("Objekat uspješno kreiran!");
+        toast.success("Objekat uspješno kreiran!");
       }
 
       reset();
@@ -149,7 +150,7 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
       setEditMode?.(false);
     } catch (err) {
       console.error(err);
-      alert("Greška prilikom čuvanja objekta.");
+      toast.error("Greška prilikom čuvanja objekta.");
     }
   };
 
@@ -288,20 +289,6 @@ export default function TouristObjectForm({ setEditMode, refetch, initialData }:
               )}
             />
           </div>
-            {/*
-          <div>
-            <Label>Kategorija</Label>
-            <Controller
-              control={control}
-              name="categoryId"
-              render={({ field }) => (
-                <select {...field} className="border rounded px-3 py-2 w-full" onChange={e => field.onChange(Number(e.target.value))}>
-                  <option value={0}>Odaberi kategoriju</option>
-                  {categories?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              )}
-            />
-          </div> */}
 
           <div>
             <Label>Opština</Label>

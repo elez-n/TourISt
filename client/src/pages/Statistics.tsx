@@ -8,7 +8,7 @@ import { useGetStatisticsQuery } from "@/store/api/statisticsApi";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, Legend
 } from "recharts";
-import background from "../assets/mapa.jpg";
+import background from "../assets/statistics.jpg";
 import { useAppSelector } from "@/store/store";
 
 const COLORS = ["#1E3A8A", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE"];
@@ -81,7 +81,7 @@ const StatisticsPage: React.FC = () => {
         )}
 
         <Card title="Objekti po tipu">
-          <div className="h-64">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie

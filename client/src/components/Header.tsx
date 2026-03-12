@@ -50,19 +50,25 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 w-full h-20 z-50 bg-[#272757]">
+    <header className="fixed top-0 w-full h-20 z-50 bg-[#272757]/90 backdrop-blur-md shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between">
-        <img src={logo} alt="Logo" className="h-10 md:h-20" />
+        <img
+          src={logo}
+          alt="Logo"
+          className="h-10 md:h-20 cursor-pointer hover:scale-105 transition"
+          onClick={() => navigate("/")}
+        />
 
         <nav className="hidden md:flex items-center gap-6">
           {links.map((link) => (
             <span
               key={link.name}
-              className="flex items-center gap-2 text-white cursor-pointer text-lg font-medium px-2 py-1 transition-all hover:scale-110"
+              className="relative flex items-center gap-2 text-white cursor-pointer text-lg font-medium px-2 py-1 transition-all hover:scale-105 group"
               onClick={() => handleNavigate(link.path)}
             >
               <img src={link.icon} alt={link.name} className="h-5 w-5" />
               {link.name}
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-yellow-400 transition-all group-hover:w-full"></span>
             </span>
           ))}
 
@@ -70,7 +76,7 @@ const Header = () => {
             <img
               src={userIcon}
               alt="User"
-              className="h-9 w-9 cursor-pointer rounded-full hover:scale-110 transition"
+              className="h-9 w-9 cursor-pointer rounded-full border-2 border-white hover:border-yellow-400 hover:shadow-lg transition"
               onClick={() => setUserOpen(!userOpen)}
             />
             {userOpen && (
@@ -90,11 +96,11 @@ const Header = () => {
       </div>
 
       {open && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-indigo-700! flex flex-col items-center py-2 space-y-2">
+        <div className="md:hidden absolute top-full left-0 w-full bg-[#272757]! flex flex-col items-center py-4 space-y-3 animate-slideDown">
           {links.map((link) => (
             <span
               key={link.name}
-              className="flex items-center gap-2 text-white cursor-pointer text-lg font-medium w-full text-center py-2 hover:text-yellow-300"
+              className="flex items-center gap-2 text-white cursor-pointer text-lg font-medium w-full text-center py-2 hover:text-yellow-300 transition"
               onClick={() => handleNavigate(link.path)}
             >
               <img src={link.icon} alt={link.name} className="h-5 w-5" />

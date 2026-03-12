@@ -42,9 +42,14 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
       <PaginationContent className="flex justify-center items-center gap-2 flex-wrap">
         <PaginationItem>
           <PaginationLink
-            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-            className={`min-w-25 py-2 px-3 border rounded text-sm text-gray-700 ${
-              currentPage === 1 ? "opacity-50 pointer-events-none" : "hover:bg-gray-100"
+            onClick={() => {
+              onPageChange(Math.max(1, currentPage - 1));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`min-w-25 py-2 px-4 rounded-lg text-sm font-medium transition ${
+              currentPage === 1
+                ? "opacity-50 pointer-events-none bg-gray-100 text-gray-400!"
+                : "bg-white border hover:bg-gray-50 text-gray-700!"
             }`}
           >
             ← Prethodna
@@ -54,16 +59,19 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
         {getPages().map((p, i) =>
           p === "ellipsis" ? (
             <PaginationItem key={`e-${i}`}>
-              <PaginationEllipsis className="px-2 text-gray-500" />
+              <PaginationEllipsis className="px-2 text-gray-400!" />
             </PaginationItem>
           ) : (
             <PaginationItem key={p}>
               <PaginationLink
-                onClick={() => onPageChange(p)}
-                className={`min-w-10 py-2 px-3 border rounded text-sm text-gray-700 ${
+                onClick={() => {
+                  onPageChange(p);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className={`min-w-10 py-2 px-4 rounded-lg text-sm font-medium transition ${
                   p === currentPage
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "hover:bg-gray-100"
+                    ? "bg-[#5c5c99] text-white! shadow-md"
+                    : "bg-white border hover:bg-gray-50! text-gray-700!"
                 }`}
               >
                 {p}
@@ -74,9 +82,14 @@ const ObjectsPagination = ({ currentPage, totalPages, onPageChange }: Props) => 
 
         <PaginationItem>
           <PaginationLink
-            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-            className={`min-w-25 py-2 px-3 border rounded text-sm text-gray-700 ${
-              currentPage === totalPages ? "opacity-50 pointer-events-none" : "hover:bg-gray-100"
+            onClick={() => {
+              onPageChange(Math.min(totalPages, currentPage + 1));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`min-w-25 py-2 px-4 rounded-lg text-sm font-medium transition ${
+              currentPage === totalPages
+                ? "opacity-50 pointer-events-none bg-gray-100 text-gray-400!"
+                : "bg-white border hover:bg-gray-50 text-gray-700!"
             }`}
           >
             Sljedeća →

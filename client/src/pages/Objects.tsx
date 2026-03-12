@@ -33,6 +33,7 @@ import PagesHero from "@/sections/PagesHero";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Modal } from "@/components/object-details/Modal";
+import { toast } from "sonner";
 
 const Objects = () => {
   const dispatch = useAppDispatch();
@@ -122,7 +123,7 @@ const Objects = () => {
         municipalityId: Number(formData.municipalityId),
       }).unwrap();
 
-      alert("Zahtjev uspješno poslan!");
+      toast.success("Zahtjev uspješno poslan!");
       setIsRegistrationOpen(false);
 
       setFormData({
@@ -136,7 +137,7 @@ const Objects = () => {
         municipalityId: 0,
       });
     } catch {
-      alert("Greška prilikom slanja zahtjeva.");
+      toast.error("Greška prilikom slanja zahtjeva.");
     }
   };
 
@@ -182,8 +183,12 @@ const Objects = () => {
               <ObjectsPagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
-                onPageChange={(page) => dispatch(setPageNumber(page))}
+                onPageChange={(page) => {
+                  dispatch(setPageNumber(page));
+                  window.scrollTo({ top: 0, behavior: "smooth" }); 
+                }}
               />
+
             </div>
           )}
         </div>

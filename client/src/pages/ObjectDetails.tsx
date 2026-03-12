@@ -19,6 +19,7 @@ import TouristObjectForm from "../components/all-objects/TouristObjectForm";
 import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "../store/api/TouristObjectApi";
 import LoadingSpinner from "@/components/ui/loading";
 import { Modal } from "@/components/object-details/Modal";
+import { toast } from "sonner";
 
 import { useGetFavoritesQuery, useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/store/api/favoritesApi";
 import { useAppSelector } from "@/store/store";
@@ -51,7 +52,7 @@ const ObjectDetailsPage = () => {
         await addFavorite(object.id);
       }
     } catch {
-      alert("Greška pri izmjeni omiljenih");
+      toast.error("Greška pri izmjeni omiljenih");
     }
   };
 
@@ -61,7 +62,7 @@ const ObjectDetailsPage = () => {
       await deleteObject(id).unwrap();
       navigate("/objects");
     } catch {
-      alert("Greška pri brisanju objekta");
+      toast.error("Greška pri brisanju objekta");
     }
   };
 
@@ -87,7 +88,6 @@ const ObjectDetailsPage = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 space-y-12 py-10 mt-20">
-        {/* Header i akcije */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
           <ObjectHeader object={object} />
           <div className="flex items-center gap-2 flex-wrap">
@@ -131,7 +131,6 @@ const ObjectDetailsPage = () => {
           </div>
         </div>
 
-        {/* Forma za edit */}
         {editMode ? (
           <TouristObjectForm
             initialData={object}
@@ -140,12 +139,10 @@ const ObjectDetailsPage = () => {
           />
         ) : (
           <>
-            {/* Galerija */}
             <section className="rounded-2xl overflow-hidden shadow-lg">
               <GallerySection photographs={object.photographs} />
             </section>
 
-            {/* Glavne informacije + dodatne usluge */}
             <section className="bg-white rounded-2xl shadow p-6 space-y-6">
               <MainInfoSection object={object} />
               <AmenitiesSection additionalServices={object.additionalServices} />
@@ -153,7 +150,6 @@ const ObjectDetailsPage = () => {
 
             <CategorizationSection objectId={object.id} />
 
-            {/* Vlasnik objekta */}
             <section className="bg-white rounded-2xl shadow p-6">
               <OwnerSection
                 owner={object.owner}
@@ -162,7 +158,6 @@ const ObjectDetailsPage = () => {
               />
             </section>
 
-            {/* Mapa */}
             <section className="rounded-2xl overflow-hidden shadow-lg">
               <MapSection
                 title="Lokacija objekta"
@@ -171,7 +166,6 @@ const ObjectDetailsPage = () => {
               />
             </section>
 
-            {/* Recenzije */}
             <section className="bg-white rounded-2xl shadow p-6">
               <ReviewsSection
                 objectId={object.id}
@@ -184,7 +178,6 @@ const ObjectDetailsPage = () => {
         )}
       </main>
 
-      {/* Modal za kategorizaciju */}
       <Modal isOpen={showEvaluationForm} onClose={() => setShowEvaluationForm(false)}>
         <h2 className="text-lg font-semibold mb-4">Kategorizacija objekta</h2>
         <EvaluationForm

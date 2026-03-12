@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { useGetFavoritesQuery } from "@/store/api/favoritesApi";
 import LoadingSpinner from "@/components/ui/loading";
 import PagesHero from "@/sections/PagesHero";
-import background1 from "../assets/background1.jpg";
+import background1 from "../assets/favorites.jpg";
 
 const Favorites = () => {
   const { data: favoriteObjects = [], isLoading } = useGetFavoritesQuery();

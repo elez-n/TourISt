@@ -62,16 +62,23 @@ const Signup = () => {
         })
       );
 
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
-        <div className="hidden md:flex flex-col justify-center items-center bg-[#272757]! text-white p-10">
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      <div
+        className="absolute inset-0 bg-cover bg-center blur-md"
+        style={{ backgroundImage: "url('/src/assets/jezero.jpg')" }}
+      ></div>
+
+      <div className="absolute inset-0 bg-black/40"></div>
+
+      <div className="relative z-10 bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
+        <div className="hidden md:flex flex-col justify-center items-center bg-[#272757] text-white p-10">
           <img src={logo} alt="Logo" className="w-70" />
           <p className="text-center text-indigo-100 max-w-xs mt-4">
             Napravite nalog i pronađite savršen turistički objekat za vas.

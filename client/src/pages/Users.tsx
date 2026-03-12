@@ -2,7 +2,7 @@ import { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PagesHero from "../sections/PagesHero";
-import background1 from "../assets/background1.jpg";
+import background1 from "../assets/users.jpg";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/loading";
@@ -24,6 +24,7 @@ import ObjectsPagination from "@/components/all-objects/ObjectsPagination";
 import type { UserInfoDto } from "@/store/types/User";
 import { EditUserModal } from "@/components/users/EditUserForm";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Users = () => {
   const dispatch = useAppDispatch();
@@ -76,7 +77,7 @@ const Users = () => {
         await toggleUserStatus(id).unwrap();
         refetch();
       } catch {
-        alert("Greška prilikom izmjene statusa korisnika.");
+        toast.error("Greška prilikom izmjene statusa korisnika.");
       }
     }
   };

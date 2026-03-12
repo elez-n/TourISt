@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useSelector } from "react-redux";
 import { useCreateEvaluationMutation, useGetAllCriteriaQuery } from "@/store/api/evaluationApi";
 import type { RootState } from "@/store/store";
+import { toast } from "sonner";
 
 type EvaluationFormValues = {
     scores: { criteriaId: number; points: number }[];
@@ -71,7 +72,7 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
     }, [criteria, reset]);
 
     const onSubmit: SubmitHandler<EvaluationFormValues> = async (values) => {
-        if (!currentUserId) return alert("Korisnik nije prijavljen");
+        if (!currentUserId) return toast.error("Korisnik nije prijavljen");
 
         try {
             await createEvaluation({
@@ -82,9 +83,9 @@ export const EvaluationForm: React.FC<Props> = ({ touristObjectId, onSuccess }) 
             onSuccess?.();
         } catch (err: unknown) {
             if (err && typeof err === "object" && "data" in err) {
-                alert(err || "Greška prilikom kategorizacije.");
+                toast.error(err + " - Greška prilikom kategorizacije.");
             } else {
-                alert("Greška prilikom kategorizacije.");
+                toast.error("Greška prilikom kategorizacije.");
             }
         }
     };

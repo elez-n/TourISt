@@ -7,6 +7,7 @@ import { User, Mail, Info, LogOut, Heart, BarChart3, FileText, Users } from "luc
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetRequestsQuery } from "@/store/api/registrationRequestsApi";
+import LoadingSpinner from "../ui/loading";
 
 const UserCard: FC = () => {
   const dispatch = useAppDispatch();
@@ -39,7 +40,7 @@ const UserCard: FC = () => {
     }
   };
 
-  if (isLoading) return <p className="p-4 text-gray-600">Loading user...</p>;
+  if (isLoading) return <LoadingSpinner/>
   if (!user) return <p className="p-4 text-gray-600">User not found.</p>;
 
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;

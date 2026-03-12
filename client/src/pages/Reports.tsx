@@ -5,7 +5,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PagesHero from "../sections/PagesHero";
 import LoadingSpinner from "../components/ui/loading";
-import background1 from "../assets/background1.jpg";
+import background1 from "../assets/reports.jpg";
 
 import {
   useGetObjectsReportMutation,

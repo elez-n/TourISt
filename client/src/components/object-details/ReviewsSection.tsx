@@ -1,5 +1,3 @@
-
-
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { useGetReviewsForObjectQuery, useCreateReviewMutation } from "../../store/api/reviewsApi";
 import LoadingSpinner from "@/components/ui/loading";
+import { useAppSelector } from "@/store/store"; 
+import { toast } from "sonner";
 
 interface ReviewsSectionProps {
   objectId: number;
@@ -16,8 +16,10 @@ interface ReviewsSectionProps {
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating, reviewCount, refetchObject }) => {
-  const { data: reviews = [], isLoading, refetch} = useGetReviewsForObjectQuery(objectId);
+  const { data: reviews = [], isLoading, refetch } = useGetReviewsForObjectQuery(objectId);
   const [createReview, { isLoading: submitting }] = useCreateReviewMutation();
+
+  const user = useAppSelector(state => state.auth.user); 
 
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(0);
@@ -26,8 +28,8 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
   const reviewsToShow = useMemo(() => reviews.slice(0, visibleCount), [reviews, visibleCount]);
 
   const handleSubmit = async () => {
-    if (!newComment) return alert("Napišite komentar!");
-    if (!newRating) return alert("Odaberite ocjenu!");
+    if (!newComment) return toast.error("Napišite komentar!");
+    if (!newRating) return toast.error("Odaberite ocjenu!");
 
     try {
       await createReview({ objectId, rating: newRating, description: newComment }).unwrap();
@@ -35,9 +37,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
       refetch();
       setNewComment("");
       setNewRating(0);
-      setVisibleCount((prev) => prev + 1); 
+      setVisibleCount((prev) => prev + 1);
     } catch {
-      alert("Prijavite se da biste ostavili recenziju.");
+      toast.error("Greška pri slanju recenzije.");
     }
   };
 
@@ -66,7 +68,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
       <div className="space-y-4">
         {reviewsToShow.map((r) => (
           <Card key={r.id}>
-            <CardContent className="p-5 space-y-2">
+            <CardContent className="p-3 space-y-0">
               <div className="flex justify-between items-center">
                 <span className="font-semibold">{r.fullName}</span>
                 <span className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</span>
@@ -95,27 +97,36 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ objectId, averageRating
 
       <Card>
         <CardContent className="p-6 space-y-4">
-          <h3 className="font-semibold">Ostavite recenziju</h3>
+          {user ? (
+            <>
+              <h3 className="font-semibold">Ostavite recenziju</h3>
 
-          <div className="flex items-center gap-2">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                onClick={() => setNewRating(i + 1)}
-                className={`w-6 h-6 cursor-pointer ${i < newRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
+              <div className="flex items-center gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    onClick={() => setNewRating(i + 1)}
+                    className={`w-6 h-6 cursor-pointer ${i < newRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
+                  />
+                ))}
+              </div>
+
+              <Textarea
+                placeholder="Napišite vašu recenziju..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
               />
-            ))}
-          </div>
 
-          <Textarea
-            placeholder="Napišite vašu recenziju..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
+              <Button onClick={handleSubmit} disabled={submitting} className="bg-[#5c5c99]! hover:bg-[#272757]!">
+                {submitting ? "Slanje..." : "Pošalji recenziju"}
+              </Button>
+            </>
+          ) : (
+            <div className="border border-gray-200 rounded-lg bg-gray-50 p-6 text-center text-gray-700 font-medium">
+                Prijavite se da biste ostavili recenziju.
+            </div>
 
-          <Button onClick={handleSubmit} disabled={submitting} className="bg-[#5c5c99]! hover:bg-[#272757]!">
-            {submitting ? "Slanje..." : "Pošalji recenziju"}
-          </Button>
+          )}
         </CardContent>
       </Card>
     </section>

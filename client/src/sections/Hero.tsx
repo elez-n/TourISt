@@ -25,9 +25,8 @@ const HeroImageSlider = () => {
           key={i}
           src={img}
           alt="Grad"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-            i === index ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${i === index ? "opacity-100" : "opacity-0"
+            }`}
         />
       ))}
     </div>
@@ -45,10 +44,11 @@ const Hero = () => {
           </h1>
           <p className="text-gray-600 text-base md:text-lg opacity-0 animate-fadeInUp delay-200">
             Centralna evidencija i promocija hotela, apartmana i drugih
-            smještajnih kapaciteta.
+            smještajnih kapaciteta. Bilo da tražite luksuzni hotel, udoban apartman ili autentičan lokalni smještaj,
+            kod nas ćete pronaći inspiraciju i sigurnost da vaš odmor bude nezaboravan. Savršen odmor počinje upravo ovdje.
           </p>
           <Button className="bg-[#5C5C99]! hover:bg-[#272757]! text-white rounded-xl shadow-lg opacity-0 animate-fadeInUp delay-400"
-          onClick={() => navigate("/objects")}>
+            onClick={() => navigate("/objects")}>
             Pogledaj objekte
           </Button>
         </div>

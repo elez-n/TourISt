@@ -60,9 +60,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-400 to-indigo-600 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
-        <div className="hidden md:flex flex-col justify-center items-center bg-[#272757]! text-white p-10">
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      <div
+        className="absolute inset-0 bg-cover bg-center blur-sm"
+        style={{ backgroundImage: "url('/src/assets/jezero.jpg')" }}
+      ></div>
+
+      <div className="absolute inset-0 bg-black/30"></div>
+
+      <div className="relative z-10 bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fadeInUp">
+        <div className="hidden md:flex flex-col justify-center items-center bg-[#272757] text-white p-10">
           <img src={logo} alt="Logo" className="w-70" />
           <p className="text-center text-indigo-100 max-w-xs">
             Tražite turističke objekte u Istočnom Sarajevu? Na pravom ste mjestu!
@@ -73,6 +80,7 @@ const Login = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             Dobrodošli nazad!
           </h2>
+
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="relative">
