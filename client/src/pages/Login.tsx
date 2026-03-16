@@ -41,7 +41,6 @@ const Login = () => {
       setAccessToken(accessToken);
 
       const decoded = jwtDecode<JwtPayload>(accessToken);
-      console.log("Decoded JWT:", decoded);
 
       dispatch(
         setUser({

@@ -1,12 +1,13 @@
 using System.Text;
 using API.Entities;
 using API.Extensions;
-using Dipl.Api.Data;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ClosedXML.Excel;
+using API.DTOs;
 
 public class ReportsService : IReportsService
 {

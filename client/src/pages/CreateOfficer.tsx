@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useCreateOfficerMutation } from "@/store/api/adminApi";
-import { useFetchMunicipalitiesQuery } from "@/store/api/TouristObjectApi";
+import { useFetchMunicipalitiesQuery } from "@/store/api/touristObjectApi";
 import { useNavigate } from "react-router-dom";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 

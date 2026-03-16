@@ -1,9 +1,7 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import LoadingSpinner from "@/components/ui/loading";
-import { useFetchFeaturedObjectsQuery } from "@/store/api/TouristObjectApi";
+import { useFetchFeaturedObjectsQuery } from "@/store/api/touristObjectApi";
 import { useNavigate } from "react-router-dom";
 
 const FeaturedObjects = () => {

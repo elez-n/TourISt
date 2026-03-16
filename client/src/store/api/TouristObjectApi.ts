@@ -1,9 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { TouristObjectDto } from "../types/TouristObject";
+import type { TouristObjectDto } from "../../models/types/TouristObject";
 import type { ObjectParams } from "../models/ObjectParams";
-import type { Pagination } from "../types/Pagination";
-import type { MapObjectDto } from "../types/MapObject";
+import type { Pagination } from "../../models/types/Pagination";
+import type { MapObjectDto } from "../../models/types/MapObject";
 
 export const touristObjectApi = createApi({
   reducerPath: "touristObjectApi",

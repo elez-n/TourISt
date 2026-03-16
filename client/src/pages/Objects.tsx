@@ -12,7 +12,7 @@ import {
   useFetchObjectTypesQuery,
   useGetTouristObjectsOfficerQuery,
   useGetTouristObjectsVisitorQuery,
-} from "@/store/api/TouristObjectApi";
+} from "@/store/api/touristObjectApi";
 
 import { useCreateRequestMutation } from "@/store/api/registrationRequestsApi";
 

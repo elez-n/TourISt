@@ -1,4 +1,4 @@
-using Dipl.Api.Data;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

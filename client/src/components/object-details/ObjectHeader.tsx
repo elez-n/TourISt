@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { MapPin } from "lucide-react";
-import type { TouristObjectDto } from "../../store/types/TouristObject";
+import type { TouristObjectDto } from "../../models/types/TouristObject";
 
 interface ObjectHeaderProps {
   object: TouristObjectDto;

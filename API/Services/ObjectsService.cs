@@ -4,9 +4,6 @@ using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.RequestHelpers;
-using System.Security.Claims;
-using Dipl.Api.Data;
-using API.DTO;
 
 namespace API.Services
 {

@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class UpdateTouristObjectDto
 {
     public string Name { get; set; } = null!;

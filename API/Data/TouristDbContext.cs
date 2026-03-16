@@ -1,8 +1,7 @@
-using Api.Entities;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dipl.Api.Data
+namespace API.Data
 {
     public class TouristDbContext : DbContext
     {

@@ -4,7 +4,7 @@ import type {
   RegistrationRequestDto, 
   GetRegistrationRequestDto, 
   UpdateStatusDto 
-} from "../types/RegistrationRequest";
+} from "../../models/types/RegistrationRequest";
 
 export const registrationRequestsApi = createApi({
   reducerPath: "registrationRequestsApi",

@@ -15,8 +15,7 @@ const defaultIcon = L.icon({
 });
 
 const highlightedIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
   iconSize: [25, 41],
   iconAnchor: [12, 41],

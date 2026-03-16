@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { TokenResponseDto, UserInfoDto } from "../types/User";
+import type { TokenResponseDto, UserInfoDto } from "../../models/types/User";
 
 interface LoginCredentials {
   username: string;

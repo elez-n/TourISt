@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class ReportDto
 {
     public List<int>? ObjectTypeIds { get; set; } = new();

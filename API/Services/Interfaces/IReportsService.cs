@@ -1,3 +1,5 @@
+using API.DTOs;
+
 public interface IReportsService
 {
     Task<IEnumerable<object>> GetObjectsReport(ReportDto request);

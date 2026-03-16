@@ -1,3 +1,4 @@
+namespace API.Entities;
 public class Criteria
 {
     public int Id { get; set; }

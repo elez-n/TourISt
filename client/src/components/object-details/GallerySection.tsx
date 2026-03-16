@@ -1,4 +1,4 @@
-import type { PhotographDto } from "@/store/types/TouristObject";
+import type { PhotographDto } from "@/models/types/TouristObject";
 import { useState } from "react";
 
 interface GallerySectionProps {

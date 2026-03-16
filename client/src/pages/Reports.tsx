@@ -14,13 +14,13 @@ import {
   useGenerateXlsxReportMutation,
 } from "@/store/api/reportsApi";
 
-import type { ReportDto, ReportResultDto } from "@/store/types/Report";
+import type { ReportDto, ReportResultDto } from "@/models/types/Report";
 import { Modal } from "@/components/object-details/Modal";
 import {
   useFetchCategoriesQuery,
   useFetchMunicipalitiesQuery,
   useFetchObjectTypesQuery,
-} from "@/store/api/TouristObjectApi";
+} from "@/store/api/touristObjectApi";
 
 import { selectCurrentUser } from "@/store/slice/authSlice";
 

@@ -1,5 +1,5 @@
 import { customBaseQuery } from "./baseApi";
-import type { ReviewDto } from "../types/ReviewDto";
+import type { ReviewDto } from "../../models/types/ReviewDto";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const reviewsApi = createApi({

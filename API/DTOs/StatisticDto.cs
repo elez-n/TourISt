@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class GeneralStatisticsDto
 {
     public int TotalObjects { get; set; }

@@ -1,8 +1,7 @@
-using API.DTO;
 using API.DTOs;
 using API.Entities;
 using API.RequestHelpers;
-using Dipl.Api.Data;
+using API.Data;
 using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.EntityFrameworkCore;

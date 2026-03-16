@@ -1,7 +1,8 @@
+using API.DTOs;
 using API.Services;
-using Dipl.Api.Data;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using API.Entities;
 
 public class RegistrationRequestService : IRegistrationRequestService
 {

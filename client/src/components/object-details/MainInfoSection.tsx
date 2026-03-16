@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { BedDouble, Home, Users } from "lucide-react";
-import type { TouristObjectDto } from "../../store/types/TouristObject";
+import type { TouristObjectDto } from "../../models/types/TouristObject";
 
 interface MainInfoSectionProps {
   object: TouristObjectDto;

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using API.Services;
+using API.DTOs;
 
 namespace API.Controllers
 {
@@ -35,7 +36,7 @@ namespace API.Controllers
         {
             var evals = await _service.GetEvaluationsAsync(touristObjectId);
             if (!evals.Any())
-                return NotFound("Nema evaluacija za ovaj objekat.");
+                return NotFound("Nema kategorizacije za ovaj objekat.");
 
             return Ok(evals);
         }

@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { ReportDto, ReportResultDto } from "../types/Report";
+import type { ReportDto, ReportResultDto } from "../../models/types/Report";
 
 export const reportsApi = createApi({
   reducerPath: "reportsApi",

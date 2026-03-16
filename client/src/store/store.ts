@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
-import { touristObjectApi } from "./api/TouristObjectApi";
+import { touristObjectApi } from "./api/touristObjectApi";
 import { objectSlice } from "./slice/objectSlice";
 import { authSlice } from "./slice/authSlice";
 import { userApi } from "./api/userApi";
@@ -12,6 +12,7 @@ import { userSlice } from "./slice/userSlice";
 import { reportsApi } from "./api/reportsApi";
 import { statisticsApi } from "./api/statisticsApi";
 import { registrationRequestsApi } from "./api/registrationRequestsApi";
+
 export const store = configureStore({
   reducer: {
     [touristObjectApi.reducerPath]: touristObjectApi.reducer,

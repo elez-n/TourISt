@@ -8,7 +8,7 @@ import {
   useFetchFiltersQuery,
   useGetObjectsForMapVisitorQuery,
   useGetObjectsForMapOfficerQuery,
-} from "@/store/api/TouristObjectApi";
+} from "@/store/api/touristObjectApi";
 import { useAppSelector, useAppDispatch } from "@/store/store";
 import {
   setSearchTerm,

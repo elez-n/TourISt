@@ -1,4 +1,5 @@
-using API.DTOs;
+namespace API.DTOs;
+
 public class ObjectDto
 {
     public int Id { get; set; }

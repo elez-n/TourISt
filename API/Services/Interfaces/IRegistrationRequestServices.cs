@@ -1,3 +1,5 @@
+using API.DTOs;
+
 namespace API.Services
 {
     public interface IRegistrationRequestService

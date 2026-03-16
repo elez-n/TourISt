@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { TouristObjectDto } from "../types/TouristObject";
+import type { TouristObjectDto } from "../../models/types/TouristObject";
 
 export const favoritesApi = createApi({
   reducerPath: "favoritesApi",

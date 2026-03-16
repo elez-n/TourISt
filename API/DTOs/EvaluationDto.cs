@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class EvaluationCreateDto
 {
     public int TouristObjectId { get; set; }

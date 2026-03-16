@@ -1,6 +1,6 @@
 using API.DTOs;
 using API.Entities;
-using Dipl.Api.Data;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 
 public class ReviewService : IReviewService

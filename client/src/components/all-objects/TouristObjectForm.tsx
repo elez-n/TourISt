@@ -21,8 +21,8 @@ import {
   useCreateTouristObjectMutation,
   useUpdateTouristObjectMutation,
   useFetchAdditionalServicesQuery
-} from "@/store/api/TouristObjectApi";
-import type { TouristObjectDto } from "@/store/types/TouristObject";
+} from "@/store/api/touristObjectApi";
+import type { TouristObjectDto } from "@/models/types/TouristObject";
 
 type Props = {
   setEditMode?: (value: boolean) => void;

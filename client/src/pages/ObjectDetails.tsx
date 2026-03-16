@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Trash2, Edit2, Heart } from "lucide-react";
@@ -16,7 +14,7 @@ import ReviewsSection from "@/components/object-details/ReviewsSection";
 import { EvaluationForm } from "@/components/object-details/EvaluationForm";
 
 import TouristObjectForm from "../components/all-objects/TouristObjectForm";
-import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "../store/api/TouristObjectApi";
+import { useGetTouristObjectByIdQuery, useDeleteTouristObjectMutation } from "../store/api/touristObjectApi";
 import LoadingSpinner from "@/components/ui/loading";
 import { Modal } from "@/components/object-details/Modal";
 import { toast } from "sonner";

@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using API.Entities;
 
-namespace Api.Entities
+namespace API.Entities
 {
     [Table("ObjectType")]
     public class ObjectType

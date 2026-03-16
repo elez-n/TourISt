@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class FavoriteDto
 {
     public int ObjectId { get; set; }

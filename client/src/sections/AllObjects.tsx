@@ -2,7 +2,7 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { TouristObjectDto } from "../store/types/TouristObject";
+import type { TouristObjectDto } from "../models/types/TouristObject";
 import {
   useGetFavoritesQuery,
   useAddFavoriteMutation,

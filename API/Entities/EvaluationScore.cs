@@ -1,3 +1,5 @@
+namespace API.Entities;
+
 public class EvaluationScore
 {
     public int Id { get; set; }

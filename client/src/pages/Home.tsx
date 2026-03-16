@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import Hero from "../sections/Hero";
 import MapSection, { type MapMarker } from "../sections/MapSection";
 import { Box } from "@mui/material";
-import { useFetchFeaturedObjectsQuery } from "@/store/api/TouristObjectApi";
+import { useFetchFeaturedObjectsQuery } from "@/store/api/touristObjectApi";
 import FeaturedObjects from "@/sections/FeaturedObjects";
 import LoadingSpinner from "@/components/ui/loading";
 
@@ -33,7 +33,6 @@ const Home = () => {
       <Hero />
 
       <FeaturedObjects />
-
 
       <MapSection markers={markers} />
 

@@ -1,4 +1,3 @@
-using API.DTO;
 using API.DTOs;
 using API.Extensions;
 using API.RequestHelpers;
@@ -21,21 +20,14 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateOfficer(OfficerDto dto)
     {
         await _service.CreateOfficer(dto);
-        return Ok("Officer created and email sent.");
+        return Ok("Službenik uspješno kreiran.");
     }
 
     [HttpPost("set-password")]
     public async Task<IActionResult> SetPassword([FromQuery] string token, [FromBody] SetPasswordDto dto)
     {
         await _service.SetPassword(token, dto.NewPassword);
-        return Ok("Password set successfully.");
-    }
-
-    [HttpPost("create-admin-temp")]
-    public async Task<IActionResult> CreateAdminTemp()
-    {
-        var result = await _service.CreateAdminTemp();
-        return Ok(result);
+        return Ok("Lozinka postavljena.");
     }
 
     [Authorize(Roles = "Admin")]

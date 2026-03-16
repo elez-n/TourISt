@@ -21,7 +21,7 @@ import {
 } from "@/store/api/adminApi";
 import { LucideSearch, LucideUserX, LucideUserCheck, LucideEdit } from "lucide-react";
 import ObjectsPagination from "@/components/all-objects/ObjectsPagination";
-import type { UserInfoDto } from "@/store/types/User";
+import type { UserInfoDto } from "@/models/types/User";
 import { EditUserModal } from "@/components/users/EditUserForm";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

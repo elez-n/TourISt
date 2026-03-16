@@ -1,8 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./baseApi";
-import type { CreateOfficerResponse, Officer, SetPasswordDto } from "../types/Officer";
-import type { UpdateUserDto, UserInfoDto } from "../types/User";
-import type { Pagination } from "../types/Pagination";
+import type { CreateOfficerResponse, Officer, SetPasswordDto } from "../../models/types/Officer";
+import type { UpdateUserDto, UserInfoDto } from "../../models/types/User";
+import type { Pagination } from "../../models/types/Pagination";
 import type { UserParams } from "../models/UserParams";
 
 

@@ -1,5 +1,4 @@
-using API.DTO;
-using API.Entities;
+using API.DTOs;
 
 namespace API.Services.Interfaces
 {

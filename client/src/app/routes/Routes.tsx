@@ -3,7 +3,7 @@ import App from "../../App";
 import Home from "../../pages/Home";
 import Objects from "../../pages/Objects";
 import Login from "@/pages/Login";
-import Signup from "@/pages/Singup";
+import Signup from "@/pages/Signup";
 import ObjectDetailsPage from "@/pages/ObjectDetails";
 import AddObject from "@/pages/AddObject";
 import ObjectsMap from "@/pages/ObjectsMap";
@@ -72,13 +72,6 @@ export const router = createBrowserRouter([
           <RegistrationRequestsPage />
         </ProtectedRoute>
       },
-
-
-
-
-
-
-
     ]
   }
 ])

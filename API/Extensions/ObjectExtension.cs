@@ -31,7 +31,7 @@ public static class ObjectExtension
       additionalServicesList.AddRange([.. additionalServices.Split(',')]);
     }
     query = query.Where(x => vrstaList.Count == 0 || vrstaList.Contains(x.ObjectType.Name));
-    query = query.Where(x => categoryList.Count == 0 || categoryList.Contains(x.Category.Name));
+    query = query.Where(x => categoryList.Count == 0 || categoryList.Contains(x.Category!.Name));
     query = query.Where(x => municipalityList.Count == 0 || municipalityList.Contains(x.Municipality.Name));
     if (additionalServicesList.Count > 0)
     {

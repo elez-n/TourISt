@@ -1,41 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Dipl.Api.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using API.Services;
+using API.DTOs;
 
 [ApiController]
 [Route("api/[controller]")]
 public class RegistrationRequestsController : ControllerBase
 {
-    private readonly TouristDbContext _context;
+    private readonly IRegistrationRequestService _service;
 
-    public RegistrationRequestsController(TouristDbContext context)
+    public RegistrationRequestsController(IRegistrationRequestService service)
     {
-        _context = context;
+        _service = service;
     }
 
     [Authorize(Roles = "Visitor")]
     [HttpPost]
     public async Task<ActionResult> CreateRequest(RegistrationRequestDto dto)
     {
-        var request = new RegistrationRequest
-        {
-            OwnerFirstName = dto.OwnerFirstName,
-            OwnerLastName = dto.OwnerLastName,
-            OwnerPhone = dto.OwnerPhone,
-            OwnerEmail = dto.OwnerEmail,
-            ObjectName = dto.ObjectName,
-            ObjectTypeId = dto.ObjectTypeId,
-            MunicipalityId = dto.MunicipalityId,
-            Address = dto.Address,
-            Status = "Na čekanju",
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.RegistrationRequests.Add(request);
-        await _context.SaveChangesAsync();
-
+        await _service.CreateRequestAsync(dto);
         return Ok();
     }
 
@@ -47,50 +31,24 @@ public class RegistrationRequestsController : ControllerBase
         if (string.IsNullOrEmpty(userId))
             return Unauthorized();
 
-        var officer = await _context.Users
-            .Include(u => u.OfficerProfile)
-            .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-
-        if (officer?.OfficerProfile == null)
-            return Forbid();
-
-        var municipalityId = officer.OfficerProfile.MunicipalityId;
-
-        var requests = await _context.RegistrationRequests
-     .Include(r => r.ObjectType)
-     .Include(r => r.Municipality)
-     .Where(r => r.MunicipalityId == municipalityId && r.Status == "Na čekanju")
-     .OrderByDescending(r => r.CreatedAt)
-     .ToListAsync();
-
-        var dtoList = requests.Select(r => new GetRegistrationRequestDto
+        try
         {
-            Id = r.Id,
-            OwnerFirstName = r.OwnerFirstName,
-            OwnerLastName = r.OwnerLastName,
-            OwnerPhone = r.OwnerPhone,
-            OwnerEmail = r.OwnerEmail,
-            ObjectName = r.ObjectName,
-            ObjectType = r.ObjectType.Name,
-            Municipality = r.Municipality.Name,
-            Address = r.Address,
-            Status = r.Status,
-            CreatedAt = r.CreatedAt
-        }).ToList();
-
-        return dtoList;
+            var requests = await _service.GetRequestsForOfficerAsync(userId);
+            return Ok(requests);
+        }
+        catch (InvalidOperationException)
+        {
+            return Forbid();
+        }
     }
-    
-[Authorize(Roles = "Officer,Admin")]
-[HttpPut("{id}/status")]
-public async Task<ActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
-{
-    var request = await _context.RegistrationRequests.FindAsync(id);
-    if (request == null) return NotFound();
 
-    request.Status = dto.Status;
-    await _context.SaveChangesAsync();
+    [Authorize(Roles = "Officer,Admin")]
+    [HttpPut("{id}/status")]
+    public async Task<ActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
+    {
+        var updated = await _service.UpdateStatusAsync(id, dto.Status);
+        if (!updated) return NotFound();
 
-    return NoContent();
-}
+        return NoContent();
+    }
 }

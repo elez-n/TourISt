@@ -1,4 +1,4 @@
-using API.Entities;
+namespace API.Entities;
 
 public class OfficerProfile
 {

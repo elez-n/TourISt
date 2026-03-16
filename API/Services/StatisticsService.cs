@@ -1,5 +1,5 @@
 using API.Entities;
-using Dipl.Api.Data;
+using API.Data;
 using Microsoft.EntityFrameworkCore;
 
 public class StatisticsService : IStatisticsService

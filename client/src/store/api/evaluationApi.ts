@@ -1,5 +1,5 @@
-import type { CriteriaDto } from "../types/Criteria";
-import type { CreateEvaluationDto, EvaluationDto } from "../types/Evaluation";
+import type { CriteriaDto } from "../../models/types/Criteria";
+import type { CreateEvaluationDto, EvaluationDto } from "../../models/types/Evaluation";
 import { customBaseQuery } from "./baseApi";
 import { createApi } from "@reduxjs/toolkit/query/react";
 

@@ -1,3 +1,5 @@
+namespace API.DTOs;
+
 public class RegistrationRequestDto
 {
     public string OwnerFirstName { get; set; } = null!;
